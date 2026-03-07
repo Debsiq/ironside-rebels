@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Sistema Fenrir</title>
+
+<style>
+
+body{
+background:#0a0a0a;
+color:white;
+font-family:monospace;
+margin:0;
+}
+
+header{
+background:#111;
+padding:20px;
+text-align:center;
+border-bottom:2px solid red;
+}
+
+.logo{
+width:160px;
+}
+
+.tabs{
+display:flex;
+justify-content:center;
+background:#151515;
+}
+
+.tabs button{
+flex:1;
+padding:15px;
+background:#151515;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+.tabs button:hover{
+background:#222;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+padding:20px;
+}
+
+input,select{
+width:100%;
+padding:8px;
+margin:5px 0;
+background:#222;
+color:white;
+border:none;
+}
+
+button.action{
+background:#b00000;
+padding:10px;
+margin-top:10px;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+.cupom{
+background:black;
+padding:15px;
+margin-top:20px;
+white-space:pre-line;
+}
+
+.tab{
+display:none;
+}
+
+.history-item{
+background:#1b1b1b;
+padding:10px;
+margin:5px 0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<img src="logo.png" class="logo">
+
+<h2>SISTEMA FENRIR</h2>
+
+</header>
+
+<div class="tabs">
+
+<button onclick="openTab('pedidos')">Pedidos</button>
+<button onclick="openTab('historico')">Histórico</button>
+<button onclick="openTab('lucro')">Lucro</button>
+
+</div>
+
+<div class="container">
+
+<div id="pedidos" class="tab">
+
+<h3>Novo Pedido</h3>
+
+Contato
+<input id="contato">
+
+Organização
+<input id="org" value="OG's">
+
+Pagamento
+<select id="pagamento">
+<option>Limpo</option>
+<option>Sujo</option>
+</select>
+
+Arma
+<select id="arma">
+<option>HK USP</option>
+</select>
+
+Quantidade
+<input id="qtd" type="number">
+
+<button class="action" onclick="gerar()">GERAR CUPOM</button>
+
+<div id="cupom" class="cupom"></div>
+
+</div>
+
+<div id="historico" class="tab">
+
+<h3>Histórico de Vendas</h3>
+
+<div id="listaHistorico"></div>
+
+</div>
+
+<div id="lucro" class="tab">
+
+<h3>Relatório</h3>
+
+<div id="relatorio"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let vendas = JSON.parse(localStorage.getItem("fenrir_vendas")) || []
+
+function openTab(tab){
+
+document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+
+document.getElementById(tab).style.display="block"
+
+if(tab=="historico") carregarHistorico()
+if(tab=="lucro") calcularLucro()
+
+}
+
+openTab("pedidos")
+
+function gerar(){
+
+let contato=document.getElementById("contato").value
+let org=document.getElementById("org").value
+let pagamento=document.getElementById("pagamento").value
+let qtd=Number(document.getElementById("qtd").value)
+
+let preco=12000
+let total=qtd*preco
+
+let cylinder=qtd
+let componente=qtd*2
+let blueprint=qtd
+
+let custoProducao=8000
+let lucroUnit=preco-custoProducao
+
+let lucro=lucroUnit*qtd
+
+let numero=vendas.length+1
+
+let data=new Date().toLocaleDateString()
+
+let cupom=
+
+`VENDA #${String(numero).padStart(4,'0')}
+
+Contato: ${contato}
+Organização: ${org}
+Data: ${data}
+Tipo de Pagamento: Dinheiro ${pagamento}
+
+Pedido:
+${qtd} HK USP → $${preco.toLocaleString()} (cada)
+
+Total do Pedido: $${total.toLocaleString()}
+
+Materiais Necessários:
+
+${cylinder} Cylinder
+${componente} Componente
+${blueprint} Blueprint
+
+Lucro estimado:
+$${lucro.toLocaleString()}
+
+Carregamento recomendado:
+1 Grade
+`
+
+document.getElementById("cupom").innerText=cupom
+
+vendas.push({
+numero,
+arma:"HK USP",
+qtd,
+total,
+lucro,
+pagamento
+})
+
+localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
+
+}
+
+function carregarHistorico(){
+
+let div=document.getElementById("listaHistorico")
+
+div.innerHTML=""
+
+vendas.forEach(v=>{
+
+div.innerHTML+=`
+<div class="history-item">
+#${String(v.numero).padStart(4,'0')} | ${v.arma} | ${v.qtd} | $${v.total.toLocaleString()} | ${v.pagamento}
+</div>
+`
+
+})
+
+}
+
+function calcularLucro(){
+
+let total=0
+let lucro=0
+
+vendas.forEach(v=>{
+total+=v.total
+lucro+=v.lucro
+})
+
+document.getElementById("relatorio").innerText=
+
+`Total vendido: $${total.toLocaleString()}
+
+Lucro estimado: $${lucro.toLocaleString()}
+
+Pedidos realizados: ${vendas.length}`
+
+}
+
+</script>
+
+</body>
+
+</html>
