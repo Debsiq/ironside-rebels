@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 <meta charset="UTF-8">
 <title>Sistema Fenrir</title>
 
@@ -79,6 +78,12 @@ margin-top:20px;
 white-space:pre-line;
 }
 
+.history{
+background:#1b1b1b;
+padding:10px;
+margin:5px 0;
+}
+
 .sugestao{
 color:#00ff9c;
 margin-top:10px;
@@ -86,26 +91,21 @@ font-weight:bold;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-
 <img src="logo.png" class="logo">
 <h2>SISTEMA FENRIR</h2>
-
 </header>
 
 <div class="tabs">
-
 <button onclick="openTab('pedidos')">Pedidos</button>
 <button onclick="openTab('historico')">Histórico</button>
 <button onclick="openTab('dashboard')">Dashboard</button>
 <button onclick="openTab('ranking')">Ranking</button>
 <button onclick="openTab('encomendas')">Encomendas</button>
-
 </div>
 
 <div class="container">
@@ -121,9 +121,9 @@ Contato
 
 Arma
 <select id="arma">
-<option>Colt 1911</option>
-<option>HK USP</option>
-<option>Desert Eagle</option>
+<option value="colt">Colt 1911</option>
+<option value="usp">HK USP</option>
+<option value="deagle">Desert Eagle</option>
 </select>
 
 Quantidade
@@ -213,37 +213,70 @@ Observação
 
 <script>
 
-/* CONTROLE DE ABAS */
+/* ABAS */
 
-function openTab(tabId){
+function openTab(tab){
+document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+document.getElementById(tab).style.display="block"
+}
 
-let tabs=document.querySelectorAll(".tab")
+window.onload=()=>{
+openTab("pedidos")
+carregarHistorico()
+}
 
-tabs.forEach(tab=>{
-tab.style.display="none"
+/* HISTORICO */
+
+let historico=JSON.parse(localStorage.getItem("fenrirHistorico"))||[]
+
+function salvarHistorico(){
+localStorage.setItem("fenrirHistorico",JSON.stringify(historico))
+carregarHistorico()
+}
+
+function carregarHistorico(){
+
+let div=document.getElementById("listaHistorico")
+div.innerHTML=""
+
+historico.forEach((p,i)=>{
+
+div.innerHTML+=`
+<div class="history">
+${p}
+<br>
+<button onclick="excluirHistorico(${i})">Excluir</button>
+</div>
+`
+
 })
 
-document.getElementById(tabId).style.display="block"
+atualizarDashboard()
+atualizarRanking()
 
 }
 
-window.onload=function(){
-openTab("pedidos")
+function excluirHistorico(i){
+historico.splice(i,1)
+salvarHistorico()
 }
 
-/* GERAR PEDIDO */
+/* PEDIDOS */
 
 function gerarPedido(){
 
 let contato=document.getElementById("contato").value
 let arma=document.getElementById("arma").value
-let qtd=document.getElementById("qtd").value
+let qtd=Number(document.getElementById("qtd").value)
 let pagamento=document.getElementById("pagamento").value
 
-if(!contato || !qtd){
+if(!contato||!qtd){
 alert("Preencha contato e quantidade")
 return
 }
+
+let pecas=qtd*1
+let carregadores=Math.ceil(qtd/12)
 
 let cupom=
 
@@ -255,176 +288,148 @@ Arma: ${arma}
 
 Quantidade: ${qtd}
 
-Pagamento: ${pagamento}
+Peças necessárias: ${pecas}
 
-Status: AGUARDANDO ENTREGA
+Carregamentos necessários: ${carregadores}
+
+Pagamento: ${pagamento}
 `
 
 document.getElementById("cupom").innerText=cupom
 
+historico.push(cupom)
+salvarHistorico()
+
 }
 
 function copiarCupom(){
-
-let texto=document.getElementById("cupom").innerText
-
-if(!texto){
-alert("Nenhum cupom gerado")
-return
+navigator.clipboard.writeText(document.getElementById("cupom").innerText)
+alert("Cupom copiado")
 }
 
-navigator.clipboard.writeText(texto)
-alert("Cupom copiado!")
+/* DASHBOARD */
+
+function atualizarDashboard(){
+
+let totalPedidos=historico.length
+let totalArmas=0
+
+historico.forEach(p=>{
+let match=p.match(/Quantidade: (\d+)/)
+if(match) totalArmas+=Number(match[1])
+})
+
+document.getElementById("relatorio").innerText=
+
+`Total de pedidos: ${totalPedidos}
+
+Total de armas vendidas: ${totalArmas}`
 
 }
 
-/* BANCO DE DADOS */
+/* RANKING */
+
+function atualizarRanking(){
+
+let contagem={}
+
+historico.forEach(p=>{
+
+let match=p.match(/Cliente: (.*)/)
+
+if(match){
+
+let nome=match[1]
+
+contagem[nome]=(contagem[nome]||0)+1
+
+}
+
+})
+
+let lista=Object.entries(contagem)
+.sort((a,b)=>b[1]-a[1])
+
+let html=""
+
+lista.forEach(c=>{
+
+html+=`${c[0]} - ${c[1]} pedidos<br>`
+
+})
+
+document.getElementById("rankingClientes").innerHTML=html
+
+}
+
+/* BANCO ENCOMENDAS */
 
 const tabelaCompras={
-
 municoes:{
 "9mm ou .45":{
-"NINE":{limpo:25,sujo:0,obs:"Pedido Min 1000 Munição"},
+"NINE":{limpo:25,sujo:0,obs:"Pedido Min 1000"},
 "FAMILIA CESARINE":{limpo:20,sujo:40,obs:""}
-},
-
-".50 e Doze":{
-"NINE":{limpo:30,sujo:0,obs:""},
-"FAMILIA CESARINE":{limpo:25,sujo:50,obs:""}
-},
-
-"762":{
-"NINE":{limpo:30,sujo:0,obs:""},
-"FAMILIA CESARINE":{limpo:30,sujo:60,obs:""}
 }
-
 },
-
 drogas:{
-
 "Coca":{
-"FAMILIES":{limpo:230,sujo:460,obs:"Venda média 280 a 290"},
-"THUNDERS":{limpo:300,sujo:460,obs:"Venda média 280 a 290"},
-"DVD":{limpo:230,sujo:460,obs:""},
-"CLOUND":{limpo:230,sujo:460,obs:""},
-"OG's":{limpo:230,sujo:380,obs:"Venda média 290 a 300"}
-},
-
-"Meta":{
-"FAMILIES":{limpo:230,sujo:500,obs:"Venda média 315"},
-"BALLAS":{limpo:230,sujo:460,obs:""}
-},
-
-"LSD":{
-"DVD":{limpo:230,sujo:500,obs:""},
-"CLOUND":{limpo:230,sujo:460,obs:""},
-"OG's":{limpo:230,sujo:380,obs:"Venda média 290 a 300"}
+"FAMILIES":{limpo:230,sujo:460,obs:"Venda média 280"},
+"OG's":{limpo:230,sujo:380,obs:""}
+}
+}
 }
 
-}
-
-}
-
-/* CARREGAR PRODUTOS */
+/* ENCOMENDAS */
 
 function carregarProdutos(){
 
-let categoria=document.getElementById("categoria").value
-let produtoSelect=document.getElementById("produto")
-let orgSelect=document.getElementById("orgCompra")
+let cat=categoria.value
+produto.innerHTML=""
+orgCompra.innerHTML=""
 
-produtoSelect.innerHTML=""
-orgSelect.innerHTML=""
+if(!cat)return
 
-if(!categoria) return
-
-produtoSelect.innerHTML='<option value="">Selecionar</option>'
-
-Object.keys(tabelaCompras[categoria]).forEach(prod=>{
-produtoSelect.innerHTML+=`<option>${prod}</option>`
+Object.keys(tabelaCompras[cat]).forEach(p=>{
+produto.innerHTML+=`<option>${p}</option>`
 })
 
 }
-
-/* CARREGAR FORNECEDORES */
 
 function carregarFornecedores(){
 
-let categoria=document.getElementById("categoria").value
-let produto=document.getElementById("produto").value
-let orgSelect=document.getElementById("orgCompra")
+let cat=categoria.value
+let prod=produto.value
 
-orgSelect.innerHTML=""
+orgCompra.innerHTML=""
 
-if(!categoria||!produto) return
-
-let fornecedores=tabelaCompras[categoria][produto]
-
-orgSelect.innerHTML='<option value="">Selecionar</option>'
-
-Object.keys(fornecedores).forEach(org=>{
-orgSelect.innerHTML+=`<option>${org}</option>`
+Object.keys(tabelaCompras[cat][prod]).forEach(o=>{
+orgCompra.innerHTML+=`<option>${o}</option>`
 })
 
 }
 
-/* PREENCHER VALORES */
-
 function preencherValores(){
 
-let categoria=document.getElementById("categoria").value
-let produto=document.getElementById("produto").value
-let org=document.getElementById("orgCompra").value
+let cat=categoria.value
+let prod=produto.value
+let org=orgCompra.value
 
-if(!categoria||!produto||!org) return
+let d=tabelaCompras[cat][prod][org]
 
-let dados=tabelaCompras[categoria][produto][org]
-
-document.getElementById("precoLimpo").value=dados.limpo
-document.getElementById("precoSujo").value=dados.sujo
-document.getElementById("obsCompra").value=dados.obs
-
-sugerirFornecedorMaisBarato(categoria,produto)
+precoLimpo.value=d.limpo
+precoSujo.value=d.sujo
+obsCompra.value=d.obs
 
 }
-
-/* SUGESTÃO FORNECEDOR */
-
-function sugerirFornecedorMaisBarato(categoria,produto){
-
-let fornecedores=tabelaCompras[categoria][produto]
-
-let maisBarato=null
-let menor=999999
-
-for(let org in fornecedores){
-
-let preco=fornecedores[org].limpo
-
-if(preco<menor){
-menor=preco
-maisBarato=org
-}
-
-}
-
-document.getElementById("fornecedorBarato").innerText=
-`Fornecedor mais barato: ${maisBarato} ($${menor})`
-
-}
-
-/* GERAR ENCOMENDA */
 
 function gerarCompra(){
 
-let produto=document.getElementById("produto").value
-let org=document.getElementById("orgCompra").value
-let qtd=document.getElementById("qtdCompra").value
-let tipo=document.getElementById("tipoPagamento").value
+let prod=produto.value
+let org=orgCompra.value
+let qtd=qtdCompra.value
+let tipo=tipoPagamento.value
 
-let preco= tipo=="limpo"
-? document.getElementById("precoLimpo").value
-: document.getElementById("precoSujo").value
+let preco=tipo=="limpo"?precoLimpo.value:precoSujo.value
 
 let total=qtd*preco
 
@@ -432,7 +437,7 @@ let cupom=
 
 `ENCOMENDA
 
-Produto: ${produto}
+Produto: ${prod}
 
 Fornecedor: ${org}
 
@@ -440,27 +445,17 @@ Quantidade: ${qtd}
 
 Pagamento: ${tipo}
 
-Valor unitário: $${preco}
+Valor unitário: ${preco}
 
-Total: $${total}
-`
+Total: ${total}`
 
-document.getElementById("cupomCompra").innerText=cupom
+cupomCompra.innerText=cupom
 
 }
 
 function copiarCupomCompra(){
-
-let texto=document.getElementById("cupomCompra").innerText
-
-if(!texto){
-alert("Nenhuma encomenda gerada")
-return
-}
-
-navigator.clipboard.writeText(texto)
-alert("Encomenda copiada!")
-
+navigator.clipboard.writeText(cupomCompra.innerText)
+alert("Encomenda copiada")
 }
 
 </script>
