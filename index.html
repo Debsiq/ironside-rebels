@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <title>Sistema Fenrir</title>
 
 <style>
@@ -20,36 +19,34 @@ header{
 background:#111;
 padding:20px;
 text-align:center;
-border-bottom:2px solid red;
 }
 
 .logo{
-width:160px;
+width:140px;
 }
 
 .tabs{
 display:flex;
-justify-content:center;
-background:#151515;
+background:#1a1a1a;
 }
 
 .tabs button{
 flex:1;
 padding:15px;
-background:#151515;
-border:none;
+background:#1a1a1a;
 color:white;
+border:none;
 cursor:pointer;
 }
 
 .tabs button:hover{
-background:#222;
+background:#333;
 }
 
 .container{
-max-width:800px;
-margin:auto;
 padding:20px;
+max-width:900px;
+margin:auto;
 }
 
 input,select{
@@ -64,10 +61,13 @@ border:none;
 button.action{
 background:#b00000;
 padding:10px;
-margin-top:10px;
 border:none;
-color:white;
+margin-top:10px;
 cursor:pointer;
+}
+
+.tab{
+display:none;
 }
 
 .cupom{
@@ -75,16 +75,6 @@ background:black;
 padding:15px;
 margin-top:20px;
 white-space:pre-line;
-}
-
-.tab{
-display:none;
-}
-
-.history-item{
-background:#1b1b1b;
-padding:10px;
-margin:5px 0;
 }
 
 </style>
@@ -96,7 +86,6 @@ margin:5px 0;
 <header>
 
 <img src="logo.png" class="logo">
-
 <h2>SISTEMA FENRIR</h2>
 
 </header>
@@ -105,7 +94,9 @@ margin:5px 0;
 
 <button onclick="openTab('pedidos')">Pedidos</button>
 <button onclick="openTab('historico')">Histórico</button>
-<button onclick="openTab('lucro')">Lucro</button>
+<button onclick="openTab('dashboard')">Dashboard</button>
+<button onclick="openTab('ranking')">Ranking</button>
+<button onclick="openTab('encomendas')">Encomendas</button>
 
 </div>
 
@@ -121,39 +112,64 @@ Contato
 Organização
 <input id="org" value="OG's">
 
+Arma
+<select id="arma">
+
+<option>Colt 1911</option>
+<option>HK USP</option>
+<option>Desert Eagle</option>
+
+</select>
+
+Quantidade
+<input id="qtd" type="number">
+
 Pagamento
 <select id="pagamento">
 <option>Limpo</option>
 <option>Sujo</option>
 </select>
 
-Arma
-<select id="arma">
-<option>HK USP</option>
-</select>
-
-Quantidade
-<input id="qtd" type="number">
-
-<button class="action" onclick="gerar()">GERAR CUPOM</button>
+<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
 
 <div id="cupom" class="cupom"></div>
 
 </div>
 
 <div id="historico" class="tab">
-
-<h3>Histórico de Vendas</h3>
-
+<h3>Histórico</h3>
 <div id="listaHistorico"></div>
-
 </div>
 
-<div id="lucro" class="tab">
-
+<div id="dashboard" class="tab">
 <h3>Relatório</h3>
-
 <div id="relatorio"></div>
+</div>
+
+<div id="ranking" class="tab">
+<h3>Ranking Clientes</h3>
+<div id="rankingClientes"></div>
+</div>
+
+<div id="encomendas" class="tab">
+
+<h3>Nova Encomenda</h3>
+
+Produto
+<input id="produtoCompra">
+
+Organização
+<input id="orgCompra">
+
+Quantidade
+<input id="qtdCompra">
+
+Preço unitário
+<input id="precoCompra">
+
+<button class="action" onclick="gerarCompra()">Registrar Compra</button>
+
+<div id="cupomCompra" class="cupom"></div>
 
 </div>
 
@@ -166,116 +182,79 @@ let vendas = JSON.parse(localStorage.getItem("fenrir_vendas")) || []
 function openTab(tab){
 
 document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
-
 document.getElementById(tab).style.display="block"
 
-if(tab=="historico") carregarHistorico()
-if(tab=="lucro") calcularLucro()
+if(tab=="ranking") gerarRanking()
 
 }
 
 openTab("pedidos")
 
-function gerar(){
+function gerarPedido(){
 
 let contato=document.getElementById("contato").value
-let org=document.getElementById("org").value
-let pagamento=document.getElementById("pagamento").value
+let arma=document.getElementById("arma").value
 let qtd=Number(document.getElementById("qtd").value)
+let pagamento=document.getElementById("pagamento").value
 
-let preco=12000
+let precos={
+"Colt 1911":{limpo:10000,sujo:12500},
+"HK USP":{limpo:12000,sujo:15000},
+"Desert Eagle":{limpo:14000,sujo:17500}
+}
+
+let preco = pagamento=="Limpo" ? precos[arma].limpo : precos[arma].sujo
+
 let total=qtd*preco
 
-let cylinder=qtd
-let componente=qtd*2
-let blueprint=qtd
-
-let custoProducao=8000
-let lucroUnit=preco-custoProducao
-
-let lucro=lucroUnit*qtd
+if(qtd>=11){
+total=total*0.9
+}
 
 let numero=vendas.length+1
-
-let data=new Date().toLocaleDateString()
 
 let cupom=
 
 `VENDA #${String(numero).padStart(4,'0')}
 
 Contato: ${contato}
-Organização: ${org}
-Data: ${data}
-Tipo de Pagamento: Dinheiro ${pagamento}
 
 Pedido:
-${qtd} HK USP → $${preco.toLocaleString()} (cada)
+${qtd} ${arma}
 
-Total do Pedido: $${total.toLocaleString()}
-
-Materiais Necessários:
-
-${cylinder} Cylinder
-${componente} Componente
-${blueprint} Blueprint
-
-Lucro estimado:
-$${lucro.toLocaleString()}
-
-Carregamento recomendado:
-1 Grade
-`
+Total: $${Math.round(total)}`
 
 document.getElementById("cupom").innerText=cupom
 
-vendas.push({
-numero,
-arma:"HK USP",
-qtd,
-total,
-lucro,
-pagamento
-})
+vendas.push({numero,contato,arma,qtd,total})
 
 localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
 
 }
 
-function carregarHistorico(){
+function gerarRanking(){
 
-let div=document.getElementById("listaHistorico")
+let ranking={}
+
+vendas.forEach(v=>{
+
+if(!ranking[v.contato]) ranking[v.contato]=0
+ranking[v.contato]+=v.total
+
+})
+
+let lista=Object.entries(ranking)
+.sort((a,b)=>b[1]-a[1])
+
+let div=document.getElementById("rankingClientes")
 
 div.innerHTML=""
 
-vendas.forEach(v=>{
+lista.forEach((c,i)=>{
 
-div.innerHTML+=`
-<div class="history-item">
-#${String(v.numero).padStart(4,'0')} | ${v.arma} | ${v.qtd} | $${v.total.toLocaleString()} | ${v.pagamento}
-</div>
-`
+div.innerHTML+=`<div>${i+1}º ${c[0]} — $${c[1]}</div>`
 
 })
-
-}
-
-function calcularLucro(){
-
-let total=0
-let lucro=0
-
-vendas.forEach(v=>{
-total+=v.total
-lucro+=v.lucro
-})
-
-document.getElementById("relatorio").innerText=
-
-`Total vendido: $${total.toLocaleString()}
-
-Lucro estimado: $${lucro.toLocaleString()}
-
-Pedidos realizados: ${vendas.length}`
 
 }
 
