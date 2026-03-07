@@ -79,12 +79,6 @@ margin-top:20px;
 white-space:pre-line;
 }
 
-.history{
-background:#1b1b1b;
-padding:10px;
-margin:5px 0;
-}
-
 .sugestao{
 color:#00ff9c;
 margin-top:10px;
@@ -116,7 +110,10 @@ font-weight:bold;
 
 <div class="container">
 
+<!-- PEDIDOS -->
+
 <div id="pedidos" class="tab">
+
 <h3>Novo Pedido</h3>
 
 Contato
@@ -138,25 +135,35 @@ Pagamento
 <option>Sujo</option>
 </select>
 
-<button class="action">Gerar Cupom</button>
+<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
+<button class="action" onclick="copiarCupom()">Copiar Cupom</button>
 
 <div id="cupom" class="cupom"></div>
+
 </div>
+
+<!-- HISTORICO -->
 
 <div id="historico" class="tab">
 <h3>Histórico</h3>
 <div id="listaHistorico"></div>
 </div>
 
+<!-- DASHBOARD -->
+
 <div id="dashboard" class="tab">
 <h3>Dashboard</h3>
 <div id="relatorio"></div>
 </div>
 
+<!-- RANKING -->
+
 <div id="ranking" class="tab">
 <h3>Ranking Clientes</h3>
 <div id="rankingClientes"></div>
 </div>
+
+<!-- ENCOMENDAS -->
 
 <div id="encomendas" class="tab">
 
@@ -172,11 +179,17 @@ Categoria
 Produto
 <select id="produto" onchange="carregarFornecedores()"></select>
 
-Organização
+Fornecedor
 <select id="orgCompra" onchange="preencherValores()"></select>
 
 Quantidade
 <input id="qtdCompra" type="number">
+
+Tipo de pagamento
+<select id="tipoPagamento">
+<option value="limpo">Dinheiro Limpo</option>
+<option value="sujo">Dinheiro Sujo</option>
+</select>
 
 Valor Limpo
 <input id="precoLimpo" readonly>
@@ -190,6 +203,7 @@ Observação
 <div id="fornecedorBarato" class="sugestao"></div>
 
 <button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
+<button class="action" onclick="copiarCupomCompra()">Copiar Encomenda</button>
 
 <div id="cupomCompra" class="cupom"></div>
 
@@ -215,6 +229,53 @@ document.getElementById(tabId).style.display="block"
 
 window.onload=function(){
 openTab("pedidos")
+}
+
+/* GERAR PEDIDO */
+
+function gerarPedido(){
+
+let contato=document.getElementById("contato").value
+let arma=document.getElementById("arma").value
+let qtd=document.getElementById("qtd").value
+let pagamento=document.getElementById("pagamento").value
+
+if(!contato || !qtd){
+alert("Preencha contato e quantidade")
+return
+}
+
+let cupom=
+
+`PEDIDO
+
+Cliente: ${contato}
+
+Arma: ${arma}
+
+Quantidade: ${qtd}
+
+Pagamento: ${pagamento}
+
+Status: AGUARDANDO ENTREGA
+`
+
+document.getElementById("cupom").innerText=cupom
+
+}
+
+function copiarCupom(){
+
+let texto=document.getElementById("cupom").innerText
+
+if(!texto){
+alert("Nenhum cupom gerado")
+return
+}
+
+navigator.clipboard.writeText(texto)
+alert("Cupom copiado!")
+
 }
 
 /* BANCO DE DADOS */
@@ -280,9 +341,7 @@ if(!categoria) return
 produtoSelect.innerHTML='<option value="">Selecionar</option>'
 
 Object.keys(tabelaCompras[categoria]).forEach(prod=>{
-
 produtoSelect.innerHTML+=`<option>${prod}</option>`
-
 })
 
 }
@@ -304,9 +363,7 @@ let fornecedores=tabelaCompras[categoria][produto]
 orgSelect.innerHTML='<option value="">Selecionar</option>'
 
 Object.keys(fornecedores).forEach(org=>{
-
 orgSelect.innerHTML+=`<option>${org}</option>`
-
 })
 
 }
@@ -345,10 +402,8 @@ for(let org in fornecedores){
 let preco=fornecedores[org].limpo
 
 if(preco<menor){
-
 menor=preco
 maisBarato=org
-
 }
 
 }
@@ -365,9 +420,11 @@ function gerarCompra(){
 let produto=document.getElementById("produto").value
 let org=document.getElementById("orgCompra").value
 let qtd=document.getElementById("qtdCompra").value
-let preco=document.getElementById("precoLimpo").value
-let sujo=document.getElementById("precoSujo").value
-let obs=document.getElementById("obsCompra").value
+let tipo=document.getElementById("tipoPagamento").value
+
+let preco= tipo=="limpo"
+? document.getElementById("precoLimpo").value
+: document.getElementById("precoSujo").value
 
 let total=qtd*preco
 
@@ -381,17 +438,28 @@ Fornecedor: ${org}
 
 Quantidade: ${qtd}
 
+Pagamento: ${tipo}
+
 Valor unitário: $${preco}
 
 Total: $${total}
-
-Valor Sujo: $${sujo}
-
-Observação:
-${obs}
 `
 
 document.getElementById("cupomCompra").innerText=cupom
+
+}
+
+function copiarCupomCompra(){
+
+let texto=document.getElementById("cupomCompra").innerText
+
+if(!texto){
+alert("Nenhuma encomenda gerada")
+return
+}
+
+navigator.clipboard.writeText(texto)
+alert("Encomenda copiada!")
 
 }
 
