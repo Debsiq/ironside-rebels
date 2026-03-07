@@ -43,7 +43,6 @@ background:#2ecc71;
 border:none;
 border-radius:5px;
 cursor:pointer;
-margin-top:5px;
 }
 
 button:hover{
@@ -95,7 +94,7 @@ margin-top:10px;
 
 <h2>Dashboard</h2>
 
-<div id="dashboard"></div>
+<div id="relatorio"></div>
 
 <h2>Ranking de Clientes</h2>
 
@@ -122,31 +121,25 @@ const armas={
 "Colt 1911":{
 limpo:10000,
 sujo:12500,
-materiais:{cylinder:1,components:1,blueprint:1},
-custo:5000
+custo:5000,
+materiais:{cylinder:1,components:1,blueprint:1}
 },
 
 "HK USP":{
 limpo:12000,
 sujo:15000,
-materiais:{cylinder:1,components:2,blueprint:1},
-custo:6000
+custo:6000,
+materiais:{cylinder:1,components:2,blueprint:1}
 },
 
 "Desert Eagle":{
 limpo:14000,
 sujo:17500,
-materiais:{cylinder:2,components:1,blueprint:1},
-custo:7000
+custo:7000,
+materiais:{cylinder:2,components:1,blueprint:1}
 }
 
 }
-
-const carregamentos=[
-{nome:"Pequeno",caixas:5,limpo:30000,sujo:45000},
-{nome:"Médio",caixas:10,limpo:60000,sujo:90000},
-{nome:"Grande",caixas:15,limpo:80000,sujo:120000}
-]
 
 function calcularCarregamento(caixas){
 
@@ -171,7 +164,7 @@ let pagamento=document.getElementById("pagamento").value
 
 let arma=armas[armaNome]
 
-let preco = pagamento=="Limpo"?arma.limpo:arma.sujo
+let preco=pagamento=="Limpo"?arma.limpo:arma.sujo
 
 let total=qtd*preco
 
@@ -206,12 +199,10 @@ if(carreg.grande>0) textoCarreg+=carreg.grande+" Grande "
 if(carreg.medio>0) textoCarreg+=carreg.medio+" Médio "
 if(carreg.pequeno>0) textoCarreg+=carreg.pequeno+" Pequeno "
 
-let custoArmas=qtd*arma.custo
-
-let lucro=total-custoArmas
+let custoTotal=qtd*arma.custo
+let lucroPedido=total-custoTotal
 
 let numero=vendas.length+1
-
 let data=new Date().toLocaleDateString()
 
 let cupom=
@@ -229,7 +220,7 @@ ${desconto?"Desconto aplicado 10%\n":""}
 
 Total do Pedido: $${Math.round(total).toLocaleString()}
 
-Lucro deste pedido: $${lucro.toLocaleString()}
+Lucro deste pedido: $${lucroPedido.toLocaleString()}
 
 Materiais Necessários para Produção:
 ${cylinder} Cylinder
@@ -247,12 +238,19 @@ $${custoSujo.toLocaleString()} (Sujo)
 
 document.getElementById("cupom").innerText=cupom
 
-vendas.push({numero,contato,arma:armaNome,qtd,total,lucro})
+vendas.push({
+numero,
+contato,
+arma:armaNome,
+qtd,
+total,
+lucro:lucroPedido
+})
 
 localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
 
 carregarHistorico()
-atualizarDashboard()
+calcularDashboard()
 gerarRanking()
 
 }
@@ -267,7 +265,7 @@ vendas.forEach((v,i)=>{
 
 div.innerHTML+=`
 
-<div style="background:#111;padding:8px;margin:5px">
+<div style="background:#111;padding:10px;margin:5px;border-radius:5px">
 
 #${String(v.numero).padStart(4,'0')}
 ${v.contato} |
@@ -276,7 +274,7 @@ ${v.qtd}
 
 $${v.total.toLocaleString()}
 
-<button onclick="excluir(${i})">Excluir</button>
+<button onclick="excluirVenda(${i})">Excluir</button>
 
 </div>
 
@@ -286,41 +284,41 @@ $${v.total.toLocaleString()}
 
 }
 
-function excluir(i){
+function excluirVenda(i){
 
 vendas.splice(i,1)
 
 localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
 
 carregarHistorico()
-atualizarDashboard()
+calcularDashboard()
 gerarRanking()
 
 }
 
-function atualizarDashboard(){
+function calcularDashboard(){
 
 let total=0
-let lucro=0
+let lucroTotal=0
 
 vendas.forEach(v=>{
 total+=v.total
-lucro+=v.lucro
+lucroTotal+=v.lucro
 })
 
 let ultimo=vendas[vendas.length-1]
 
 let lucroUltimo=ultimo?ultimo.lucro:0
 
-document.getElementById("dashboard").innerText=
+document.getElementById("relatorio").innerText=
 
-`Total Vendido: $${total.toLocaleString()}
+`Total vendido: $${total.toLocaleString()}
 
-Lucro Total: $${lucro.toLocaleString()}
+Lucro total: $${lucroTotal.toLocaleString()}
 
-Lucro Último Pedido: $${lucroUltimo.toLocaleString()}
+Lucro do último pedido: $${lucroUltimo.toLocaleString()}
 
-Pedidos Realizados: ${vendas.length}`
+Pedidos realizados: ${vendas.length}`
 
 }
 
@@ -345,16 +343,14 @@ div.innerHTML=""
 
 lista.forEach(c=>{
 
-div.innerHTML+=
-
-`<div>${c[0]} → $${c[1].toLocaleString()}</div>`
+div.innerHTML+=`<div>${c[0]} → $${c[1].toLocaleString()}</div>`
 
 })
 
 }
 
 carregarHistorico()
-atualizarDashboard()
+calcularDashboard()
 gerarRanking()
 
 </script>
