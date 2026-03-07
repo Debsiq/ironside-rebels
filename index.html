@@ -371,7 +371,25 @@ ${obs}
 document.getElementById("cupomCompra").innerText=cupom
 
 }
+/* CONTROLE DE ABAS */
 
+function openTab(tabId){
+
+let tabs=document.querySelectorAll(".tab")
+
+tabs.forEach(tab=>{
+tab.style.display="none"
+})
+
+document.getElementById(tabId).style.display="block"
+
+}
+
+/* ABRIR PRIMEIRA ABA AO INICIAR */
+
+window.onload=function(){
+openTab("pedidos")
+}
 </script>
 
 </body>
