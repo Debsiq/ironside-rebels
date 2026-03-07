@@ -624,6 +624,7 @@
       <div class="actions">
         <button class="secondary" onclick="adicionarItemPedido()">+ Adicionar arma</button>
         <button class="action" onclick="gerarPedido()">Gerar Cupom</button>
+        <button class="secondary" onclick="resetarPedido()">Reset Pedido</button>
         <button class="secondary" onclick="copiarCupom()">Copiar Cupom</button>
       </div>
 
@@ -671,64 +672,12 @@
     <div class="card">
       <h2 class="section-title">📦 Nova Encomenda</h2>
 
-      <div class="grid">
-        <div>
-          <label for="categoria">Categoria</label>
-          <select id="categoria" onchange="carregarProdutos()">
-            <option value="">Selecionar</option>
-            <option value="municoes">Munições</option>
-            <option value="drogas">Drogas</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="produto">Produto</label>
-          <select id="produto" onchange="carregarFornecedores()">
-            <option value="">Selecione a categoria primeiro</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="orgCompra">Fornecedor</label>
-          <select id="orgCompra" onchange="preencherValores()">
-            <option value="">Selecione o produto primeiro</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="qtdCompra">Quantidade</label>
-          <input id="qtdCompra" type="number" min="1" placeholder="Ex: 1000">
-        </div>
-
-        <div>
-          <label for="tipoPagamento">Tipo de pagamento</label>
-          <select id="tipoPagamento" onchange="atualizarResumoPagamento()">
-            <option value="limpo">Dinheiro Limpo</option>
-            <option value="sujo">Dinheiro Sujo</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="precoLimpo">Valor unitário no limpo</label>
-          <input id="precoLimpo" readonly>
-        </div>
-
-        <div>
-          <label for="precoSujo">Valor unitário no sujo</label>
-          <input id="precoSujo" readonly>
-        </div>
-
-        <div>
-          <label for="obsCompra">Observação</label>
-          <input id="obsCompra" readonly>
-        </div>
-      </div>
-
-      <div id="resumoPagamento" class="warning"></div>
-      <div id="fornecedorBarato" class="sugestao"></div>
+      <div id="itensEncomenda"></div>
 
       <div class="actions">
+        <button class="secondary" onclick="adicionarItemEncomenda()">+ Adicionar item</button>
         <button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
+        <button class="secondary" onclick="resetarEncomenda()">Reset Encomenda</button>
         <button class="secondary" onclick="copiarCupomCompra()">Copiar Encomenda</button>
       </div>
 
@@ -748,18 +697,6 @@
 <script>
   let vendas = JSON.parse(localStorage.getItem("fenrir_vendas")) || [];
   let encomendasHistorico = JSON.parse(localStorage.getItem("fenrir_encomendas")) || [];
-
-  const categoriaEl = document.getElementById("categoria");
-  const produtoEl = document.getElementById("produto");
-  const orgCompraEl = document.getElementById("orgCompra");
-  const qtdCompraEl = document.getElementById("qtdCompra");
-  const tipoPagamentoEl = document.getElementById("tipoPagamento");
-  const precoLimpoEl = document.getElementById("precoLimpo");
-  const precoSujoEl = document.getElementById("precoSujo");
-  const obsCompraEl = document.getElementById("obsCompra");
-  const fornecedorBaratoEl = document.getElementById("fornecedorBarato");
-  const cupomCompraEl = document.getElementById("cupomCompra");
-  const resumoPagamentoEl = document.getElementById("resumoPagamento");
 
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -809,8 +746,8 @@
     return `$${Number(valor).toLocaleString("pt-BR")}`;
   }
 
-  function dataHoraAtual(){
-    return new Date().toLocaleString("pt-BR");
+  function dataAtual(){
+    return new Date().toLocaleDateString("pt-BR");
   }
 
   function escapeHtml(texto){
@@ -838,10 +775,6 @@
     if(tab === "historico") carregarHistorico();
     if(tab === "ranking") gerarRanking();
     if(tab === "dashboard") gerarDashboard();
-    if(tab === "encomendas"){
-      atualizarResumoPagamento();
-      sugerirFornecedorMaisBarato();
-    }
   }
 
   function calcularCarregamento(caixas){
@@ -855,31 +788,20 @@
 
   function renderTerminal(lines){
     return lines.map(item => {
-      if(item.type === "title"){
-        return `<div class="title-terminal">${escapeHtml(item.text)}</div>`;
-      }
-      if(item.type === "line"){
-        return `<div class="line">${escapeHtml(item.text)}</div>`;
-      }
-      if(item.type === "discount"){
-        return `<div class="discount">${escapeHtml(item.text)}</div>`;
-      }
-      if(item.type === "total"){
-        return `<div class="total">${escapeHtml(item.text)}</div>`;
-      }
+      if(item.type === "title") return `<div class="title-terminal">${escapeHtml(item.text)}</div>`;
+      if(item.type === "line") return `<div class="line">${escapeHtml(item.text)}</div>`;
+      if(item.type === "discount") return `<div class="discount">${escapeHtml(item.text)}</div>`;
+      if(item.type === "total") return `<div class="total">${escapeHtml(item.text)}</div>`;
       return `<div>${escapeHtml(item.text)}</div>`;
     }).join("");
   }
 
   function getArmasOptionsHtml(selected = "Colt 1911"){
-    return Object.keys(armas).map(nome => {
-      return `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`;
-    }).join("");
+    return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
   }
 
   function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = ""){
     const container = document.getElementById("itensPedido");
-
     const div = document.createElement("div");
     div.className = "item-pedido";
 
@@ -908,18 +830,17 @@
   function removerItemPedido(botao){
     const container = document.getElementById("itensPedido");
     const itens = container.querySelectorAll(".item-pedido");
-
     if(itens.length <= 1){
       alert("O pedido precisa ter pelo menos uma arma.");
       return;
     }
-
     botao.closest(".item-pedido").remove();
     atualizarResumoItensPedido();
   }
 
   function atualizarResumoItensPedido(){
     const itens = document.querySelectorAll("#itensPedido .item-pedido");
+    const pagamento = document.getElementById("pagamento").value;
 
     itens.forEach(item => {
       let resumo = item.querySelector(".item-resumo");
@@ -931,7 +852,6 @@
 
       const armaNome = item.querySelector(".arma-item").value;
       const qtd = Number(item.querySelector(".qtd-item").value);
-      const pagamento = document.getElementById("pagamento").value;
       const valorUnitario = armas[armaNome][pagamento.toLowerCase()];
       const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
 
@@ -940,12 +860,16 @@
         return;
       }
 
-      const subtotal = qtd * valorUnitario;
-      resumo.innerHTML = `
-        Valor unitário: ${dinheiro(valorUnitario)} |
-        Subtotal: ${dinheiro(subtotal)}${semDesconto}
-      `;
+      resumo.innerHTML = `Valor unitário: ${dinheiro(valorUnitario)} | Subtotal: ${dinheiro(qtd * valorUnitario)}${semDesconto}`;
     });
+  }
+
+  function resetarPedido(){
+    document.getElementById("contato").value = "";
+    document.getElementById("pagamento").value = "Limpo";
+    document.getElementById("itensPedido").innerHTML = "";
+    document.getElementById("cupom").innerHTML = "";
+    adicionarItemPedido();
   }
 
   function gerarPedido(){
@@ -969,9 +893,9 @@
     let totalCylinder = 0;
     let totalComponents = 0;
     let totalBlueprint = 0;
-
     let qtdElegivelDesconto = 0;
     let subtotalElegivelDesconto = 0;
+    let temHK = false;
 
     for(const itemEl of itensEls){
       const armaNome = itemEl.querySelector(".arma-item").value;
@@ -986,6 +910,8 @@
       const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
       const subtotalItem = qtd * preco;
       const elegivelDesconto = armaNome !== "HK USP";
+
+      if(armaNome === "HK USP") temHK = true;
 
       itens.push({
         arma: armaNome,
@@ -1031,7 +957,7 @@
       { type:"title", text:">> SISTEMA FENRIR" },
       { type:"line", text:"==============================" },
       { text:`VENDA #${String(numero).padStart(4,"0")}` },
-      { text:`DATA: ${dataHoraAtual()}` },
+      { text:`DATA: ${dataAtual()}` },
       { text:`CLIENTE: ${contato}` },
       { text:`PAGAMENTO: DINHEIRO ${pagamento.toUpperCase()}` },
       { type:"line", text:"------------------------------" },
@@ -1041,17 +967,24 @@
     itens.forEach(item => {
       const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
       linhas.push({
-        text:`${item.qtd}x ${item.arma} • ${dinheiro(item.preco)} • ${dinheiro(item.subtotal)}${marcador}`
+        text:`${item.qtd} ${item.arma} → ${dinheiro(item.preco)} (cada)${marcador}`
       });
     });
 
     linhas.push(
       { type:"line", text:"------------------------------" },
       { text:`TOTAL DE ARMAS: ${totalArmas}` },
-      { text:`ARMAS ELEGÍVEIS P/ DESCONTO: ${qtdElegivelDesconto}` },
-      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` },
-      { text:`OBS: HK USP não participa do desconto.` }
+      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` }
     );
+
+    if(desconto && temHK){
+      linhas.push({
+        text:`OBS: HK USP não participa do desconto.`
+      });
+      linhas.push({
+        text:`ARMAS COM DESCONTO: ${qtdElegivelDesconto}`
+      });
+    }
 
     if(desconto){
       linhas.push({
@@ -1078,7 +1011,6 @@
       numero,
       contato,
       itens,
-      armasTexto: itens.map(i => `${i.qtd}x ${i.arma}`).join(", "),
       qtd: totalArmas,
       qtdElegivelDesconto,
       pagamento,
@@ -1087,7 +1019,7 @@
       total: Math.round(totalFinal),
       descontoAplicado: desconto,
       valorDesconto: Math.round(valorDesconto),
-      data: dataHoraAtual()
+      data: dataAtual()
     });
 
     localStorage.setItem("fenrir_vendas", JSON.stringify(vendas));
@@ -1106,26 +1038,319 @@
     alert("Cupom copiado.");
   }
 
+  function getCategoriasOptionsHtml(selected = ""){
+    return `
+      <option value="">Selecionar</option>
+      <option value="municoes" ${selected === "municoes" ? "selected" : ""}>Munições</option>
+      <option value="drogas" ${selected === "drogas" ? "selected" : ""}>Drogas</option>
+    `;
+  }
+
+  function adicionarItemEncomenda(){
+    const container = document.getElementById("itensEncomenda");
+    const div = document.createElement("div");
+    div.className = "item-pedido";
+
+    div.innerHTML = `
+      <div>
+        <label>Categoria</label>
+        <select class="categoria-item" onchange="carregarProdutosItem(this)">
+          ${getCategoriasOptionsHtml()}
+        </select>
+      </div>
+
+      <div>
+        <label>Produto</label>
+        <select class="produto-item" onchange="carregarFornecedoresItem(this)">
+          <option value="">Selecione a categoria primeiro</option>
+        </select>
+      </div>
+
+      <div>
+        <button class="remove-item" onclick="removerItemEncomenda(this)">Remover</button>
+      </div>
+
+      <div>
+        <label>Fornecedor</label>
+        <select class="fornecedor-item" onchange="preencherValoresItem(this)">
+          <option value="">Selecione o produto primeiro</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Quantidade</label>
+        <input class="qtd-encomenda-item" type="number" min="1" placeholder="Ex: 1000" oninput="atualizarResumoEncomendaItem(this)">
+      </div>
+
+      <div>
+        <label>Tipo de pagamento</label>
+        <select class="tipo-pagamento-item" onchange="atualizarResumoEncomendaItem(this)">
+          <option value="limpo">Dinheiro Limpo</option>
+          <option value="sujo">Dinheiro Sujo</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Valor unitário no limpo</label>
+        <input class="preco-limpo-item" readonly>
+      </div>
+
+      <div>
+        <label>Valor unitário no sujo</label>
+        <input class="preco-sujo-item" readonly>
+      </div>
+
+      <div>
+        <label>Observação</label>
+        <input class="obs-item" readonly>
+      </div>
+
+      <div class="item-resumo full"></div>
+    `;
+
+    container.appendChild(div);
+  }
+
+  function removerItemEncomenda(botao){
+    const container = document.getElementById("itensEncomenda");
+    const itens = container.querySelectorAll(".item-pedido");
+    if(itens.length <= 1){
+      alert("A encomenda precisa ter pelo menos um item.");
+      return;
+    }
+    botao.closest(".item-pedido").remove();
+  }
+
+  function carregarProdutosItem(el){
+    const item = el.closest(".item-pedido");
+    const categoria = item.querySelector(".categoria-item").value;
+    const produto = item.querySelector(".produto-item");
+    const fornecedor = item.querySelector(".fornecedor-item");
+
+    produto.innerHTML = `<option value="">Selecionar</option>`;
+    fornecedor.innerHTML = `<option value="">Selecione o produto primeiro</option>`;
+    item.querySelector(".preco-limpo-item").value = "";
+    item.querySelector(".preco-sujo-item").value = "";
+    item.querySelector(".obs-item").value = "";
+    item.querySelector(".item-resumo").innerHTML = "";
+
+    if(!categoria) return;
+
+    Object.keys(tabelaCompras[categoria]).forEach(prod => {
+      produto.innerHTML += `<option value="${escapeHtml(prod)}">${escapeHtml(prod)}</option>`;
+    });
+  }
+
+  function carregarFornecedoresItem(el){
+    const item = el.closest(".item-pedido");
+    const categoria = item.querySelector(".categoria-item").value;
+    const produto = item.querySelector(".produto-item").value;
+    const fornecedor = item.querySelector(".fornecedor-item");
+
+    fornecedor.innerHTML = `<option value="">Selecionar</option>`;
+    item.querySelector(".preco-limpo-item").value = "";
+    item.querySelector(".preco-sujo-item").value = "";
+    item.querySelector(".obs-item").value = "";
+    item.querySelector(".item-resumo").innerHTML = "";
+
+    if(!categoria || !produto) return;
+
+    Object.keys(tabelaCompras[categoria][produto]).forEach(org => {
+      fornecedor.innerHTML += `<option value="${escapeHtml(org)}">${escapeHtml(org)}</option>`;
+    });
+  }
+
+  function preencherValoresItem(el){
+    const item = el.closest(".item-pedido");
+    const categoria = item.querySelector(".categoria-item").value;
+    const produto = item.querySelector(".produto-item").value;
+    const fornecedor = item.querySelector(".fornecedor-item").value;
+
+    if(!categoria || !produto || !fornecedor) return;
+
+    const dados = tabelaCompras[categoria][produto][fornecedor];
+
+    item.querySelector(".preco-limpo-item").value = dados.limpo != null ? dinheiro(dados.limpo) : "Indisponível";
+    item.querySelector(".preco-sujo-item").value = dados.sujo != null ? dinheiro(dados.sujo) : "Indisponível";
+    item.querySelector(".obs-item").value = dados.obs || "-";
+
+    atualizarResumoEncomendaItem(el);
+  }
+
+  function atualizarResumoEncomendaItem(el){
+    const item = el.closest(".item-pedido");
+    const categoria = item.querySelector(".categoria-item").value;
+    const produto = item.querySelector(".produto-item").value;
+    const fornecedor = item.querySelector(".fornecedor-item").value;
+    const qtd = Number(item.querySelector(".qtd-encomenda-item").value);
+    const tipo = item.querySelector(".tipo-pagamento-item").value;
+    const resumo = item.querySelector(".item-resumo");
+
+    if(!categoria || !produto || !fornecedor){
+      resumo.innerHTML = "";
+      return;
+    }
+
+    const dados = tabelaCompras[categoria][produto][fornecedor];
+    const valor = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+    if(valor == null){
+      resumo.innerHTML = `⚠️ Este fornecedor não possui valor em dinheiro ${tipo}.`;
+      return;
+    }
+
+    if(!qtd || qtd <= 0){
+      resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)}`;
+      return;
+    }
+
+    resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)} | Total do item: ${dinheiro(qtd * valor)}`;
+  }
+
+  function resetarEncomenda(){
+    document.getElementById("itensEncomenda").innerHTML = "";
+    document.getElementById("cupomCompra").innerHTML = "";
+    adicionarItemEncomenda();
+  }
+
+  function gerarCompra(){
+    const itensEls = document.querySelectorAll("#itensEncomenda .item-pedido");
+
+    if(itensEls.length === 0){
+      alert("Adicione pelo menos um item.");
+      return;
+    }
+
+    let itens = [];
+    let totalGeral = 0;
+
+    for(const itemEl of itensEls){
+      const categoria = itemEl.querySelector(".categoria-item").value;
+      const produto = itemEl.querySelector(".produto-item").value;
+      const fornecedor = itemEl.querySelector(".fornecedor-item").value;
+      const qtd = Number(itemEl.querySelector(".qtd-encomenda-item").value);
+      const tipo = itemEl.querySelector(".tipo-pagamento-item").value;
+
+      if(!categoria){
+        alert("Selecione a categoria de todos os itens.");
+        return;
+      }
+
+      if(!produto){
+        alert("Selecione o produto de todos os itens.");
+        return;
+      }
+
+      if(!fornecedor){
+        alert("Selecione o fornecedor de todos os itens.");
+        return;
+      }
+
+      if(!qtd || qtd <= 0){
+        alert("Informe uma quantidade válida para todos os itens.");
+        return;
+      }
+
+      const dados = tabelaCompras[categoria][produto][fornecedor];
+      const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+      if(valorUnitario == null){
+        alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
+        return;
+      }
+
+      if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
+        alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
+        return;
+      }
+
+      const total = qtd * valorUnitario;
+      totalGeral += total;
+
+      itens.push({
+        categoria: categoria === "municoes" ? "Munições" : "Drogas",
+        produto,
+        fornecedor,
+        qtd,
+        tipoPagamento: tipo.toUpperCase(),
+        valorUnitario,
+        total,
+        limpo: dados.limpo,
+        sujo: dados.sujo,
+        obs: dados.obs || ""
+      });
+    }
+
+    const numero = encomendasHistorico.length + 1;
+
+    const linhas = [
+      { type:"title", text:">> SISTEMA FENRIR" },
+      { type:"line", text:"==============================" },
+      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
+      { text:`DATA: ${dataAtual()}` },
+      { type:"line", text:"------------------------------" },
+      { text:"ITENS:" }
+    ];
+
+    itens.forEach(item => {
+      linhas.push({ text:`${item.qtd} ${item.produto} → ${dinheiro(item.valorUnitario)} (cada)` });
+      linhas.push({ text:`Fornecedor: ${item.fornecedor} | Pagamento: ${item.tipoPagamento}` });
+      linesep = true;
+      if(item.obs){
+        linhas.push({ text:`Obs: ${item.obs}` });
+      }
+      linhas.push({ type:"line", text:"------------------------------" });
+    });
+
+    linhas.push(
+      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
+      { type:"line", text:"==============================" }
+    );
+
+    document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
+
+    encomendasHistorico.push({
+      numero,
+      itens,
+      categoria: itens.map(i => i.categoria).join(", "),
+      produto: itens.map(i => `${i.qtd}x ${i.produto}`).join(", "),
+      fornecedor: itens.map(i => i.fornecedor).join(", "),
+      qtd: itens.reduce((acc, i) => acc + i.qtd, 0),
+      tipoPagamento: "MISTO",
+      valorUnitario: 0,
+      total: totalGeral,
+      obs: itens.map(i => i.obs).filter(Boolean).join(" | "),
+      data: dataAtual()
+    });
+
+    localStorage.setItem("fenrir_encomendas", JSON.stringify(encomendasHistorico));
+    gerarDashboard();
+    carregarHistorico();
+  }
+
+  function copiarCupomCompra(){
+    const texto = document.getElementById("cupomCompra").innerText.trim();
+    if(!texto){
+      alert("Gere uma encomenda primeiro.");
+      return;
+    }
+    navigator.clipboard.writeText(texto);
+    alert("Encomenda copiada.");
+  }
+
   function carregarHistorico(){
     const div = document.getElementById("listaHistorico");
     const termo = (document.getElementById("buscaHistorico").value || "").toLowerCase().trim();
 
     const vendasFiltradas = vendas.filter(v => {
-      const armasTexto = v.itens
-        ? v.itens.map(i => i.arma).join(" ").toLowerCase()
-        : (v.arma || "").toLowerCase();
-
-      return !termo ||
-        v.contato.toLowerCase().includes(termo) ||
-        armasTexto.includes(termo);
+      const armasTexto = v.itens ? v.itens.map(i => i.arma).join(" ").toLowerCase() : "";
+      return !termo || v.contato.toLowerCase().includes(termo) || armasTexto.includes(termo);
     });
 
-    const encomendasFiltradas = encomendasHistorico.filter(e =>
-      !termo ||
-      e.produto.toLowerCase().includes(termo) ||
-      e.fornecedor.toLowerCase().includes(termo) ||
-      e.categoria.toLowerCase().includes(termo)
-    );
+    const encomendasFiltradas = encomendasHistorico.filter(e => {
+      const textoItens = e.itens ? e.itens.map(i => `${i.produto} ${i.fornecedor} ${i.categoria}`).join(" ").toLowerCase() : "";
+      return !termo || textoItens.includes(termo) || (e.produto || "").toLowerCase().includes(termo) || (e.fornecedor || "").toLowerCase().includes(termo);
+    });
 
     if(vendasFiltradas.length === 0 && encomendasFiltradas.length === 0){
       div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
@@ -1138,9 +1363,7 @@
       html += `<h3>🧾 Pedidos</h3>`;
       vendasFiltradas.forEach((v) => {
         const indexReal = vendas.indexOf(v);
-        const descricaoItens = v.itens
-          ? v.itens.map(item => `${item.qtd}x ${item.arma}`).join(", ")
-          : `${v.qtd}x ${v.arma || ""}`;
+        const descricaoItens = v.itens ? v.itens.map(item => `${item.qtd}x ${item.arma}`).join(", ") : "";
 
         html += `
           <div class="history">
@@ -1148,10 +1371,9 @@
             Cliente: ${escapeHtml(v.contato)}<br>
             Itens: ${escapeHtml(descricaoItens)}<br>
             Total de armas: ${v.qtd}<br>
-            Armas elegíveis p/ desconto: ${v.qtdElegivelDesconto || 0}<br>
             Pagamento: ${escapeHtml(v.pagamento)}<br>
             Subtotal: ${dinheiro(v.subtotal || v.total)}<br>
-            ${v.descontoAplicado ? `<span class="ok">Desconto de 10% aplicado somente nos itens elegíveis: -${dinheiro(v.valorDesconto || 0)}</span><br>` : ""}
+            ${v.descontoAplicado ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.valorDesconto || 0)}</span><br>` : ""}
             Total: ${dinheiro(v.total)}<br>
             <button class="small" onclick="excluirHistorico(${indexReal})">Excluir pedido</button>
           </div>
@@ -1163,15 +1385,15 @@
       html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
       encomendasFiltradas.forEach((e) => {
         const indexReal = encomendasHistorico.indexOf(e);
+        const itensTexto = e.itens
+          ? e.itens.map(i => `${i.qtd}x ${i.produto} (${i.fornecedor})`).join(", ")
+          : e.produto;
+
         html += `
           <div class="history">
             <strong>Encomenda #${String(e.numero).padStart(4,"0")}</strong><br>
-            Categoria: ${escapeHtml(e.categoria)}<br>
-            Produto: ${escapeHtml(e.produto)}<br>
-            Fornecedor: ${escapeHtml(e.fornecedor)}<br>
-            Quantidade: ${e.qtd}<br>
-            Pagamento: ${escapeHtml(e.tipoPagamento)}<br>
-            Unitário usado: ${dinheiro(e.valorUnitario)}<br>
+            Itens: ${escapeHtml(itensTexto)}<br>
+            Quantidade total: ${e.qtd}<br>
             Total: ${dinheiro(e.total)}<br>
             Observação: ${escapeHtml(e.obs || "-")}<br>
             <button class="small" onclick="excluirEncomenda(${indexReal})">Excluir encomenda</button>
@@ -1300,8 +1522,6 @@
         v.itens.forEach(item => {
           armasVendidas[item.arma] = (armasVendidas[item.arma] || 0) + item.qtd;
         });
-      }else if(v.arma){
-        armasVendidas[v.arma] = (armasVendidas[v.arma] || 0) + v.qtd;
       }
     });
 
@@ -1367,221 +1587,13 @@
     `;
   }
 
-  function carregarProdutos(){
-    const cat = categoriaEl.value;
-
-    produtoEl.innerHTML = `<option value="">Selecionar</option>`;
-    orgCompraEl.innerHTML = `<option value="">Selecione o produto primeiro</option>`;
-    precoLimpoEl.value = "";
-    precoSujoEl.value = "";
-    obsCompraEl.value = "";
-    fornecedorBaratoEl.innerText = "";
-    resumoPagamentoEl.innerText = "";
-    cupomCompraEl.innerHTML = "";
-
-    if(!cat) return;
-
-    Object.keys(tabelaCompras[cat]).forEach(prod => {
-      produtoEl.innerHTML += `<option value="${escapeHtml(prod)}">${escapeHtml(prod)}</option>`;
-    });
-  }
-
-  function carregarFornecedores(){
-    const cat = categoriaEl.value;
-    const prod = produtoEl.value;
-
-    orgCompraEl.innerHTML = `<option value="">Selecionar</option>`;
-    precoLimpoEl.value = "";
-    precoSujoEl.value = "";
-    obsCompraEl.value = "";
-    fornecedorBaratoEl.innerText = "";
-    resumoPagamentoEl.innerText = "";
-    cupomCompraEl.innerHTML = "";
-
-    if(!cat || !prod) return;
-
-    Object.keys(tabelaCompras[cat][prod]).forEach(org => {
-      orgCompraEl.innerHTML += `<option value="${escapeHtml(org)}">${escapeHtml(org)}</option>`;
-    });
-
-    sugerirFornecedorMaisBarato();
-  }
-
-  function preencherValores(){
-    const cat = categoriaEl.value;
-    const prod = produtoEl.value;
-    const org = orgCompraEl.value;
-
-    if(!cat || !prod || !org) return;
-
-    const d = tabelaCompras[cat][prod][org];
-
-    precoLimpoEl.value = d.limpo != null ? dinheiro(d.limpo) : "Indisponível";
-    precoSujoEl.value = d.sujo != null ? dinheiro(d.sujo) : "Indisponível";
-    obsCompraEl.value = d.obs || "-";
-
-    atualizarResumoPagamento();
-    sugerirFornecedorMaisBarato();
-  }
-
-  function atualizarResumoPagamento(){
-    const cat = categoriaEl.value;
-    const prod = produtoEl.value;
-    const org = orgCompraEl.value;
-    const tipo = tipoPagamentoEl.value;
-
-    if(!cat || !prod || !org){
-      resumoPagamentoEl.innerText = "";
-      return;
-    }
-
-    const d = tabelaCompras[cat][prod][org];
-    const valorEscolhido = tipo === "limpo" ? d.limpo : d.sujo;
-
-    if(valorEscolhido == null){
-      resumoPagamentoEl.innerText = `⚠️ Este fornecedor não possui valor em dinheiro ${tipo}.`;
-    }else{
-      resumoPagamentoEl.innerText = `Pagamento selecionado: ${tipo.toUpperCase()} → ${dinheiro(valorEscolhido)} por unidade.`;
-    }
-  }
-
-  function sugerirFornecedorMaisBarato(){
-    const cat = categoriaEl.value;
-    const prod = produtoEl.value;
-
-    if(!cat || !prod){
-      fornecedorBaratoEl.innerText = "";
-      return;
-    }
-
-    const fornecedores = tabelaCompras[cat][prod];
-    let melhorLimpo = null;
-    let melhorSujo = null;
-
-    Object.entries(fornecedores).forEach(([nome, dados]) => {
-      if(dados.limpo != null){
-        if(!melhorLimpo || dados.limpo < melhorLimpo.valor){
-          melhorLimpo = { nome, valor: dados.limpo };
-        }
-      }
-
-      if(dados.sujo != null){
-        if(!melhorSujo || dados.sujo < melhorSujo.valor){
-          melhorSujo = { nome, valor: dados.sujo };
-        }
-      }
-    });
-
-    let texto = "";
-    if(melhorLimpo){
-      texto += `Mais barato no limpo: ${melhorLimpo.nome} (${dinheiro(melhorLimpo.valor)})`;
-    }
-    if(melhorSujo){
-      texto += `${texto ? " | " : ""}Mais barato no sujo: ${melhorSujo.nome} (${dinheiro(melhorSujo.valor)})`;
-    }
-
-    fornecedorBaratoEl.innerText = texto;
-  }
-
-  function gerarCompra(){
-    const cat = categoriaEl.value;
-    const prod = produtoEl.value;
-    const org = orgCompraEl.value;
-    const qtd = Number(qtdCompraEl.value);
-    const tipo = tipoPagamentoEl.value;
-
-    if(!cat){
-      alert("Selecione uma categoria.");
-      return;
-    }
-
-    if(!prod){
-      alert("Selecione um produto.");
-      return;
-    }
-
-    if(!org){
-      alert("Selecione um fornecedor.");
-      return;
-    }
-
-    if(!qtd || qtd <= 0){
-      alert("Informe uma quantidade válida.");
-      return;
-    }
-
-    const dados = tabelaCompras[cat][prod][org];
-    const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
-
-    if(valorUnitario == null){
-      alert(`Esse fornecedor não possui preço em dinheiro ${tipo}.`);
-      return;
-    }
-
-    if(cat === "municoes" && org === "NINE" && prod === "9mm ou .45" && qtd < 1000){
-      alert("Para esse item com a NINE, o pedido mínimo é 1000 munições.");
-      return;
-    }
-
-    const total = qtd * valorUnitario;
-    const numero = encomendasHistorico.length + 1;
-
-    const linhas = [
-      { type:"title", text:">> SISTEMA FENRIR" },
-      { type:"line", text:"==============================" },
-      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
-      { text:`DATA: ${dataHoraAtual()}` },
-      { text:`CATEGORIA: ${cat === "municoes" ? "MUNIÇÕES" : "DROGAS"}` },
-      { text:`PRODUTO: ${prod}` },
-      { text:`FORNECEDOR: ${org}` },
-      { type:"line", text:"------------------------------" },
-      { text:`QTD: ${qtd}` },
-      { text:`LIMPO: ${dados.limpo != null ? dinheiro(dados.limpo) : "Indisponível"}` },
-      { text:`SUJO: ${dados.sujo != null ? dinheiro(dados.sujo) : "Indisponível"}` },
-      { text:`PAGAMENTO USADO: ${tipo.toUpperCase()}` },
-      { text:`VALOR UNITÁRIO: ${dinheiro(valorUnitario)}` },
-      { type:"line", text:"------------------------------" },
-      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(total)}` },
-      { type:"line", text:"==============================" },
-      { text:`OBS: ${dados.obs || "-"}` }
-    ];
-
-    cupomCompraEl.innerHTML = renderTerminal(linhas);
-
-    encomendasHistorico.push({
-      numero,
-      categoria: cat === "municoes" ? "Munições" : "Drogas",
-      produto: prod,
-      fornecedor: org,
-      qtd,
-      tipoPagamento: tipo.toUpperCase(),
-      valorUnitario,
-      total,
-      obs: dados.obs || "",
-      data: dataHoraAtual()
-    });
-
-    localStorage.setItem("fenrir_encomendas", JSON.stringify(encomendasHistorico));
-    gerarDashboard();
-    carregarHistorico();
-  }
-
-  function copiarCupomCompra(){
-    const texto = cupomCompraEl.innerText.trim();
-    if(!texto){
-      alert("Gere uma encomenda primeiro.");
-      return;
-    }
-    navigator.clipboard.writeText(texto);
-    alert("Encomenda copiada.");
-  }
-
   window.onload = () => {
     openTab("pedidos");
     carregarHistorico();
     gerarDashboard();
     gerarRanking();
     adicionarItemPedido();
+    adicionarItemEncomenda();
     document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
   };
 </script>
