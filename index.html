@@ -1,357 +1,376 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
+
 <head>
+
 <meta charset="UTF-8">
-<title>Fenrir - Sistema de Vendas</title>
+<title>Sistema Fenrir</title>
 
 <style>
 
 body{
-background:#0f0f0f;
+background:#0a0a0a;
 color:white;
-font-family:Arial;
+font-family:monospace;
+margin:0;
+}
+
+header{
+background:#111;
 padding:20px;
+text-align:center;
+border-bottom:2px solid red;
+}
+
+.logo{
+width:140px;
+}
+
+.tabs{
+display:flex;
+background:#1a1a1a;
+}
+
+.tabs button{
+flex:1;
+padding:15px;
+background:#1a1a1a;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+.tabs button:hover{
+background:#333;
 }
 
 .container{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-}
-
-.card{
-background:#1b1b1b;
-padding:15px;
-border-radius:10px;
-}
-
-h2{
-margin-top:0;
+padding:20px;
+max-width:900px;
+margin:auto;
 }
 
 input,select{
 width:100%;
 padding:8px;
 margin:5px 0;
-border-radius:5px;
+background:#222;
+color:white;
 border:none;
 }
 
-button{
+button.action{
+background:#b00000;
 padding:10px;
-background:#2ecc71;
 border:none;
-border-radius:5px;
-cursor:pointer;
-}
-
-button:hover{
-background:#27ae60;
-}
-
-#cupom{
-white-space:pre-line;
-background:#000;
-padding:10px;
 margin-top:10px;
+cursor:pointer;
+color:white;
+}
+
+.tab{
+display:none;
+}
+
+.cupom{
+background:black;
+padding:15px;
+margin-top:20px;
+white-space:pre-line;
+}
+
+.history{
+background:#1b1b1b;
+padding:10px;
+margin:5px 0;
+}
+
+.sugestao{
+color:#00ff9c;
+margin-top:10px;
+font-weight:bold;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<h1>🐺 Fenrir - Sistema de Vendas</h1>
+<header>
+
+<img src="logo.png" class="logo">
+<h2>SISTEMA FENRIR</h2>
+
+</header>
+
+<div class="tabs">
+
+<button onclick="openTab('pedidos')">Pedidos</button>
+<button onclick="openTab('historico')">Histórico</button>
+<button onclick="openTab('dashboard')">Dashboard</button>
+<button onclick="openTab('ranking')">Ranking</button>
+<button onclick="openTab('encomendas')">Encomendas</button>
+
+</div>
 
 <div class="container">
 
-<div class="card">
+<!-- PEDIDOS -->
 
-<h2>Novo Pedido</h2>
+<div id="pedidos" class="tab">
 
-<input id="contato" placeholder="Contato do cliente">
+<h3>Novo Pedido</h3>
 
+Contato
+<input id="contato">
+
+Arma
 <select id="arma">
 <option>Colt 1911</option>
 <option>HK USP</option>
 <option>Desert Eagle</option>
 </select>
 
-<input id="qtd" type="number" placeholder="Quantidade">
+Quantidade
+<input id="qtd" type="number">
 
+Pagamento
 <select id="pagamento">
 <option>Limpo</option>
 <option>Sujo</option>
 </select>
 
-<button onclick="gerarPedido()">Gerar Pedido</button>
+<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
 
-<div id="cupom"></div>
+<div id="cupom" class="cupom"></div>
 
 </div>
 
-<div class="card">
+<!-- HISTORICO -->
 
-<h2>Dashboard</h2>
+<div id="historico" class="tab">
+<h3>Histórico</h3>
+<div id="listaHistorico"></div>
+</div>
 
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="tab">
+<h3>Dashboard</h3>
 <div id="relatorio"></div>
-
-<h2>Ranking de Clientes</h2>
-
-<div id="ranking"></div>
-
 </div>
 
+<!-- RANKING -->
+
+<div id="ranking" class="tab">
+<h3>Ranking Clientes</h3>
+<div id="rankingClientes"></div>
 </div>
 
-<div class="card">
+<!-- ENCOMENDAS -->
 
-<h2>Histórico de Pedidos</h2>
+<div id="encomendas" class="tab">
 
-<div id="historico"></div>
+<h3>Nova Encomenda</h3>
+
+Categoria
+<select id="categoria" onchange="carregarProdutos()">
+<option value="">Selecionar</option>
+<option value="municoes">Munições</option>
+<option value="drogas">Drogas</option>
+</select>
+
+Produto
+<select id="produto" onchange="preencherValores()"></select>
+
+Organização
+<select id="orgCompra" onchange="preencherValores()">
+<option value="">Selecionar</option>
+<option>NINE</option>
+<option>FAMILIA CESARINE</option>
+<option>FAMILIES</option>
+<option>THUNDERS</option>
+<option>DVD</option>
+<option>BALLAS</option>
+<option>CLOUND</option>
+<option>OG's</option>
+</select>
+
+Quantidade
+<input id="qtdCompra" type="number">
+
+Valor Limpo
+<input id="precoLimpo" readonly>
+
+Valor Sujo
+<input id="precoSujo" readonly>
+
+Observação
+<input id="obsCompra" readonly>
+
+<div id="fornecedorBarato" class="sugestao"></div>
+
+<button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
+
+<div id="cupomCompra" class="cupom"></div>
+
+</div>
 
 </div>
 
 <script>
 
-let vendas = JSON.parse(localStorage.getItem("fenrir_vendas")) || []
+/* BANCO DE DADOS ENCOMENDAS */
 
-const armas={
+const tabelaCompras={
 
-"Colt 1911":{
-limpo:10000,
-sujo:12500,
-custo:5000,
-materiais:{cylinder:1,components:1,blueprint:1}
+municoes:{
+"9mm ou .45":{
+"NINE":{limpo:25,sujo:0,obs:"Pedido Min 1000 Munição"},
+"FAMILIA CESARINE":{limpo:20,sujo:40,obs:""}
 },
 
-"HK USP":{
-limpo:12000,
-sujo:15000,
-custo:6000,
-materiais:{cylinder:1,components:2,blueprint:1}
+".50 e Doze":{
+"NINE":{limpo:30,sujo:0,obs:""},
+"FAMILIA CESARINE":{limpo:25,sujo:50,obs:""}
 },
 
-"Desert Eagle":{
-limpo:14000,
-sujo:17500,
-custo:7000,
-materiais:{cylinder:2,components:1,blueprint:1}
+"762":{
+"NINE":{limpo:30,sujo:0,obs:""},
+"FAMILIA CESARINE":{limpo:30,sujo:60,obs:""}
+}
+
+},
+
+drogas:{
+"Coca":{
+"FAMILIES":{limpo:230,sujo:460,obs:"Venda média 280 a 290"},
+"THUNDERS":{limpo:300,sujo:460,obs:"Venda média 280 a 290"},
+"DVD":{limpo:230,sujo:460,obs:""},
+"CLOUND":{limpo:230,sujo:460,obs:""},
+"OG's":{limpo:230,sujo:380,obs:"Venda média 290 a 300"}
+},
+
+"Meta":{
+"FAMILIES":{limpo:230,sujo:500,obs:"Venda média 315"},
+"BALLAS":{limpo:230,sujo:460,obs:""}
+},
+
+"LSD":{
+"DVD":{limpo:230,sujo:500,obs:""},
+"CLOUND":{limpo:230,sujo:460,obs:""},
+"OG's":{limpo:230,sujo:380,obs:"Venda média 290 a 300"}
 }
 
 }
 
-function calcularCarregamento(caixas){
+}
 
-let grande=Math.floor(caixas/15)
-let resto=caixas%15
+/* CARREGAR PRODUTOS */
 
-let medio=Math.floor(resto/10)
-resto=resto%10
+function carregarProdutos(){
 
-let pequeno=Math.ceil(resto/5)
+let categoria=document.getElementById("categoria").value
+let produtoSelect=document.getElementById("produto")
 
-return{grande,medio,pequeno}
+produtoSelect.innerHTML=""
+
+if(!categoria) return
+
+Object.keys(tabelaCompras[categoria]).forEach(prod=>{
+
+produtoSelect.innerHTML+=`<option>${prod}</option>`
+
+})
 
 }
 
-function gerarPedido(){
+/* PREENCHER VALORES */
 
-let contato=document.getElementById("contato").value
-let armaNome=document.getElementById("arma").value
-let qtd=Number(document.getElementById("qtd").value)
-let pagamento=document.getElementById("pagamento").value
+function preencherValores(){
 
-let arma=armas[armaNome]
+let categoria=document.getElementById("categoria").value
+let produto=document.getElementById("produto").value
+let org=document.getElementById("orgCompra").value
 
-let preco=pagamento=="Limpo"?arma.limpo:arma.sujo
+if(!categoria||!produto||!org) return
+
+let dados=tabelaCompras[categoria][produto][org]
+
+if(!dados) return
+
+document.getElementById("precoLimpo").value=dados.limpo
+document.getElementById("precoSujo").value=dados.sujo
+document.getElementById("obsCompra").value=dados.obs
+
+sugerirFornecedorMaisBarato(categoria,produto)
+
+}
+
+/* SUGESTÃO FORNECEDOR */
+
+function sugerirFornecedorMaisBarato(categoria,produto){
+
+let fornecedores=tabelaCompras[categoria][produto]
+
+let maisBarato=null
+let menor=999999
+
+for(let org in fornecedores){
+
+let preco=fornecedores[org].limpo
+
+if(preco<menor){
+
+menor=preco
+maisBarato=org
+
+}
+
+}
+
+document.getElementById("fornecedorBarato").innerText=
+`Fornecedor mais barato: ${maisBarato} ($${menor})`
+
+}
+
+/* GERAR ENCOMENDA */
+
+function gerarCompra(){
+
+let produto=document.getElementById("produto").value
+let org=document.getElementById("orgCompra").value
+let qtd=document.getElementById("qtdCompra").value
+let preco=document.getElementById("precoLimpo").value
+let sujo=document.getElementById("precoSujo").value
+let obs=document.getElementById("obsCompra").value
 
 let total=qtd*preco
 
-let desconto=false
-
-if(qtd>=11){
-total=total*0.9
-desconto=true
-}
-
-let cylinder=qtd*arma.materiais.cylinder
-let components=qtd*arma.materiais.components
-let blueprint=qtd*arma.materiais.blueprint
-
-let caixas=Math.max(cylinder,components,blueprint)
-
-let carreg=calcularCarregamento(caixas)
-
-let custoLimpo=
-carreg.grande*80000+
-carreg.medio*60000+
-carreg.pequeno*30000
-
-let custoSujo=
-carreg.grande*120000+
-carreg.medio*90000+
-carreg.pequeno*45000
-
-let textoCarreg=""
-
-if(carreg.grande>0) textoCarreg+=carreg.grande+" Grande "
-if(carreg.medio>0) textoCarreg+=carreg.medio+" Médio "
-if(carreg.pequeno>0) textoCarreg+=carreg.pequeno+" Pequeno "
-
-let custoTotal=qtd*arma.custo
-let lucroPedido=total-custoTotal
-
-let numero=vendas.length+1
-let data=new Date().toLocaleDateString()
-
 let cupom=
 
-`VENDA #${String(numero).padStart(4,'0')}
+`ENCOMENDA
 
-Contato: ${contato}
-Data: ${data}
-Pagamento: ${pagamento}
+Produto: ${produto}
 
-Pedido:
-${qtd} ${armaNome} → $${preco.toLocaleString()}
+Fornecedor: ${org}
 
-${desconto?"Desconto aplicado 10%\n":""}
+Quantidade: ${qtd}
 
-Total do Pedido: $${Math.round(total).toLocaleString()}
+Valor unitário: $${preco}
 
-Lucro deste pedido: $${lucroPedido.toLocaleString()}
+Total: $${total}
 
-Materiais Necessários para Produção:
-${cylinder} Cylinder
-${components} Componente
-${blueprint} Blueprint
+Valor Sujo: $${sujo}
 
-Para atender o pedido o carregamento recomendado é:
-
-${textoCarreg}
-
-Custará:
-$${custoLimpo.toLocaleString()} (Limpo)
-$${custoSujo.toLocaleString()} (Sujo)
+Observação:
+${obs}
 `
 
-document.getElementById("cupom").innerText=cupom
-
-vendas.push({
-numero,
-contato,
-arma:armaNome,
-qtd,
-total,
-lucro:lucroPedido
-})
-
-localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
-
-carregarHistorico()
-calcularDashboard()
-gerarRanking()
+document.getElementById("cupomCompra").innerText=cupom
 
 }
-
-function carregarHistorico(){
-
-let div=document.getElementById("historico")
-
-div.innerHTML=""
-
-vendas.forEach((v,i)=>{
-
-div.innerHTML+=`
-
-<div style="background:#111;padding:10px;margin:5px;border-radius:5px">
-
-#${String(v.numero).padStart(4,'0')}
-${v.contato} |
-${v.arma} |
-${v.qtd}
-
-$${v.total.toLocaleString()}
-
-<button onclick="excluirVenda(${i})">Excluir</button>
-
-</div>
-
-`
-
-})
-
-}
-
-function excluirVenda(i){
-
-vendas.splice(i,1)
-
-localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
-
-carregarHistorico()
-calcularDashboard()
-gerarRanking()
-
-}
-
-function calcularDashboard(){
-
-let total=0
-let lucroTotal=0
-
-vendas.forEach(v=>{
-total+=v.total
-lucroTotal+=v.lucro
-})
-
-let ultimo=vendas[vendas.length-1]
-
-let lucroUltimo=ultimo?ultimo.lucro:0
-
-document.getElementById("relatorio").innerText=
-
-`Total vendido: $${total.toLocaleString()}
-
-Lucro total: $${lucroTotal.toLocaleString()}
-
-Lucro do último pedido: $${lucroUltimo.toLocaleString()}
-
-Pedidos realizados: ${vendas.length}`
-
-}
-
-function gerarRanking(){
-
-let ranking={}
-
-vendas.forEach(v=>{
-
-if(!ranking[v.contato]) ranking[v.contato]=0
-
-ranking[v.contato]+=v.total
-
-})
-
-let lista=Object.entries(ranking)
-.sort((a,b)=>b[1]-a[1])
-
-let div=document.getElementById("ranking")
-
-div.innerHTML=""
-
-lista.forEach(c=>{
-
-div.innerHTML+=`<div>${c[0]} → $${c[1].toLocaleString()}</div>`
-
-})
-
-}
-
-carregarHistorico()
-calcularDashboard()
-gerarRanking()
 
 </script>
 
