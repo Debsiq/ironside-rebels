@@ -525,16 +525,16 @@
   </div>
 
   <div id="dashboard" class="tab">
-  <div class="card">
-    <h2 class="section-title">📊 Dashboard</h2>
-    <div id="relatorio"></div>
-  </div>
+    <div class="card">
+      <h2 class="section-title">📊 Dashboard</h2>
+      <div id="relatorio"></div>
+    </div>
 
-  <div class="card">
-    <h2 class="section-title">🏆 Ranking de Clientes</h2>
-    <div id="rankingClientes"></div>
+    <div class="card">
+      <h2 class="section-title">🏆 Ranking de Clientes</h2>
+      <div id="rankingClientes"></div>
+    </div>
   </div>
-</div>
 
   <div id="encomendas" class="tab">
     <div class="card">
@@ -639,25 +639,24 @@
       .replaceAll("'","&#039;");
   }
 
-function openTab(tab, btn = null){
-  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+  function openTab(tab, btn = null){
+    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    document.getElementById(tab).style.display = "block";
 
-  document.getElementById(tab).style.display = "block";
+    if(btn){
+      btn.classList.add("active");
+    }else{
+      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+      if(autoBtn) autoBtn.classList.add("active");
+    }
 
-  if(btn){
-    btn.classList.add("active");
-  }else{
-    const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-    if(autoBtn) autoBtn.classList.add("active");
+    if(tab === "historico") carregarHistoricoBanco();
+    if(tab === "dashboard"){
+      gerarDashboard();
+      gerarRanking();
+    }
   }
-
-  if(tab === "historico") carregarHistoricoBanco();
-  if(tab === "dashboard"){
-    gerarDashboard();
-    gerarRanking();
-  }
-}
 
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
@@ -678,26 +677,61 @@ function openTab(tab, btn = null){
     }).join("");
   }
 
-async function carregarHistoricoBanco() {
-  const buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
-  const seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
-  const sort = document.getElementById("filtroOrdem")?.value || "newest";
+  async function carregarHistoricoBanco() {
+    const buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
+    const seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
+    const sort = document.getElementById("filtroOrdem")?.value || "newest";
 
-  const params = new URLSearchParams({
-    sort,
-    buyer,
-    seller,
-  });
+    const params = new URLSearchParams({ sort, buyer, seller });
+    const res = await fetch(`/api/history?${params.toString()}`);
+    const data = await res.json();
 
-  const res = await fetch(`/api/history?${params.toString()}`);
-  const data = await res.json();
+    vendas = data.orders || [];
+    encomendasHistorico = data.purchases || [];
 
-  vendas = data.orders || [];
-  encomendasHistorico = data.purchases || [];
+    carregarHistorico();
+    gerarDashboard();
+  }
 
-  carregarHistorico();
-  gerarDashboard();
-}
+  async function excluirHistorico(id){
+    const ok = confirm("Deseja excluir este pedido?");
+    if(!ok) return;
+
+    const res = await fetch('/api/delete-order', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || "Erro ao excluir pedido.");
+      return;
+    }
+
+    await carregarHistoricoBanco();
+  }
+
+  async function excluirEncomenda(id){
+    const ok = confirm("Deseja excluir esta encomenda?");
+    if(!ok) return;
+
+    const res = await fetch('/api/delete-purchase', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || "Erro ao excluir encomenda.");
+      return;
+    }
+
+    await carregarHistoricoBanco();
+  }
 
   function getArmasOptionsHtml(selected = "Colt 1911"){
     return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
@@ -1232,84 +1266,62 @@ async function carregarHistoricoBanco() {
   }
 
   function carregarHistorico(){
-  const div = document.getElementById("listaHistorico");
+    const div = document.getElementById("listaHistorico");
 
-  if(vendas.length === 0 && encomendasHistorico.length === 0){
-    div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
-    return;
-  }
+    if(vendas.length === 0 && encomendasHistorico.length === 0){
+      div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
+      return;
+    }
 
-  let html = "";
+    let html = "";
 
-  if(vendas.length){
-    html += `<h3>🧾 Pedidos</h3>`;
+    if(vendas.length){
+      html += `<h3>🧾 Pedidos</h3>`;
 
-    vendas.forEach((v) => {
-      const descricaoItens = (v.items || [])
-        .map(item => `${item.quantity}x ${item.weapon}`)
-        .join(", ");
+      vendas.forEach((v) => {
+        const descricaoItens = (v.items || [])
+          .map(item => `${item.quantity}x ${item.weapon}`)
+          .join(", ");
 
-      html += `
-        <div class="history">
-          <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
-          Comprador: ${escapeHtml(v.buyer_name)}<br>
-          Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
-          Itens: ${escapeHtml(descricaoItens || "-")}<br>
-          Total de armas: ${v.total_weapons}<br>
-          Pagamento: ${escapeHtml(v.payment_type)}<br>
-          Subtotal: ${dinheiro(v.subtotal)}<br>
-          ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
-          Total: ${dinheiro(v.total)}<br>
-          Data: ${dataAtualBR(v.created_at)}<br>
-          <button class="small" onclick="excluirHistorico(${v.id})">Excluir pedido</button>
-        </div>
-      `;
-    });
-  }
+        html += `
+          <div class="history">
+            <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
+            Comprador: ${escapeHtml(v.buyer_name)}<br>
+            Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
+            Itens: ${escapeHtml(descricaoItens || "-")}<br>
+            Total de armas: ${v.total_weapons}<br>
+            Pagamento: ${escapeHtml(v.payment_type)}<br>
+            Subtotal: ${dinheiro(v.subtotal)}<br>
+            ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
+            Total: ${dinheiro(v.total)}<br>
+            Data: ${dataAtualBR(v.created_at)}<br>
+            <button class="small" onclick="excluirHistorico(${v.id})">Excluir pedido</button>
+          </div>
+        `;
+      });
+    }
 
-  if(encomendasHistorico.length){
-    html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
+    if(encomendasHistorico.length){
+      html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
 
-    encomendasHistorico.forEach((e) => {
-      const itensTexto = (e.items || [])
-        .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
-        .join(", ");
+      encomendasHistorico.forEach((e) => {
+        const itensTexto = (e.items || [])
+          .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
+          .join(", ");
 
-      html += `
-        <div class="history">
-          <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-          Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-          Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
-          Itens: ${escapeHtml(itensTexto || "-")}<br>
-          Total: ${dinheiro(e.total)}<br>
-          Data: ${dataAtualBR(e.created_at)}<br>
-          <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
-        </div>
-      `;
-    });
-  }
-
-  div.innerHTML = html;
-}
-
-if(encomendasHistorico.length){
-  html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
-  encomendasHistorico.forEach((e) => {
-    const itensTexto = (e.items || []).map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`).join(", ");
-
-    html += `
-      <div class="history">
-        <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
-        Itens: ${escapeHtml(itensTexto)}<br>
-        Total: ${dinheiro(e.total)}<br>
-        Data: ${dataAtualBR(e.created_at)}<br>
-        <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
-      </div>
-    `;
-  });
-}
+        html += `
+          <div class="history">
+            <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+            Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+            Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+            Itens: ${escapeHtml(itensTexto || "-")}<br>
+            Total: ${dinheiro(e.total)}<br>
+            Data: ${dataAtualBR(e.created_at)}<br>
+            <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+          </div>
+        `;
+      });
+    }
 
     div.innerHTML = html;
   }
@@ -1399,55 +1411,17 @@ if(encomendasHistorico.length){
         <div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(economiaTotal)}</div></div>
       </div>
     `;
-     gerarRanking();
+
+    gerarRanking();
   }
 
- window.onload = async () => {
-  openTab("pedidos");
-  adicionarItemPedido();
-  adicionarItemEncomenda();
-  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-  await carregarHistoricoBanco();
-};
-  async function excluirHistorico(id){
-  const ok = confirm("Deseja excluir este pedido?");
-  if(!ok) return;
-
-  const res = await fetch('/api/delete-order', {
-    method: 'DELETE',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ id })
-  });
-
-  const data = await res.json();
-
-  if(!res.ok){
-    alert(data.error || "Erro ao excluir pedido.");
-    return;
-  }
-
-  await carregarHistoricoBanco();
-}
-
-async function excluirEncomenda(id){
-  const ok = confirm("Deseja excluir esta encomenda?");
-  if(!ok) return;
-
-  const res = await fetch('/api/delete-purchase', {
-    method: 'DELETE',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ id })
-  });
-
-  const data = await res.json();
-
-  if(!res.ok){
-    alert(data.error || "Erro ao excluir encomenda.");
-    return;
-  }
-
-  await carregarHistoricoBanco();
-}
+  window.onload = async () => {
+    openTab("pedidos");
+    adicionarItemPedido();
+    adicionarItemEncomenda();
+    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+    await carregarHistoricoBanco();
+  };
 </script>
 
 </body>
