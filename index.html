@@ -453,7 +453,6 @@
   <button data-tab="pedidos" onclick="openTab('pedidos', this)">🧾 Pedidos</button>
   <button data-tab="historico" onclick="openTab('historico', this)">📚 Histórico</button>
   <button data-tab="dashboard" onclick="openTab('dashboard', this)">📊 Dashboard</button>
-  <button data-tab="ranking" onclick="openTab('ranking', this)">🏆 Ranking</button>
   <button data-tab="encomendas" onclick="openTab('encomendas', this)">📦 Encomendas</button>
 </div>
 
@@ -526,18 +525,16 @@
   </div>
 
   <div id="dashboard" class="tab">
-    <div class="card">
-      <h2 class="section-title">📊 Dashboard</h2>
-      <div id="relatorio"></div>
-    </div>
+  <div class="card">
+    <h2 class="section-title">📊 Dashboard</h2>
+    <div id="relatorio"></div>
   </div>
 
-  <div id="ranking" class="tab">
-    <div class="card">
-      <h2 class="section-title">🏆 Ranking de Clientes</h2>
-      <div id="rankingClientes"></div>
-    </div>
+  <div class="card">
+    <h2 class="section-title">🏆 Ranking de Clientes</h2>
+    <div id="rankingClientes"></div>
   </div>
+</div>
 
   <div id="encomendas" class="tab">
     <div class="card">
@@ -678,21 +675,26 @@
     }).join("");
   }
 
-  async function carregarHistoricoBanco() {
-    const buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
-    const seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
-    const sort = document.getElementById("filtroOrdem")?.value || "newest";
+async function carregarHistoricoBanco() {
+  const buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
+  const seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
+  const sort = document.getElementById("filtroOrdem")?.value || "newest";
 
-    const params = new URLSearchParams({ sort, buyer, seller });
-    const res = await fetch(`/api/history?${params.toString()}`);
-    const data = await res.json();
+  const params = new URLSearchParams({
+    sort,
+    buyer,
+    seller,
+  });
 
-    vendas = data.orders || [];
-    encomendasHistorico = data.purchases || [];
-    carregarHistorico();
-    gerarDashboard();
-    gerarRanking();
-  }
+  const res = await fetch(`/api/history?${params.toString()}`);
+  const data = await res.json();
+
+  vendas = data.orders || [];
+  encomendasHistorico = data.purchases || [];
+
+  carregarHistorico();
+  gerarDashboard();
+}
 
   function getArmasOptionsHtml(selected = "Colt 1911"){
     return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
@@ -1227,36 +1229,64 @@
   }
 
   function carregarHistorico(){
-    const div = document.getElementById("listaHistorico");
+  const div = document.getElementById("listaHistorico");
 
-    if(vendas.length === 0 && encomendasHistorico.length === 0){
-      div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
-      return;
-    }
+  if(vendas.length === 0 && encomendasHistorico.length === 0){
+    div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
+    return;
+  }
 
-    let html = "";
+  let html = "";
 
-if(vendas.length){
-  html += `<h3>🧾 Pedidos</h3>`;
-  vendas.forEach((v) => {
-    const descricaoItens = (v.items || []).map(item => `${item.quantity}x ${item.weapon}`).join(", ");
+  if(vendas.length){
+    html += `<h3>🧾 Pedidos</h3>`;
 
-    html += `
-      <div class="history">
-        <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
-        Comprador: ${escapeHtml(v.buyer_name)}<br>
-        Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
-        Itens: ${escapeHtml(descricaoItens)}<br>
-        Total de armas: ${v.total_weapons}<br>
-        Pagamento: ${escapeHtml(v.payment_type)}<br>
-        Subtotal: ${dinheiro(v.subtotal)}<br>
-        ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
-        Total: ${dinheiro(v.total)}<br>
-        Data: ${dataAtualBR(v.created_at)}<br>
-        <button class="small" onclick="excluirHistorico(${v.id})">Excluir pedido</button>
-      </div>
-    `;
-  });
+    vendas.forEach((v) => {
+      const descricaoItens = (v.items || [])
+        .map(item => `${item.quantity}x ${item.weapon}`)
+        .join(", ");
+
+      html += `
+        <div class="history">
+          <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
+          Comprador: ${escapeHtml(v.buyer_name)}<br>
+          Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
+          Itens: ${escapeHtml(descricaoItens || "-")}<br>
+          Total de armas: ${v.total_weapons}<br>
+          Pagamento: ${escapeHtml(v.payment_type)}<br>
+          Subtotal: ${dinheiro(v.subtotal)}<br>
+          ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
+          Total: ${dinheiro(v.total)}<br>
+          Data: ${dataAtualBR(v.created_at)}<br>
+          <button class="small" onclick="excluirHistorico(${v.id})">Excluir pedido</button>
+        </div>
+      `;
+    });
+  }
+
+  if(encomendasHistorico.length){
+    html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
+
+    encomendasHistorico.forEach((e) => {
+      const itensTexto = (e.items || [])
+        .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
+        .join(", ");
+
+      html += `
+        <div class="history">
+          <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+          Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+          Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+          Itens: ${escapeHtml(itensTexto || "-")}<br>
+          Total: ${dinheiro(e.total)}<br>
+          Data: ${dataAtualBR(e.created_at)}<br>
+          <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+        </div>
+      `;
+    });
+  }
+
+  div.innerHTML = html;
 }
 
 if(encomendasHistorico.length){
