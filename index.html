@@ -209,7 +209,8 @@
 
     button.action,
     button.secondary,
-    button.small{
+    button.small,
+    .remove-item{
       border:none;
       border-radius:12px;
       cursor:pointer;
@@ -275,20 +276,13 @@
       font-weight:700;
     }
 
-    .success{
-      color:var(--green-soft);
-      margin-top:12px;
-      font-weight:700;
-    }
-
     .muted{
       color:var(--muted);
     }
 
     .terminal{
       margin-top:18px;
-      background:
-        linear-gradient(180deg,#030303,#090909);
+      background:linear-gradient(180deg,#030303,#090909);
       border:1px solid #2d2d2d;
       border-left:4px solid var(--red);
       border-radius:14px;
@@ -533,6 +527,38 @@
       background:#111;
     }
 
+    .item-pedido{
+      display:grid;
+      grid-template-columns:1.5fr 1fr auto;
+      gap:12px;
+      align-items:end;
+      background:linear-gradient(180deg,#181818,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .item-pedido .full{
+      grid-column:1 / -1;
+    }
+
+    .item-resumo{
+      margin-top:8px;
+      color:#bdbdbd;
+      font-size:12px;
+    }
+
+    .remove-item{
+      background:#3a1111;
+      color:#fff;
+      padding:11px 12px;
+    }
+
+    .remove-item:hover{
+      background:#5a1616;
+    }
+
     @media (max-width:700px){
       .title{
         font-size:22px;
@@ -545,6 +571,10 @@
 
       .container{
         padding:18px 12px 30px;
+      }
+
+      .item-pedido{
+        grid-template-columns:1fr;
       }
     }
   </style>
@@ -567,30 +597,15 @@
 
 <div class="container">
 
-  <!-- PEDIDOS -->
   <div id="pedidos" class="tab">
     <div class="card">
       <h2 class="section-title">🧾 Novo Pedido</h2>
-      <div class="tag">✅ 10% de desconto acima de 10 armas</div>
+      <div class="tag">✅ 10% acima de 10 armas elegíveis • HK USP não participa</div>
 
       <div class="grid">
         <div>
           <label for="contato">Contato</label>
           <input id="contato" placeholder="Nome ou contato do cliente">
-        </div>
-
-        <div>
-          <label for="arma">Arma</label>
-          <select id="arma">
-            <option>Colt 1911</option>
-            <option>HK USP</option>
-            <option>Desert Eagle</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="qtd">Quantidade</label>
-          <input id="qtd" type="number" min="1" placeholder="Ex: 5">
         </div>
 
         <div>
@@ -602,9 +617,12 @@
         </div>
       </div>
 
-      <div class="helper">O desconto é aplicado automaticamente apenas em pedidos com 11 armas ou mais.</div>
+      <div class="helper">Você pode adicionar várias armas no mesmo pedido. A HK USP não recebe desconto.</div>
+
+      <div id="itensPedido"></div>
 
       <div class="actions">
+        <button class="secondary" onclick="adicionarItemPedido()">+ Adicionar arma</button>
         <button class="action" onclick="gerarPedido()">Gerar Cupom</button>
         <button class="secondary" onclick="copiarCupom()">Copiar Cupom</button>
       </div>
@@ -621,7 +639,6 @@
     </div>
   </div>
 
-  <!-- HISTORICO -->
   <div id="historico" class="tab">
     <div class="card">
       <h2 class="section-title">📚 Histórico</h2>
@@ -636,7 +653,6 @@
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="dashboard" class="tab">
     <div class="card">
       <h2 class="section-title">📊 Dashboard</h2>
@@ -644,7 +660,6 @@
     </div>
   </div>
 
-  <!-- RANKING -->
   <div id="ranking" class="tab">
     <div class="card">
       <h2 class="section-title">🏆 Ranking de Clientes</h2>
@@ -652,7 +667,6 @@
     </div>
   </div>
 
-  <!-- ENCOMENDAS -->
   <div id="encomendas" class="tab">
     <div class="card">
       <h2 class="section-title">📦 Nova Encomenda</h2>
@@ -857,41 +871,153 @@
     }).join("");
   }
 
+  function getArmasOptionsHtml(selected = "Colt 1911"){
+    return Object.keys(armas).map(nome => {
+      return `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`;
+    }).join("");
+  }
+
+  function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = ""){
+    const container = document.getElementById("itensPedido");
+
+    const div = document.createElement("div");
+    div.className = "item-pedido";
+
+    div.innerHTML = `
+      <div>
+        <label>Arma</label>
+        <select class="arma-item" onchange="atualizarResumoItensPedido()">
+          ${getArmasOptionsHtml(armaSelecionada)}
+        </select>
+      </div>
+
+      <div>
+        <label>Quantidade</label>
+        <input class="qtd-item" type="number" min="1" value="${quantidade}" placeholder="Ex: 5" oninput="atualizarResumoItensPedido()">
+      </div>
+
+      <div>
+        <button class="remove-item" onclick="removerItemPedido(this)">Remover</button>
+      </div>
+    `;
+
+    container.appendChild(div);
+    atualizarResumoItensPedido();
+  }
+
+  function removerItemPedido(botao){
+    const container = document.getElementById("itensPedido");
+    const itens = container.querySelectorAll(".item-pedido");
+
+    if(itens.length <= 1){
+      alert("O pedido precisa ter pelo menos uma arma.");
+      return;
+    }
+
+    botao.closest(".item-pedido").remove();
+    atualizarResumoItensPedido();
+  }
+
+  function atualizarResumoItensPedido(){
+    const itens = document.querySelectorAll("#itensPedido .item-pedido");
+
+    itens.forEach(item => {
+      let resumo = item.querySelector(".item-resumo");
+      if(!resumo){
+        resumo = document.createElement("div");
+        resumo.className = "item-resumo full";
+        item.appendChild(resumo);
+      }
+
+      const armaNome = item.querySelector(".arma-item").value;
+      const qtd = Number(item.querySelector(".qtd-item").value);
+      const pagamento = document.getElementById("pagamento").value;
+      const valorUnitario = armas[armaNome][pagamento.toLowerCase()];
+      const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
+
+      if(!qtd || qtd <= 0){
+        resumo.innerHTML = `Valor unitário: ${dinheiro(valorUnitario)}${semDesconto}`;
+        return;
+      }
+
+      const subtotal = qtd * valorUnitario;
+      resumo.innerHTML = `
+        Valor unitário: ${dinheiro(valorUnitario)} |
+        Subtotal: ${dinheiro(subtotal)}${semDesconto}
+      `;
+    });
+  }
+
   function gerarPedido(){
     const contato = document.getElementById("contato").value.trim();
-    const armaNome = document.getElementById("arma").value;
-    const qtd = Number(document.getElementById("qtd").value);
     const pagamento = document.getElementById("pagamento").value;
+    const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
 
     if(!contato){
       alert("Preencha o contato.");
       return;
     }
 
-    if(!qtd || qtd <= 0){
-      alert("Informe uma quantidade válida.");
+    if(itensEls.length === 0){
+      alert("Adicione pelo menos uma arma.");
       return;
     }
 
-    const arma = armas[armaNome];
-    const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
+    let itens = [];
+    let totalArmas = 0;
+    let subtotalGeral = 0;
+    let totalCylinder = 0;
+    let totalComponents = 0;
+    let totalBlueprint = 0;
 
-    let subtotal = qtd * preco;
-    let total = subtotal;
-    let desconto = false;
-    let valorDesconto = 0;
+    let qtdElegivelDesconto = 0;
+    let subtotalElegivelDesconto = 0;
 
-    if(qtd >= 11){
-      valorDesconto = subtotal * 0.10;
-      total = subtotal - valorDesconto;
-      desconto = true;
+    for(const itemEl of itensEls){
+      const armaNome = itemEl.querySelector(".arma-item").value;
+      const qtd = Number(itemEl.querySelector(".qtd-item").value);
+
+      if(!qtd || qtd <= 0){
+        alert("Todas as armas precisam ter uma quantidade válida.");
+        return;
+      }
+
+      const arma = armas[armaNome];
+      const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
+      const subtotalItem = qtd * preco;
+      const elegivelDesconto = armaNome !== "HK USP";
+
+      itens.push({
+        arma: armaNome,
+        qtd,
+        preco,
+        subtotal: subtotalItem,
+        elegivelDesconto
+      });
+
+      totalArmas += qtd;
+      subtotalGeral += subtotalItem;
+      totalCylinder += qtd * arma.materiais.cylinder;
+      totalComponents += qtd * arma.materiais.components;
+      totalBlueprint += qtd * arma.materiais.blueprint;
+
+      if(elegivelDesconto){
+        qtdElegivelDesconto += qtd;
+        subtotalElegivelDesconto += subtotalItem;
+      }
     }
 
-    const cylinder = qtd * arma.materiais.cylinder;
-    const components = qtd * arma.materiais.components;
-    const blueprint = qtd * arma.materiais.blueprint;
+    let desconto = false;
+    let valorDesconto = 0;
+    let totalFinal = subtotalGeral;
 
-    const caixas = Math.max(cylinder, components, blueprint);
+    if(qtdElegivelDesconto >= 11){
+      desconto = true;
+      valorDesconto = subtotalElegivelDesconto * 0.10;
+      totalFinal = subtotalGeral - valorDesconto;
+    }
+
+    const caixas = Math.max(totalCylinder, totalComponents, totalBlueprint);
     const carreg = calcularCarregamento(caixas);
 
     let textoCarreg = "";
@@ -909,27 +1035,39 @@
       { text:`CLIENTE: ${contato}` },
       { text:`PAGAMENTO: DINHEIRO ${pagamento.toUpperCase()}` },
       { type:"line", text:"------------------------------" },
-      { text:`ITEM: ${armaNome}` },
-      { text:`QTD: ${qtd}` },
-      { text:`VALOR UN: ${dinheiro(preco)}` },
-      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotal))}` }
+      { text:"ITENS:" }
     ];
+
+    itens.forEach(item => {
+      const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
+      linhas.push({
+        text:`${item.qtd}x ${item.arma} • ${dinheiro(item.preco)} • ${dinheiro(item.subtotal)}${marcador}`
+      });
+    });
+
+    linhas.push(
+      { type:"line", text:"------------------------------" },
+      { text:`TOTAL DE ARMAS: ${totalArmas}` },
+      { text:`ARMAS ELEGÍVEIS P/ DESCONTO: ${qtdElegivelDesconto}` },
+      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` },
+      { text:`OBS: HK USP não participa do desconto.` }
+    );
 
     if(desconto){
       linhas.push({
         type:"discount",
-        text:`DESCONTO: 10% (-${dinheiro(Math.round(valorDesconto))})`
+        text:`DESCONTO: 10% SOBRE ITENS ELEGÍVEIS (-${dinheiro(Math.round(valorDesconto))})`
       });
     }
 
     linhas.push(
       { type:"line", text:"------------------------------" },
-      { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(total))}` },
+      { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(totalFinal))}` },
       { type:"line", text:"==============================" },
       { text:"MATERIAIS:" },
-      { text:`${cylinder} Cylinder` },
-      { text:`${components} Componente` },
-      { text:`${blueprint} Blueprint` },
+      { text:`${totalCylinder} Cylinder` },
+      { text:`${totalComponents} Componente` },
+      { text:`${totalBlueprint} Blueprint` },
       { type:"line", text:"==============================" },
       { text:`CARREGAMENTO: ${textoCarreg || "Não calculado"}` }
     );
@@ -939,11 +1077,14 @@
     vendas.push({
       numero,
       contato,
-      arma: armaNome,
-      qtd,
+      itens,
+      armasTexto: itens.map(i => `${i.qtd}x ${i.arma}`).join(", "),
+      qtd: totalArmas,
+      qtdElegivelDesconto,
       pagamento,
-      subtotal: Math.round(subtotal),
-      total: Math.round(total),
+      subtotal: Math.round(subtotalGeral),
+      subtotalElegivelDesconto: Math.round(subtotalElegivelDesconto),
+      total: Math.round(totalFinal),
       descontoAplicado: desconto,
       valorDesconto: Math.round(valorDesconto),
       data: dataHoraAtual()
@@ -952,6 +1093,7 @@
     localStorage.setItem("fenrir_vendas", JSON.stringify(vendas));
     gerarDashboard();
     gerarRanking();
+    carregarHistorico();
   }
 
   function copiarCupom(){
@@ -968,11 +1110,15 @@
     const div = document.getElementById("listaHistorico");
     const termo = (document.getElementById("buscaHistorico").value || "").toLowerCase().trim();
 
-    const vendasFiltradas = vendas.filter(v =>
-      !termo ||
-      v.contato.toLowerCase().includes(termo) ||
-      v.arma.toLowerCase().includes(termo)
-    );
+    const vendasFiltradas = vendas.filter(v => {
+      const armasTexto = v.itens
+        ? v.itens.map(i => i.arma).join(" ").toLowerCase()
+        : (v.arma || "").toLowerCase();
+
+      return !termo ||
+        v.contato.toLowerCase().includes(termo) ||
+        armasTexto.includes(termo);
+    });
 
     const encomendasFiltradas = encomendasHistorico.filter(e =>
       !termo ||
@@ -990,17 +1136,22 @@
 
     if(vendasFiltradas.length){
       html += `<h3>🧾 Pedidos</h3>`;
-      vendasFiltradas.forEach((v, iOriginal) => {
+      vendasFiltradas.forEach((v) => {
         const indexReal = vendas.indexOf(v);
+        const descricaoItens = v.itens
+          ? v.itens.map(item => `${item.qtd}x ${item.arma}`).join(", ")
+          : `${v.qtd}x ${v.arma || ""}`;
+
         html += `
           <div class="history">
             <strong>Venda #${String(v.numero).padStart(4,"0")}</strong><br>
             Cliente: ${escapeHtml(v.contato)}<br>
-            Arma: ${escapeHtml(v.arma)}<br>
-            Quantidade: ${v.qtd}<br>
+            Itens: ${escapeHtml(descricaoItens)}<br>
+            Total de armas: ${v.qtd}<br>
+            Armas elegíveis p/ desconto: ${v.qtdElegivelDesconto || 0}<br>
             Pagamento: ${escapeHtml(v.pagamento)}<br>
             Subtotal: ${dinheiro(v.subtotal || v.total)}<br>
-            ${v.descontoAplicado ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.valorDesconto || 0)}</span><br>` : ""}
+            ${v.descontoAplicado ? `<span class="ok">Desconto de 10% aplicado somente nos itens elegíveis: -${dinheiro(v.valorDesconto || 0)}</span><br>` : ""}
             Total: ${dinheiro(v.total)}<br>
             <button class="small" onclick="excluirHistorico(${indexReal})">Excluir pedido</button>
           </div>
@@ -1138,16 +1289,20 @@
     const totalVendas = vendas.length;
     const faturamento = vendas.reduce((acc,v) => acc + v.total, 0);
     const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
-
     const totalEncomendas = encomendasHistorico.length;
     const gastoEncomendas = encomendasHistorico.reduce((acc,e) => acc + e.total, 0);
-
     const vendasComDesconto = vendas.filter(v => v.descontoAplicado).length;
     const economiaTotal = vendas.reduce((acc,v) => acc + (v.valorDesconto || 0), 0);
 
     const armasVendidas = {};
     vendas.forEach(v => {
-      armasVendidas[v.arma] = (armasVendidas[v.arma] || 0) + v.qtd;
+      if(v.itens && Array.isArray(v.itens)){
+        v.itens.forEach(item => {
+          armasVendidas[item.arma] = (armasVendidas[item.arma] || 0) + item.qtd;
+        });
+      }else if(v.arma){
+        armasVendidas[v.arma] = (armasVendidas[v.arma] || 0) + v.qtd;
+      }
     });
 
     let armaTop = "Nenhuma";
@@ -1408,6 +1563,7 @@
 
     localStorage.setItem("fenrir_encomendas", JSON.stringify(encomendasHistorico));
     gerarDashboard();
+    carregarHistorico();
   }
 
   function copiarCupomCompra(){
@@ -1425,6 +1581,8 @@
     carregarHistorico();
     gerarDashboard();
     gerarRanking();
+    adicionarItemPedido();
+    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
   };
 </script>
 
