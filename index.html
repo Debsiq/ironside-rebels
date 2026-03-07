@@ -1,267 +1,65 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-<meta charset="UTF-8">
-<title>Sistema Fenrir</title>
-
-<style>
-
-body{
-background:#0a0a0a;
-color:white;
-font-family:monospace;
-margin:0;
-}
-
-header{
-background:#111;
-padding:20px;
-text-align:center;
-border-bottom:2px solid red;
-}
-
-.logo{
-width:140px;
-}
-
-.tabs{
-display:flex;
-background:#1a1a1a;
-}
-
-.tabs button{
-flex:1;
-padding:15px;
-background:#1a1a1a;
-color:white;
-border:none;
-cursor:pointer;
-}
-
-.tabs button:hover{
-background:#333;
-}
-
-.container{
-padding:20px;
-max-width:900px;
-margin:auto;
-}
-
-input,select{
-width:100%;
-padding:8px;
-margin:5px 0;
-background:#222;
-color:white;
-border:none;
-}
-
-button.action{
-background:#b00000;
-padding:10px;
-border:none;
-margin-top:10px;
-cursor:pointer;
-color:white;
-}
-
-.tab{
-display:none;
-}
-
-.cupom{
-background:black;
-padding:15px;
-margin-top:20px;
-white-space:pre-line;
-}
-
-.history{
-background:#1b1b1b;
-padding:10px;
-margin:5px 0;
-}
-
-.sugestao{
-color:#00ff9c;
-margin-top:10px;
-font-weight:bold;
-}
-
-</style>
-</head>
-
-<body>
-
-<header>
-<img src="logo.png" class="logo">
-<h2>SISTEMA FENRIR</h2>
-</header>
-
-<div class="tabs">
-<button onclick="openTab('pedidos')">Pedidos</button>
-<button onclick="openTab('historico')">Histórico</button>
-<button onclick="openTab('dashboard')">Dashboard</button>
-<button onclick="openTab('ranking')">Ranking</button>
-<button onclick="openTab('encomendas')">Encomendas</button>
-</div>
-
-<div class="container">
-
-<!-- PEDIDOS -->
-
-<div id="pedidos" class="tab">
-
-<h3>Novo Pedido</h3>
-
-Contato
-<input id="contato">
-
-Arma
-<select id="arma">
-<option>Colt 1911</option>
-<option>HK USP</option>
-<option>Desert Eagle</option>
-</select>
-
-Quantidade
-<input id="qtd" type="number">
-
-Pagamento
-<select id="pagamento">
-<option>Limpo</option>
-<option>Sujo</option>
-</select>
-
-<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
-<button class="action" onclick="copiarCupom()">Copiar Cupom</button>
-
-<div id="cupom" class="cupom"></div>
-
-</div>
-
-<!-- HISTORICO -->
-
-<div id="historico" class="tab">
-<h3>Histórico</h3>
-<div id="listaHistorico"></div>
-</div>
-
-<!-- DASHBOARD -->
-
-<div id="dashboard" class="tab">
-<h3>Dashboard</h3>
-<div id="relatorio"></div>
-</div>
-
-<!-- RANKING -->
-
-<div id="ranking" class="tab">
-<h3>Ranking Clientes</h3>
-<div id="rankingClientes"></div>
-</div>
-
-<!-- ENCOMENDAS -->
-
-<div id="encomendas" class="tab">
-
-<h3>Nova Encomenda</h3>
-
-Categoria
-<select id="categoria" onchange="carregarProdutos()">
-<option value="">Selecionar</option>
-<option value="municoes">Munições</option>
-<option value="drogas">Drogas</option>
-</select>
-
-Produto
-<select id="produto" onchange="carregarFornecedores()"></select>
-
-Fornecedor
-<select id="orgCompra" onchange="preencherValores()"></select>
-
-Quantidade
-<input id="qtdCompra" type="number">
-
-Tipo de pagamento
-<select id="tipoPagamento">
-<option value="limpo">Dinheiro Limpo</option>
-<option value="sujo">Dinheiro Sujo</option>
-</select>
-
-Valor Limpo
-<input id="precoLimpo" readonly>
-
-Valor Sujo
-<input id="precoSujo" readonly>
-
-Observação
-<input id="obsCompra" readonly>
-
-<div id="fornecedorBarato" class="sugestao"></div>
-
-<button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
-<button class="action" onclick="copiarCupomCompra()">Copiar Encomenda</button>
-
-<div id="cupomCompra" class="cupom"></div>
-
-</div>
-
-</div>
-
 <script>
 
 /* ABAS */
 
 function openTab(tab){
+
 document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+
 document.getElementById(tab).style.display="block"
+
+if(tab=="historico")carregarHistorico()
+if(tab=="ranking")gerarRanking()
+
 }
 
-window.onload=()=>{
-openTab("pedidos")
-carregarHistorico()
-}
+/* DADOS */
+
+let vendas=JSON.parse(localStorage.getItem("fenrir_vendas"))||[]
 
 /* HISTORICO */
-
-let historico=JSON.parse(localStorage.getItem("fenrirHistorico"))||[]
-
-function salvarHistorico(){
-localStorage.setItem("fenrirHistorico",JSON.stringify(historico))
-carregarHistorico()
-}
 
 function carregarHistorico(){
 
 let div=document.getElementById("listaHistorico")
+
 div.innerHTML=""
 
-historico.forEach((p,i)=>{
+vendas.forEach((v,i)=>{
 
 div.innerHTML+=`
+
 <div class="history">
-${p}
+
+Venda #${String(v.numero).padStart(4,'0')}  
+Cliente: ${v.contato}  
+Arma: ${v.arma}  
+Quantidade: ${v.qtd}  
+Total: $${v.total.toLocaleString()}
+
 <br>
+
 <button onclick="excluirHistorico(${i})">Excluir</button>
+
 </div>
+
 `
 
 })
 
-atualizarDashboard()
-atualizarRanking()
-
 }
 
 function excluirHistorico(i){
-historico.splice(i,1)
-salvarHistorico()
+
+vendas.splice(i,1)
+
+localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
+
+carregarHistorico()
+
 }
 
-/* PEDIDOS */
+/* ARMAS */
 
 const armas={
 
@@ -271,21 +69,7 @@ const armas={
 
 }
 
-let vendas=JSON.parse(localStorage.getItem("fenrir_vendas"))||[]
-
-function openTab(tab){
-
-document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
-
-document.getElementById(tab).style.display="block"
-
-if(tab=="historico")carregarHistorico()
-if(tab=="dashboard")calcularDashboard()
-if(tab=="ranking")gerarRanking()
-
-}
-
-openTab("pedidos")
+/* CARREGAMENTO */
 
 function calcularCarregamento(caixas){
 
@@ -300,6 +84,8 @@ let pequeno=Math.ceil(resto/5)
 return{grande,medio,pequeno}
 
 }
+
+/* GERAR PEDIDO */
 
 function gerarPedido(){
 
@@ -329,16 +115,6 @@ let caixas=Math.max(cylinder,components,blueprint)
 
 let carreg=calcularCarregamento(caixas)
 
-let custoLimpo=
-carreg.grande*80000+
-carreg.medio*60000+
-carreg.pequeno*30000
-
-let custoSujo=
-carreg.grande*120000+
-carreg.medio*90000+
-carreg.pequeno*45000
-
 let textoCarreg=""
 
 if(carreg.grande>0)textoCarreg+=`${carreg.grande} Grande `
@@ -364,15 +140,13 @@ ${desconto?"Desconto aplicado: 10%\n":""}
 
 Total do Pedido: $${Math.round(total).toLocaleString()}
 
-Materiais Necessários para Produção:
+Materiais Necessários:
 
 ${cylinder} Cylinder
 ${components} Componente
 ${blueprint} Blueprint
 
-Para atender o pedido o carregamento recomendado é ${textoCarreg}
-
-Que custará $${custoLimpo.toLocaleString()} ou no Sujo: $${custoSujo.toLocaleString()}
+Carregamento recomendado: ${textoCarreg}
 `
 
 document.getElementById("cupom").innerText=cupom
@@ -381,11 +155,17 @@ vendas.push({numero,contato,arma:armaNome,qtd,total})
 
 localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
 
-carregarHistorico()
-calcularDashboard()
-gerarRanking()
-
 }
+
+/* COPIAR */
+
+function copiarCupom(){
+navigator.clipboard.writeText(document.getElementById("cupom").innerText)
+alert("Cupom copiado")
+}
+
+/* RANKING */
+
 function gerarRanking(){
 
 let ranking={}
@@ -411,67 +191,8 @@ div.innerHTML+=`<div>${i+1}º ${c[0]} — $${c[1].toLocaleString()}</div>`
 })
 
 }
-function copiarCupom(){
-navigator.clipboard.writeText(document.getElementById("cupom").innerText)
-alert("Cupom copiado")
-}
 
-/* DASHBOARD */
-
-function atualizarDashboard(){
-
-let totalPedidos=historico.length
-let totalArmas=0
-
-historico.forEach(p=>{
-let match=p.match(/Quantidade: (\d+)/)
-if(match) totalArmas+=Number(match[1])
-})
-
-document.getElementById("relatorio").innerText=
-
-`Total de pedidos: ${totalPedidos}
-
-Total de armas vendidas: ${totalArmas}`
-
-}
-
-/* RANKING */
-
-function atualizarRanking(){
-
-let contagem={}
-
-historico.forEach(p=>{
-
-let match=p.match(/Cliente: (.*)/)
-
-if(match){
-
-let nome=match[1]
-
-contagem[nome]=(contagem[nome]||0)+1
-
-}
-
-})
-
-let lista=Object.entries(contagem)
-.sort((a,b)=>b[1]-a[1])
-
-let html=""
-
-lista.forEach(c=>{
-
-html+=`${c[0]} - ${c[1]} pedidos<br>`
-
-})
-
-document.getElementById("rankingClientes").innerHTML=html
-
-}
-
-/* BANCO ENCOMENDAS */
+/* ENCOMENDAS */
 
 const tabelaCompras={
 municoes:{
@@ -487,8 +208,6 @@ drogas:{
 }
 }
 }
-
-/* ENCOMENDAS */
 
 function carregarProdutos(){
 
@@ -567,7 +286,14 @@ navigator.clipboard.writeText(cupomCompra.innerText)
 alert("Encomenda copiada")
 }
 
-</script>
+/* INICIO */
 
-</body>
-</html>
+window.onload=()=>{
+
+openTab("pedidos")
+carregarHistorico()
+gerarRanking()
+
+}
+
+</script>
