@@ -639,22 +639,25 @@
       .replaceAll("'","&#039;");
   }
 
-  function openTab(tab, btn = null){
-    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-    document.getElementById(tab).style.display = "block";
+function openTab(tab, btn = null){
+  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
 
-    if(btn){
-      btn.classList.add("active");
-    }else{
-      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-      if(autoBtn) autoBtn.classList.add("active");
-    }
+  document.getElementById(tab).style.display = "block";
 
-    if(tab === "historico") carregarHistoricoBanco();
-    if(tab === "ranking") gerarRanking();
-    if(tab === "dashboard") gerarDashboard();
+  if(btn){
+    btn.classList.add("active");
+  }else{
+    const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+    if(autoBtn) autoBtn.classList.add("active");
   }
+
+  if(tab === "historico") carregarHistoricoBanco();
+  if(tab === "dashboard"){
+    gerarDashboard();
+    gerarRanking();
+  }
+}
 
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
@@ -1396,15 +1399,16 @@ if(encomendasHistorico.length){
         <div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(economiaTotal)}</div></div>
       </div>
     `;
+     gerarRanking();
   }
 
-  window.onload = async () => {
-    openTab("pedidos");
-    adicionarItemPedido();
-    adicionarItemEncomenda();
-    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-    await carregarHistoricoBanco();
-  };
+ window.onload = async () => {
+  openTab("pedidos");
+  adicionarItemPedido();
+  adicionarItemEncomenda();
+  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+  await carregarHistoricoBanco();
+};
   async function excluirHistorico(id){
   const ok = confirm("Deseja excluir este pedido?");
   if(!ok) return;
