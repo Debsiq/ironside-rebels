@@ -1236,45 +1236,47 @@
 
     let html = "";
 
-    if(vendas.length){
-      html += `<h3>🧾 Pedidos</h3>`;
-      vendas.forEach((v) => {
-        const descricaoItens = (v.items || []).map(item => `${item.quantity}x ${item.weapon}`).join(", ");
+if(vendas.length){
+  html += `<h3>🧾 Pedidos</h3>`;
+  vendas.forEach((v) => {
+    const descricaoItens = (v.items || []).map(item => `${item.quantity}x ${item.weapon}`).join(", ");
 
-        html += `
-          <div class="history">
-            <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
-            Comprador: ${escapeHtml(v.buyer_name)}<br>
-            Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
-            Itens: ${escapeHtml(descricaoItens)}<br>
-            Total de armas: ${v.total_weapons}<br>
-            Pagamento: ${escapeHtml(v.payment_type)}<br>
-            Subtotal: ${dinheiro(v.subtotal)}<br>
-            ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
-            Total: ${dinheiro(v.total)}<br>
-            Data: ${dataAtualBR(v.created_at)}<br>
-          </div>
-        `;
-      });
-    }
+    html += `
+      <div class="history">
+        <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
+        Comprador: ${escapeHtml(v.buyer_name)}<br>
+        Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
+        Itens: ${escapeHtml(descricaoItens)}<br>
+        Total de armas: ${v.total_weapons}<br>
+        Pagamento: ${escapeHtml(v.payment_type)}<br>
+        Subtotal: ${dinheiro(v.subtotal)}<br>
+        ${Number(v.discount_value) > 0 ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.discount_value)}</span><br>` : ""}
+        Total: ${dinheiro(v.total)}<br>
+        Data: ${dataAtualBR(v.created_at)}<br>
+        <button class="small" onclick="excluirHistorico(${v.id})">Excluir pedido</button>
+      </div>
+    `;
+  });
+}
 
-    if(encomendasHistorico.length){
-      html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
-      encomendasHistorico.forEach((e) => {
-        const itensTexto = (e.items || []).map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`).join(", ");
+if(encomendasHistorico.length){
+  html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
+  encomendasHistorico.forEach((e) => {
+    const itensTexto = (e.items || []).map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`).join(", ");
 
-        html += `
-          <div class="history">
-            <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-            Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-            Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
-            Itens: ${escapeHtml(itensTexto)}<br>
-            Total: ${dinheiro(e.total)}<br>
-            Data: ${dataAtualBR(e.created_at)}<br>
-          </div>
-        `;
-      });
-    }
+    html += `
+      <div class="history">
+        <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+        Itens: ${escapeHtml(itensTexto)}<br>
+        Total: ${dinheiro(e.total)}<br>
+        Data: ${dataAtualBR(e.created_at)}<br>
+        <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+      </div>
+    `;
+  });
+}
 
     div.innerHTML = html;
   }
@@ -1373,6 +1375,45 @@
     document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
     await carregarHistoricoBanco();
   };
+  async function excluirHistorico(id){
+  const ok = confirm("Deseja excluir este pedido?");
+  if(!ok) return;
+
+  const res = await fetch('/api/delete-order', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao excluir pedido.");
+    return;
+  }
+
+  await carregarHistoricoBanco();
+}
+
+async function excluirEncomenda(id){
+  const ok = confirm("Deseja excluir esta encomenda?");
+  if(!ok) return;
+
+  const res = await fetch('/api/delete-purchase', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao excluir encomenda.");
+    return;
+  }
+
+  await carregarHistoricoBanco();
+}
 </script>
 
 </body>
