@@ -1,3 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>Sistema Fenrir</title>
+
+<style>
+
+body{
+background:#0a0a0a;
+color:white;
+font-family:monospace;
+margin:0;
+}
+
+header{
+background:#111;
+padding:20px;
+text-align:center;
+border-bottom:2px solid red;
+}
+
+.logo{
+width:140px;
+}
+
+.tabs{
+display:flex;
+background:#1a1a1a;
+}
+
+.tabs button{
+flex:1;
+padding:15px;
+background:#1a1a1a;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+.tabs button:hover{
+background:#333;
+}
+
+.container{
+padding:20px;
+max-width:900px;
+margin:auto;
+}
+
+input,select{
+width:100%;
+padding:8px;
+margin:5px 0;
+background:#222;
+color:white;
+border:none;
+}
+
+button.action{
+background:#b00000;
+padding:10px;
+border:none;
+margin-top:10px;
+cursor:pointer;
+color:white;
+}
+
+.tab{
+display:none;
+}
+
+.cupom{
+background:black;
+padding:15px;
+margin-top:20px;
+white-space:pre-line;
+}
+
+.history{
+background:#1b1b1b;
+padding:10px;
+margin:5px 0;
+}
+
+.sugestao{
+color:#00ff9c;
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<img src="logo.png" class="logo">
+<h2>SISTEMA FENRIR</h2>
+</header>
+
+<div class="tabs">
+<button onclick="openTab('pedidos')">Pedidos</button>
+<button onclick="openTab('historico')">Histórico</button>
+<button onclick="openTab('dashboard')">Dashboard</button>
+<button onclick="openTab('ranking')">Ranking</button>
+<button onclick="openTab('encomendas')">Encomendas</button>
+</div>
+
+<div class="container">
+
+<!-- PEDIDOS -->
+
+<div id="pedidos" class="tab">
+
+<h3>Novo Pedido</h3>
+
+Contato
+<input id="contato">
+
+Arma
+<select id="arma">
+<option>Colt 1911</option>
+<option>HK USP</option>
+<option>Desert Eagle</option>
+</select>
+
+Quantidade
+<input id="qtd" type="number">
+
+Pagamento
+<select id="pagamento">
+<option>Limpo</option>
+<option>Sujo</option>
+</select>
+
+<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
+<button class="action" onclick="copiarCupom()">Copiar Cupom</button>
+
+<div id="cupom" class="cupom"></div>
+
+</div>
+
+<!-- HISTORICO -->
+
+<div id="historico" class="tab">
+<h3>Histórico</h3>
+<div id="listaHistorico"></div>
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="tab">
+<h3>Dashboard</h3>
+<div id="relatorio"></div>
+</div>
+
+<!-- RANKING -->
+
+<div id="ranking" class="tab">
+<h3>Ranking Clientes</h3>
+<div id="rankingClientes"></div>
+</div>
+
+<!-- ENCOMENDAS -->
+
+<div id="encomendas" class="tab">
+
+<h3>Nova Encomenda</h3>
+
+Categoria
+<select id="categoria" onchange="carregarProdutos()">
+<option value="">Selecionar</option>
+<option value="municoes">Munições</option>
+<option value="drogas">Drogas</option>
+</select>
+
+Produto
+<select id="produto" onchange="carregarFornecedores()"></select>
+
+Fornecedor
+<select id="orgCompra" onchange="preencherValores()"></select>
+
+Quantidade
+<input id="qtdCompra" type="number">
+
+Tipo de pagamento
+<select id="tipoPagamento">
+<option value="limpo">Dinheiro Limpo</option>
+<option value="sujo">Dinheiro Sujo</option>
+</select>
+
+Valor Limpo
+<input id="precoLimpo" readonly>
+
+Valor Sujo
+<input id="precoSujo" readonly>
+
+Observação
+<input id="obsCompra" readonly>
+
+<div id="fornecedorBarato" class="sugestao"></div>
+
+<button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
+<button class="action" onclick="copiarCupomCompra()">Copiar Encomenda</button>
+
+<div id="cupomCompra" class="cupom"></div>
+
+</div>
+
+</div>
+
 <script>
 
 /* ABAS */
@@ -297,3 +510,6 @@ gerarRanking()
 }
 
 </script>
+
+</body>
+</html>
