@@ -19,6 +19,7 @@ header{
 background:#111;
 padding:20px;
 text-align:center;
+border-bottom:2px solid red;
 }
 
 .logo{
@@ -64,6 +65,7 @@ padding:10px;
 border:none;
 margin-top:10px;
 cursor:pointer;
+color:white;
 }
 
 .tab{
@@ -75,6 +77,12 @@ background:black;
 padding:15px;
 margin-top:20px;
 white-space:pre-line;
+}
+
+.history{
+background:#1b1b1b;
+padding:10px;
+margin:5px 0;
 }
 
 </style>
@@ -109,9 +117,6 @@ white-space:pre-line;
 Contato
 <input id="contato">
 
-Organização
-<input id="org" value="OG's">
-
 Arma
 <select id="arma">
 
@@ -137,18 +142,27 @@ Pagamento
 </div>
 
 <div id="historico" class="tab">
+
 <h3>Histórico</h3>
+
 <div id="listaHistorico"></div>
+
 </div>
 
 <div id="dashboard" class="tab">
-<h3>Relatório</h3>
+
+<h3>Dashboard</h3>
+
 <div id="relatorio"></div>
+
 </div>
 
 <div id="ranking" class="tab">
+
 <h3>Ranking Clientes</h3>
+
 <div id="rankingClientes"></div>
+
 </div>
 
 <div id="encomendas" class="tab">
@@ -162,12 +176,12 @@ Organização
 <input id="orgCompra">
 
 Quantidade
-<input id="qtdCompra">
+<input id="qtdCompra" type="number">
 
-Preço unitário
-<input id="precoCompra">
+Preço Unitário
+<input id="precoCompra" type="number">
 
-<button class="action" onclick="gerarCompra()">Registrar Compra</button>
+<button class="action" onclick="gerarCompra()">Registrar</button>
 
 <div id="cupomCompra" class="cupom"></div>
 
@@ -177,58 +191,177 @@ Preço unitário
 
 <script>
 
-let vendas = JSON.parse(localStorage.getItem("fenrir_vendas")) || []
+const armas={
+
+"Colt 1911":{limpo:10000,sujo:12500,materiais:{cylinder:1,components:1,blueprint:1}},
+"HK USP":{limpo:12000,sujo:15000,materiais:{cylinder:1,components:2,blueprint:1}},
+"Desert Eagle":{limpo:14000,sujo:17500,materiais:{cylinder:2,components:1,blueprint:1}}
+
+}
+
+let vendas=JSON.parse(localStorage.getItem("fenrir_vendas"))||[]
 
 function openTab(tab){
 
 document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+
 document.getElementById(tab).style.display="block"
 
-if(tab=="ranking") gerarRanking()
+if(tab=="historico")carregarHistorico()
+if(tab=="dashboard")calcularDashboard()
+if(tab=="ranking")gerarRanking()
 
 }
 
 openTab("pedidos")
 
+function calcularCarregamento(caixas){
+
+let grande=Math.floor(caixas/15)
+let resto=caixas%15
+
+let medio=Math.floor(resto/10)
+resto=resto%10
+
+let pequeno=Math.ceil(resto/5)
+
+return{grande,medio,pequeno}
+
+}
+
 function gerarPedido(){
 
 let contato=document.getElementById("contato").value
-let arma=document.getElementById("arma").value
+let armaNome=document.getElementById("arma").value
 let qtd=Number(document.getElementById("qtd").value)
 let pagamento=document.getElementById("pagamento").value
 
-let precos={
-"Colt 1911":{limpo:10000,sujo:12500},
-"HK USP":{limpo:12000,sujo:15000},
-"Desert Eagle":{limpo:14000,sujo:17500}
-}
+let arma=armas[armaNome]
 
-let preco = pagamento=="Limpo" ? precos[arma].limpo : precos[arma].sujo
+let preco=pagamento=="Limpo"?arma.limpo:arma.sujo
 
 let total=qtd*preco
 
+let desconto=false
+
 if(qtd>=11){
 total=total*0.9
+desconto=true
 }
 
+let cylinder=qtd*arma.materiais.cylinder
+let components=qtd*arma.materiais.components
+let blueprint=qtd*arma.materiais.blueprint
+
+let caixas=Math.max(cylinder,components,blueprint)
+
+let carreg=calcularCarregamento(caixas)
+
+let custoLimpo=
+carreg.grande*80000+
+carreg.medio*60000+
+carreg.pequeno*30000
+
+let custoSujo=
+carreg.grande*120000+
+carreg.medio*90000+
+carreg.pequeno*45000
+
+let textoCarreg=""
+
+if(carreg.grande>0)textoCarreg+=`${carreg.grande} Grande `
+if(carreg.medio>0)textoCarreg+=`${carreg.medio} Médio `
+if(carreg.pequeno>0)textoCarreg+=`${carreg.pequeno} Pequeno`
+
 let numero=vendas.length+1
+
+let data=new Date().toLocaleDateString()
 
 let cupom=
 
 `VENDA #${String(numero).padStart(4,'0')}
 
 Contato: ${contato}
+Data: ${data}
+Tipo de Pagamento: Dinheiro ${pagamento}
 
 Pedido:
-${qtd} ${arma}
+${qtd} ${armaNome} → $${preco.toLocaleString()} (cada)
 
-Total: $${Math.round(total)}`
+${desconto?"Desconto aplicado: 10%\n":""}
+
+Total do Pedido: $${Math.round(total).toLocaleString()}
+
+Materiais Necessários para Produção:
+
+${cylinder} Cylinder
+${components} Componente
+${blueprint} Blueprint
+
+Para atender o pedido o carregamento recomendado é ${textoCarreg}
+
+Que custará $${custoLimpo.toLocaleString()} ou no Sujo: $${custoSujo.toLocaleString()}
+`
 
 document.getElementById("cupom").innerText=cupom
 
-vendas.push({numero,contato,arma,qtd,total})
+vendas.push({numero,contato,arma:armaNome,qtd,total})
 
 localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
+
+carregarHistorico()
+calcularDashboard()
+gerarRanking()
+
+}
+
+function carregarHistorico(){
+
+let div=document.getElementById("listaHistorico")
+
+div.innerHTML=""
+
+vendas.forEach((v,i)=>{
+
+div.innerHTML+=`
+
+<div class="history">
+
+#${String(v.numero).padStart(4,'0')} | ${v.contato} | ${v.arma} | ${v.qtd} | $${v.total.toLocaleString()}
+
+<button onclick="excluirVenda(${i})">Excluir</button>
+
+</div>
+
+`
+
+})
+
+}
+
+function excluirVenda(i){
+
+vendas.splice(i,1)
+
+localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
+
+carregarHistorico()
+calcularDashboard()
+gerarRanking()
+
+}
+
+function calcularDashboard(){
+
+let total=0
+
+vendas.forEach(v=>total+=v.total)
+
+document.getElementById("relatorio").innerText=
+
+`Total vendido: $${total.toLocaleString()}
+
+Pedidos realizados: ${vendas.length}`
 
 }
 
@@ -238,13 +371,13 @@ let ranking={}
 
 vendas.forEach(v=>{
 
-if(!ranking[v.contato]) ranking[v.contato]=0
+if(!ranking[v.contato])ranking[v.contato]=0
+
 ranking[v.contato]+=v.total
 
 })
 
-let lista=Object.entries(ranking)
-.sort((a,b)=>b[1]-a[1])
+let lista=Object.entries(ranking).sort((a,b)=>b[1]-a[1])
 
 let div=document.getElementById("rankingClientes")
 
@@ -252,14 +385,41 @@ div.innerHTML=""
 
 lista.forEach((c,i)=>{
 
-div.innerHTML+=`<div>${i+1}º ${c[0]} — $${c[1]}</div>`
+div.innerHTML+=`<div>${i+1}º ${c[0]} — $${c[1].toLocaleString()}</div>`
 
 })
+
+}
+
+function gerarCompra(){
+
+let produto=document.getElementById("produtoCompra").value
+let org=document.getElementById("orgCompra").value
+let qtd=document.getElementById("qtdCompra").value
+let preco=document.getElementById("precoCompra").value
+
+let total=qtd*preco
+
+let cupom=
+
+`COMPRA
+
+Produto: ${produto}
+
+Organização: ${org}
+
+Quantidade: ${qtd}
+
+Preço unitário: $${preco}
+
+Total: $${total}
+`
+
+document.getElementById("cupomCompra").innerText=cupom
 
 }
 
 </script>
 
 </body>
-
 </html>
