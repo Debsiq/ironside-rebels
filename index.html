@@ -128,85 +128,87 @@
       margin-bottom:18px;
       overflow:hidden;
     }
-.meta-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:12px;
-  margin-top:16px;
-}
 
-.meta-card{
-  background:linear-gradient(180deg,#181818,#121212);
-  border:1px solid #2a2a2a;
-  border-radius:14px;
-  padding:14px;
-}
+    .meta-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
 
-.meta-card .nome{
-  font-weight:800;
-  color:#fff;
-  margin-bottom:6px;
-}
+    .meta-card{
+      background:linear-gradient(180deg,#181818,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+    }
 
-.meta-card .tipo{
-  color:#cfcfcf;
-  font-size:12px;
-  margin-bottom:8px;
-}
+    .meta-card .nome{
+      font-weight:800;
+      color:#fff;
+      margin-bottom:6px;
+    }
 
-.meta-status{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:8px;
-}
+    .meta-card .tipo{
+      color:#cfcfcf;
+      font-size:12px;
+      margin-bottom:8px;
+    }
 
-.meta-status.pago{
-  background:rgba(0,255,135,.12);
-  color:#00ff87;
-  border:1px solid rgba(0,255,135,.25);
-}
+    .meta-status{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
 
-.meta-status.pendente{
-  background:rgba(255,209,102,.12);
-  color:#ffd166;
-  border:1px solid rgba(255,209,102,.25);
-}
+    .meta-status.pago{
+      background:rgba(0,255,135,.12);
+      color:#00ff87;
+      border:1px solid rgba(0,255,135,.25);
+    }
 
-.meta-status.justificado{
-  background:rgba(120,180,255,.12);
-  color:#8fc1ff;
-  border:1px solid rgba(120,180,255,.25);
-}
+    .meta-status.pendente{
+      background:rgba(255,209,102,.12);
+      color:#ffd166;
+      border:1px solid rgba(255,209,102,.25);
+    }
 
-.meta-total-box{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:12px;
-  margin-top:16px;
-  margin-bottom:12px;
-}
+    .meta-status.justificado{
+      background:rgba(120,180,255,.12);
+      color:#8fc1ff;
+      border:1px solid rgba(120,180,255,.25);
+    }
 
-.meta-total-item{
-  background:linear-gradient(180deg,#1a1a1a,#121212);
-  border:1px solid #2a2a2a;
-  border-radius:14px;
-  padding:14px;
-}
+    .meta-total-box{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-top:16px;
+      margin-bottom:12px;
+    }
 
-.meta-total-item .title{
-  color:#bdbdbd;
-  font-size:12px;
-  margin-bottom:6px;
-}
+    .meta-total-item{
+      background:linear-gradient(180deg,#1a1a1a,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+    }
 
-.meta-total-item .value{
-  font-size:22px;
-  font-weight:900;
-  color:#fff;
-}
+    .meta-total-item .title{
+      color:#bdbdbd;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .meta-total-item .value{
+      font-size:22px;
+      font-weight:900;
+      color:#fff;
+    }
+
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
@@ -536,58 +538,59 @@
 </div>
 
 <div class="container">
+
   <div id="meta" class="tab">
-  <div class="card">
-    <h2 class="section-title">💰 Meta Semanal</h2>
-    <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
+    <div class="card">
+      <h2 class="section-title">💰 Meta Semanal</h2>
+      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
 
-    <div class="actions" style="margin-top:0; margin-bottom:14px;">
-      <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
-    </div>
-
-    <div id="metaResumoSemana" class="helper"></div>
-
-    <div class="grid">
-      <div>
-        <label for="tipoMetaPessoa">Tipo</label>
-        <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
-          <option value="membro">Membro</option>
-          <option value="prospect">Prospect</option>
-        </select>
+      <div class="actions" style="margin-top:0; margin-bottom:14px;">
+        <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
       </div>
 
-      <div>
-        <label for="nomeMetaPessoa">Nome</label>
-        <select id="nomeMetaPessoa"></select>
+      <div id="metaResumoSemana" class="helper"></div>
+
+      <div class="grid">
+        <div>
+          <label for="tipoMetaPessoa">Tipo</label>
+          <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
+            <option value="membro">Membro</option>
+            <option value="prospect">Prospect</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nomeMetaPessoa">Nome</label>
+          <select id="nomeMetaPessoa"></select>
+        </div>
+
+        <div>
+          <label for="valorMetaPessoa">Valor</label>
+          <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
+        </div>
+
+        <div>
+          <label for="statusMetaPessoa">Status</label>
+          <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+            <option value="justificado">Justificado</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label for="valorMetaPessoa">Valor</label>
-        <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
+      <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
+        <label for="justificativaMetaPessoa">Justificativa</label>
+        <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
       </div>
 
-      <div>
-        <label for="statusMetaPessoa">Status</label>
-        <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
-          <option value="pago">Pago</option>
-          <option value="pendente">Pendente</option>
-          <option value="justificado">Justificado</option>
-        </select>
+      <div class="actions">
+        <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
       </div>
-    </div>
 
-    <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
-      <label for="justificativaMetaPessoa">Justificativa</label>
-      <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
+      <div id="metaTabelaSemana" style="margin-top:18px;"></div>
     </div>
-
-    <div class="actions">
-      <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
-    </div>
-
-    <div id="metaTabelaSemana" style="margin-top:18px;"></div>
   </div>
-</div>
 
   <div id="pedidos" class="tab">
     <div class="card">
@@ -702,242 +705,50 @@
         <div id="cupomCompra" class="cupom"></div>
       </div>
     </div>
+
+    <div class="card">
+      <h2 class="section-title">📚 Histórico de Encomendas</h2>
+      <div id="historicoEncomendasInterno"></div>
+    </div>
   </div>
 </div>
 
 <script>
   const membrosMeta = [
-  'Maximilian Leclerc',
-  'Pietro "Devil" D\'Lenfer',
-  'Bjorn "Thor" D\'Lenfer',
-  'Jazmin "Jazz" Reis',
-  'Wolfgang "Kaiser" Larsen',
-  'Lucas Vance',
-  'Apollo "Lobo" Castillo',
-  'Siegfried "Tekken" Larsen',
-  'Ricardo Lionhearth',
-  'Chuck Silver',
-  'Dante D\'Lenfer',
-  'Isaiah D\'Lenfer',
-  'Tristan D\'Lenfer',
-  'Angelique "Angel" Melbourne',
-  'Kaleb Chester',
-  'Søren "Caju" D\'Ulven',
-  'Matteo "Tet" Brown',
-  'Baltazar "Bills" D\'Lenfer'
-];
+    'Maximilian Leclerc',
+    'Pietro "Devil" D\'Lenfer',
+    'Bjorn "Thor" D\'Lenfer',
+    'Jazmin "Jazz" Reis',
+    'Wolfgang "Kaiser" Larsen',
+    'Lucas Vance',
+    'Apollo "Lobo" Castillo',
+    'Siegfried "Tekken" Larsen',
+    'Ricardo Lionhearth',
+    'Chuck Silver',
+    'Dante D\'Lenfer',
+    'Isaiah D\'Lenfer',
+    'Tristan D\'Lenfer',
+    'Angelique "Angel" Melbourne',
+    'Kaleb Chester',
+    'Søren "Caju" D\'Ulven',
+    'Matteo "Tet" Brown',
+    'Baltazar "Bills" D\'Lenfer'
+  ];
 
-const prospectsMeta = [
-  'Aurora "Castillo" Castillo',
-  'Jorsh Garcia',
-  'Rebecca "Belladonna" Celestine',
-  'Amanda "Valquíria" Winters',
-  'Amora Corvus',
-  'Carraig "Corvo" Dubhghaill',
-  'Jesse "Foster" Foster'
-];
+  const prospectsMeta = [
+    'Aurora "Castillo" Castillo',
+    'Jorsh Garcia',
+    'Rebecca "Belladonna" Celestine',
+    'Amanda "Valquíria" Winters',
+    'Amora Corvus',
+    'Carraig "Corvo" Dubhghaill',
+    'Jesse "Foster" Foster'
+  ];
 
-let metasSemanais = JSON.parse(localStorage.getItem("fenrir_metas_semanais")) || [];
+  let metaSemanaAtualNumero = 0;
+  let metaSemanaAtual = null;
+  let metaEntradas = [];
 
-function salvarMetasSemanais(){
-  localStorage.setItem("fenrir_metas_semanais", JSON.stringify(metasSemanais));
-}
-
-function inicioDaSemana(data = new Date()){
-  const d = new Date(data);
-  const dia = d.getDay();
-  const diff = dia === 0 ? -6 : 1 - dia;
-  d.setDate(d.getDate() + diff);
-  d.setHours(0,0,0,0);
-  return d;
-}
-
-function formatarDataSimples(data){
-  return new Date(data).toLocaleDateString("pt-BR");
-}
-
-function gerarEstruturaSemanaMeta(numero){
-  const inicio = inicioDaSemana();
-  return {
-    numero,
-    inicioSemana: inicio.toISOString(),
-    registros: [
-      ...membrosMeta.map(nome => ({
-        nome,
-        tipo: "membro",
-        valor: 0,
-        status: "pendente",
-        justificativa: ""
-      })),
-      ...prospectsMeta.map(nome => ({
-        nome,
-        tipo: "prospect",
-        valor: 0,
-        status: "pendente",
-        justificativa: ""
-      }))
-    ]
-  };
-}
-
-function garantirSemanaMetaAtual(){
-  if(metasSemanais.length === 0){
-    metasSemanais.push(gerarEstruturaSemanaMeta(0));
-    salvarMetasSemanais();
-  }
-}
-
-function getSemanaMetaAtual(){
-  garantirSemanaMetaAtual();
-  return metasSemanais[metasSemanais.length - 1];
-}
-
-function novaSemanaMeta(){
-  const ultima = getSemanaMetaAtual();
-  const novoNumero = (ultima?.numero || 0) + 1;
-  metasSemanais.push(gerarEstruturaSemanaMeta(novoNumero));
-  salvarMetasSemanais();
-  renderMeta();
-}
-
-function carregarPessoasMeta(){
-  const tipo = document.getElementById("tipoMetaPessoa").value;
-  const select = document.getElementById("nomeMetaPessoa");
-  const lista = tipo === "membro" ? membrosMeta : prospectsMeta;
-
-  select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
-
-  document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
-
-  const status = document.getElementById("statusMetaPessoa");
-  if(tipo === "prospect" && status.value === "justificado"){
-    status.value = "pendente";
-  }
-
-  toggleJustificativaMeta();
-}
-
-function toggleJustificativaMeta(){
-  const status = document.getElementById("statusMetaPessoa").value;
-  document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
-}
-
-function registrarMetaPessoa(){
-  const semana = getSemanaMetaAtual();
-
-  const tipo = document.getElementById("tipoMetaPessoa").value;
-  const nome = document.getElementById("nomeMetaPessoa").value;
-  const valor = Number(document.getElementById("valorMetaPessoa").value || 0);
-  const status = document.getElementById("statusMetaPessoa").value;
-  const justificativa = document.getElementById("justificativaMetaPessoa").value.trim();
-
-  const registro = semana.registros.find(r => r.nome === nome && r.tipo === tipo);
-
-  if(!registro){
-    alert("Pessoa não encontrada.");
-    return;
-  }
-
-  registro.valor = valor;
-
-  if(tipo === "prospect" && status === "justificado"){
-    registro.status = "pendente";
-    registro.justificativa = "";
-  } else {
-    registro.status = status;
-    registro.justificativa = status === "justificado" ? justificativa : "";
-  }
-
-  if(registro.status === "pago" && registro.valor <= 0){
-    alert("Informe um valor maior que 0 para marcar como pago.");
-    return;
-  }
-
-  salvarMetasSemanais();
-  renderMeta();
-}
-
-function renderMeta(){
-  garantirSemanaMetaAtual();
-  const semana = getSemanaMetaAtual();
-
-  document.getElementById("metaResumoSemana").innerHTML =
-    `Meta Semanal #${String(semana.numero).padStart(3, "0")} • Início: ${formatarDataSimples(semana.inicioSemana)}`;
-
-  const membros = semana.registros.filter(r => r.tipo === "membro");
-  const prospects = semana.registros.filter(r => r.tipo === "prospect");
-
-  const membrosPagos = membros.filter(r => r.status === "pago").length;
-  const membrosPendentes = membros.filter(r => r.status === "pendente").length;
-  const membrosJustificados = membros.filter(r => r.status === "justificado").length;
-  const totalArrecadado = semana.registros.reduce((acc, r) => acc + Number(r.valor || 0), 0);
-
-  let html = `
-    <div class="meta-total-box">
-      <div class="meta-total-item">
-        <div class="title">Meta Semanal</div>
-        <div class="value">#${String(semana.numero).padStart(3, "0")}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Total arrecadado</div>
-        <div class="value">${dinheiro(totalArrecadado)}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros pagos</div>
-        <div class="value">${membrosPagos}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros pendentes</div>
-        <div class="value">${membrosPendentes}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros justificados</div>
-        <div class="value">${membrosJustificados}</div>
-      </div>
-    </div>
-  `;
-
-  html += `<h3>👑 Membros</h3><div class="meta-grid">`;
-  membros.forEach(r => {
-    html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.nome)}</div>
-        <div class="tipo">Membro • Obrigatório $5.000</div>
-        <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
-        <div>Valor: ${dinheiro(r.valor || 0)}</div>
-        <div>Justificativa: ${escapeHtml(r.justificativa || "-")}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
-  prospects.forEach(r => {
-    let statusExibido = r.status;
-    if(r.status === "pendente" && Number(r.valor || 0) === 0){
-      statusExibido = "opcional";
-    }
-
-    const classe = statusExibido === "opcional" ? "pendente" : r.status;
-
-    html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.nome)}</div>
-        <div class="tipo">Prospect • Ajuda opcional</div>
-        <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
-        <div>Valor: ${dinheiro(r.valor || 0)}</div>
-        <div>Justificativa: ${escapeHtml(r.justificativa || "-")}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  document.getElementById("metaTabelaSemana").innerHTML = html;
-}
   let vendas = [];
   let encomendasHistorico = [];
 
@@ -1002,27 +813,30 @@ function renderMeta(){
       .replaceAll("'","&#039;");
   }
 
- function openTab(tab, btn = null){
-  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-  document.getElementById(tab).style.display = "block";
+  function openTab(tab, btn = null){
+    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    document.getElementById(tab).style.display = "block";
 
-  if(btn){
-    btn.classList.add("active");
-  }else{
-    const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-    if(autoBtn) autoBtn.classList.add("active");
-  }
+    if(btn){
+      btn.classList.add("active");
+    }else{
+      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+      if(autoBtn) autoBtn.classList.add("active");
+    }
 
-  if(tab === "historico") carregarHistoricoBanco();
-  if(tab === "dashboard"){
-    gerarDashboard();
-    gerarRanking();
+    if(tab === "historico") carregarHistoricoBanco();
+    if(tab === "dashboard"){
+      gerarDashboard();
+      gerarRanking();
+    }
+    if(tab === "meta"){
+      carregarMetaBanco();
+    }
+    if(tab === "encomendas"){
+      renderHistoricoEncomendasInterno();
+    }
   }
-  if(tab === "meta"){
-    renderMeta();
-  }
-}
 
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
@@ -1056,6 +870,7 @@ function renderMeta(){
     encomendasHistorico = data.purchases || [];
 
     carregarHistorico();
+    renderHistoricoEncomendasInterno();
     gerarDashboard();
   }
 
@@ -1097,6 +912,167 @@ function renderMeta(){
     }
 
     await carregarHistoricoBanco();
+  }
+
+  async function carregarMetaBanco() {
+    const res = await fetch(`/api/meta?week=${metaSemanaAtualNumero}`);
+    const data = await res.json();
+
+    metaSemanaAtual = data.week;
+    metaEntradas = data.entries || [];
+    metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
+
+    renderMeta();
+  }
+
+  async function novaSemanaMeta(){
+    const res = await fetch('/api/meta', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ currentWeekNumber: metaSemanaAtualNumero })
+    });
+
+    const data = await res.json();
+    metaSemanaAtualNumero = Number(data.weekNumber || 0);
+    await carregarMetaBanco();
+  }
+
+  function carregarPessoasMeta(){
+    const tipo = document.getElementById("tipoMetaPessoa").value;
+    const select = document.getElementById("nomeMetaPessoa");
+    const lista = tipo === "membro" ? membrosMeta : prospectsMeta;
+
+    select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
+    document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
+
+    const status = document.getElementById("statusMetaPessoa");
+    if(tipo === "prospect" && status.value === "justificado"){
+      status.value = "pendente";
+    }
+
+    toggleJustificativaMeta();
+  }
+
+  function toggleJustificativaMeta(){
+    const status = document.getElementById("statusMetaPessoa").value;
+    document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
+  }
+
+  async function registrarMetaPessoa(){
+    const tipo = document.getElementById("tipoMetaPessoa").value;
+    const nome = document.getElementById("nomeMetaPessoa").value;
+    const valor = Number(document.getElementById("valorMetaPessoa").value || 0);
+    const status = document.getElementById("statusMetaPessoa").value;
+    const justificativa = document.getElementById("justificativaMetaPessoa").value.trim();
+
+    if(!nome){
+      alert("Selecione uma pessoa.");
+      return;
+    }
+
+    if(status === "pago" && valor <= 0){
+      alert("Informe um valor maior que 0 para marcar como pago.");
+      return;
+    }
+
+    await fetch('/api/meta', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        weekNumber: metaSemanaAtualNumero,
+        personName: nome,
+        personType: tipo,
+        amount: valor,
+        status,
+        justification: status === "justificado" ? justificativa : ""
+      })
+    });
+
+    await carregarMetaBanco();
+  }
+
+  function renderMeta(){
+    if(!metaSemanaAtual){
+      document.getElementById("metaTabelaSemana").innerHTML = `<div class="empty">Carregando meta...</div>`;
+      return;
+    }
+
+    document.getElementById("metaResumoSemana").innerHTML =
+      `Meta Semanal #${String(metaSemanaAtual.week_number).padStart(3, "0")} • Início: ${dataAtualBR(metaSemanaAtual.week_start)}`;
+
+    const membros = metaEntradas.filter(r => r.person_type === "membro");
+    const prospects = metaEntradas.filter(r => r.person_type === "prospect");
+
+    const membrosPagos = membros.filter(r => r.status === "pago").length;
+    const membrosPendentes = membros.filter(r => r.status === "pendente").length;
+    const membrosJustificados = membros.filter(r => r.status === "justificado").length;
+    const totalArrecadado = metaEntradas.reduce((acc, r) => acc + Number(r.amount || 0), 0);
+
+    let html = `
+      <div class="meta-total-box">
+        <div class="meta-total-item">
+          <div class="title">Meta Semanal</div>
+          <div class="value">#${String(metaSemanaAtual.week_number).padStart(3, "0")}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Total arrecadado</div>
+          <div class="value">${dinheiro(totalArrecadado)}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Membros pagos</div>
+          <div class="value">${membrosPagos}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Membros pendentes</div>
+          <div class="value">${membrosPendentes}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Membros justificados</div>
+          <div class="value">${membrosJustificados}</div>
+        </div>
+      </div>
+    `;
+
+    html += `<h3>👑 Membros</h3><div class="meta-grid">`;
+    membros.forEach(r => {
+      html += `
+        <div class="meta-card">
+          <div class="nome">${escapeHtml(r.person_name)}</div>
+          <div class="tipo">Membro • Obrigatório $5.000</div>
+          <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
+          <div>Valor: ${dinheiro(r.amount || 0)}</div>
+          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+
+    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+    prospects.forEach(r => {
+      let statusExibido = r.status;
+      if(r.status === "pendente" && Number(r.amount || 0) === 0){
+        statusExibido = "opcional";
+      }
+
+      const classe = statusExibido === "opcional" ? "pendente" : r.status;
+
+      html += `
+        <div class="meta-card">
+          <div class="nome">${escapeHtml(r.person_name)}</div>
+          <div class="tipo">Prospect • Ajuda opcional</div>
+          <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
+          <div>Valor: ${dinheiro(r.amount || 0)}</div>
+          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+
+    document.getElementById("metaTabelaSemana").innerHTML = html;
   }
 
   function getArmasOptionsHtml(selected = "Colt 1911"){
@@ -1520,6 +1496,7 @@ function renderMeta(){
     document.getElementById("itensEncomenda").innerHTML = "";
     document.getElementById("cupomCompra").innerHTML = "";
     adicionarItemEncomenda();
+    renderHistoricoEncomendasInterno();
   }
 
   async function gerarCompra(){
@@ -1692,6 +1669,38 @@ function renderMeta(){
     div.innerHTML = html;
   }
 
+  function renderHistoricoEncomendasInterno(){
+    const div = document.getElementById("historicoEncomendasInterno");
+    if(!div) return;
+
+    if(!encomendasHistorico.length){
+      div.innerHTML = `<div class="empty">Nenhuma encomenda registrada.</div>`;
+      return;
+    }
+
+    let html = "";
+
+    encomendasHistorico.forEach((e) => {
+      const itensTexto = (e.items || [])
+        .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
+        .join(", ");
+
+      html += `
+        <div class="history">
+          <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+          Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+          Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+          Itens: ${escapeHtml(itensTexto || "-")}<br>
+          Total: ${dinheiro(e.total)}<br>
+          Data: ${dataAtualBR(e.created_at)}<br>
+          <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+        </div>
+      `;
+    });
+
+    div.innerHTML = html;
+  }
+
   function gerarRanking(){
     const ranking = {};
 
@@ -1782,14 +1791,14 @@ function renderMeta(){
   }
 
   window.onload = async () => {
-  openTab("pedidos");
-  adicionarItemPedido();
-  adicionarItemEncomenda();
-  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-  carregarPessoasMeta();
-  renderMeta();
-  await carregarHistoricoBanco();
-};
+    openTab("pedidos");
+    adicionarItemPedido();
+    adicionarItemEncomenda();
+    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+    carregarPessoasMeta();
+    await carregarMetaBanco();
+    await carregarHistoricoBanco();
+  };
 </script>
 
 </body>
