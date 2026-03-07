@@ -11,90 +11,116 @@
     }
 
     :root{
-      --bg:#080808;
-      --bg2:#111111;
-      --panel:#141414;
-      --panel2:#1b1b1b;
-      --border:#2a2a2a;
-      --red:#b00000;
-      --red2:#d10a0a;
-      --text:#ffffff;
-      --muted:#a8a8a8;
+      --bg:#060606;
+      --bg-soft:#0d0d0d;
+      --panel:#131313;
+      --panel-2:#191919;
+      --panel-3:#1f1f1f;
+      --border:#2b2b2b;
+      --red:#a40000;
+      --red-2:#d30000;
+      --red-soft:#ff4d4d;
+      --text:#f5f5f5;
+      --muted:#a9a9a9;
       --green:#00ff87;
+      --green-soft:#6dffba;
       --gold:#ffd166;
+      --silver:#d6d6d6;
+      --bronze:#d19762;
+      --shadow:0 14px 38px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+
+    html{
+      scroll-behavior:smooth;
     }
 
     body{
       margin:0;
       color:var(--text);
-      font-family:monospace;
+      font-family:Consolas, Monaco, monospace;
       background:
-        radial-gradient(circle at top, rgba(176,0,0,.18), transparent 28%),
-        linear-gradient(180deg,#050505 0%, #0c0c0c 50%, #090909 100%);
+        radial-gradient(circle at top center, rgba(180,0,0,.16), transparent 22%),
+        linear-gradient(180deg, #050505 0%, #0a0a0a 35%, #080808 100%);
       min-height:100vh;
     }
 
     header{
-      background:linear-gradient(180deg,#121212 0%, #0c0c0c 100%);
-      padding:24px 20px 18px;
-      text-align:center;
+      background:linear-gradient(180deg,#121212,#0b0b0b);
       border-bottom:2px solid var(--red);
-      box-shadow:0 0 30px rgba(176,0,0,.18);
+      padding:22px 16px 18px;
+      text-align:center;
+      box-shadow:0 0 28px rgba(164,0,0,.18);
+      position:relative;
+      overflow:hidden;
+    }
+
+    header::after{
+      content:"";
+      position:absolute;
+      inset:auto -10% -30px -10%;
+      height:60px;
+      background:radial-gradient(circle, rgba(255,0,0,.12), transparent 70%);
+      pointer-events:none;
     }
 
     .logo{
-      width:130px;
+      width:120px;
       max-width:80%;
-      filter:drop-shadow(0 0 10px rgba(255,0,0,.12));
+      filter:drop-shadow(0 0 12px rgba(255,0,0,.18));
+      margin-bottom:8px;
     }
 
-    h2{
-      margin:10px 0 0;
+    .title{
+      font-size:28px;
       letter-spacing:2px;
+      margin:0;
     }
 
-    h3{
-      margin-top:0;
-      margin-bottom:16px;
-      color:#ffb3b3;
+    .subtitle{
+      margin-top:6px;
+      color:#ffb0b0;
+      font-size:13px;
+      letter-spacing:1px;
     }
 
     .tabs{
       display:flex;
       flex-wrap:wrap;
-      background:#111;
+      background:rgba(10,10,10,.96);
       border-bottom:1px solid #1f1f1f;
       position:sticky;
       top:0;
-      z-index:10;
-      backdrop-filter:blur(5px);
+      z-index:50;
+      backdrop-filter:blur(6px);
     }
 
     .tabs button{
       flex:1;
-      min-width:140px;
-      padding:15px;
-      background:#171717;
-      color:#fff;
+      min-width:150px;
       border:none;
-      border-right:1px solid #242424;
+      background:#161616;
+      color:#fff;
+      padding:15px 14px;
       cursor:pointer;
-      transition:.2s ease;
-      font-weight:bold;
-      letter-spacing:.5px;
+      transition:.18s ease;
+      border-right:1px solid #252525;
+      font-weight:700;
+      letter-spacing:.4px;
+      font-size:14px;
     }
 
     .tabs button:hover,
     .tabs button.active{
-      background:linear-gradient(180deg,#2a0b0b,#1d0b0b);
-      color:#ffd7d7;
-      box-shadow:inset 0 -2px 0 var(--red);
+      background:linear-gradient(180deg,#2a0c0c,#1a0a0a);
+      color:#ffd4d4;
+      box-shadow:inset 0 -2px 0 var(--red-soft);
     }
 
     .container{
-      max-width:1100px;
+      max-width:1150px;
       margin:0 auto;
-      padding:24px;
+      padding:24px 18px 36px;
     }
 
     .tab{
@@ -103,46 +129,75 @@
     }
 
     @keyframes fade{
-      from{opacity:0;transform:translateY(5px);}
+      from{opacity:0;transform:translateY(4px);}
       to{opacity:1;transform:translateY(0);}
     }
 
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 16px;
+      color:#ffd2d2;
+      font-size:22px;
+    }
+
     .card{
-      background:linear-gradient(180deg,#151515 0%, #101010 100%);
+      background:linear-gradient(180deg,#141414,#101010);
       border:1px solid var(--border);
-      border-radius:16px;
+      border-radius:var(--radius);
       padding:20px;
-      margin-bottom:20px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
     }
 
     .grid{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
       gap:14px;
     }
 
     label{
       display:block;
-      margin:12px 0 6px;
-      color:#d0d0d0;
-      font-size:14px;
+      margin:10px 0 6px;
+      font-size:13px;
+      color:#d9d9d9;
+      letter-spacing:.3px;
     }
 
-    input,select{
+    input, select{
       width:100%;
-      padding:11px 12px;
       background:#202020;
       color:#fff;
       border:1px solid #343434;
-      border-radius:10px;
+      border-radius:12px;
+      padding:11px 12px;
       outline:none;
-      transition:.15s ease;
+      transition:.16s ease;
+      font-family:inherit;
     }
 
-    input:focus,select:focus{
-      border-color:var(--red);
-      box-shadow:0 0 0 2px rgba(176,0,0,.2);
+    input:focus, select:focus{
+      border-color:var(--red-soft);
+      box-shadow:0 0 0 2px rgba(255,60,60,.16);
+      background:#232323;
+    }
+
+    input[readonly]{
+      color:#d8d8d8;
+      background:#1c1c1c;
     }
 
     .actions{
@@ -152,132 +207,345 @@
       margin-top:16px;
     }
 
-    button.action{
-      background:linear-gradient(180deg,var(--red2),var(--red));
-      color:#fff;
+    button.action,
+    button.secondary,
+    button.small{
       border:none;
-      padding:12px 16px;
-      border-radius:10px;
+      border-radius:12px;
       cursor:pointer;
-      font-weight:bold;
-      letter-spacing:.3px;
-      transition:.2s ease;
-      box-shadow:0 8px 20px rgba(176,0,0,.18);
+      font-family:inherit;
+      font-weight:700;
+      transition:.18s ease;
+    }
+
+    button.action{
+      background:linear-gradient(180deg,var(--red-2),var(--red));
+      color:#fff;
+      padding:12px 16px;
+      box-shadow:0 10px 24px rgba(164,0,0,.22);
     }
 
     button.action:hover{
       transform:translateY(-1px);
-      filter:brightness(1.08);
+      filter:brightness(1.06);
+    }
+
+    button.secondary{
+      background:#2a2a2a;
+      color:#fff;
+      padding:12px 16px;
+    }
+
+    button.secondary:hover,
+    button.small:hover{
+      background:#353535;
     }
 
     button.small{
-      background:#2a2a2a;
+      background:#292929;
       color:#fff;
-      border:none;
-      border-radius:8px;
       padding:8px 10px;
-      cursor:pointer;
+      font-size:12px;
       margin-top:10px;
     }
 
-    button.small:hover{
-      background:#373737;
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#241111;
+      color:#ffc3c3;
+      border:1px solid #4d1b1b;
+      border-radius:999px;
+      padding:5px 10px;
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:10px;
     }
 
-    .cupom{
-      margin-top:18px;
-      background:
-        linear-gradient(180deg,#050505 0%, #0b0b0b 100%);
-      border:1px solid #2d2d2d;
-      border-left:4px solid var(--red);
-      border-radius:12px;
-      padding:16px;
-      min-height:90px;
-      line-height:1.65;
-      box-shadow:inset 0 0 20px rgba(255,255,255,.02);
-    }
-
-    .cupom .verde{
-      color:var(--green);
-      font-weight:bold;
-    }
-
-    .history{
-      background:#191919;
-      border:1px solid #2a2a2a;
-      border-radius:12px;
-      padding:14px;
-      margin:10px 0;
-    }
-
-    .sugestao{
-      margin-top:14px;
-      color:var(--green);
-      font-weight:bold;
+    .helper{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:8px;
     }
 
     .warning{
-      margin-top:10px;
       color:var(--gold);
+      margin-top:12px;
+      font-weight:700;
+    }
+
+    .success{
+      color:var(--green-soft);
+      margin-top:12px;
+      font-weight:700;
     }
 
     .muted{
       color:var(--muted);
     }
 
-    .divider{
-      height:1px;
-      background:#2a2a2a;
-      margin:18px 0;
+    .terminal{
+      margin-top:18px;
+      background:
+        linear-gradient(180deg,#030303,#090909);
+      border:1px solid #2d2d2d;
+      border-left:4px solid var(--red);
+      border-radius:14px;
+      padding:0;
+      overflow:hidden;
+      box-shadow:inset 0 0 28px rgba(255,255,255,.02);
+    }
+
+    .terminal-head{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      background:#111;
+      border-bottom:1px solid #232323;
+      font-size:12px;
+      color:#d8d8d8;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      display:inline-block;
+    }
+
+    .dot.red{ background:#ff5f56; }
+    .dot.yellow{ background:#ffbd2e; }
+    .dot.green{ background:#27c93f; }
+
+    .cupom{
+      padding:18px 16px;
+      min-height:110px;
+      white-space:normal;
+      line-height:1.7;
+      color:#b8ffcf;
+      font-size:14px;
+    }
+
+    .cupom .title-terminal{
+      color:#e7ffe7;
+      font-weight:700;
+    }
+
+    .cupom .line{
+      color:#6dffba;
+    }
+
+    .cupom .discount{
+      color:var(--green);
+      font-weight:900;
+      text-shadow:0 0 8px rgba(0,255,135,.12);
+    }
+
+    .cupom .total{
+      color:#ffffff;
+      font-weight:900;
+      font-size:16px;
+    }
+
+    .search-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .search-row input{
+      flex:1;
+      min-width:260px;
+    }
+
+    .history{
+      background:linear-gradient(180deg,#181818,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+      margin:10px 0;
+      box-shadow:0 8px 22px rgba(0,0,0,.22);
+    }
+
+    .history strong{
+      color:#ffe0e0;
+    }
+
+    .history .ok{
+      color:var(--green);
+      font-weight:700;
     }
 
     .stats{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
       gap:14px;
-      margin-top:12px;
     }
 
     .stat{
-      background:linear-gradient(180deg,#1a1a1a,#111);
+      background:linear-gradient(180deg,#1b1b1b,#121212);
       border:1px solid #2a2a2a;
-      border-radius:14px;
+      border-radius:16px;
       padding:16px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .stat::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:100px;
+      height:100px;
+      background:radial-gradient(circle, rgba(255,0,0,.08), transparent 60%);
+      pointer-events:none;
+    }
+
+    .stat .icon{
+      font-size:22px;
+      margin-bottom:6px;
     }
 
     .stat .title{
-      color:#b9b9b9;
+      color:#bdbdbd;
       font-size:13px;
       margin-bottom:6px;
     }
 
     .stat .value{
-      font-size:24px;
-      font-weight:bold;
+      font-size:25px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .ranking-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:14px;
+    }
+
+    .podium{
+      border-radius:16px;
+      padding:16px;
+      font-weight:700;
+      border:1px solid #2b2b2b;
+      box-shadow:var(--shadow);
+      background:linear-gradient(180deg,#171717,#101010);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .podium::after{
+      content:"";
+      position:absolute;
+      right:-20px;
+      bottom:-20px;
+      width:90px;
+      height:90px;
+      background:radial-gradient(circle, rgba(255,255,255,.08), transparent 60%);
+      pointer-events:none;
+    }
+
+    .gold{
+      border-left:5px solid var(--gold);
+      box-shadow:0 10px 26px rgba(255,209,102,.08);
+    }
+
+    .silver{
+      border-left:5px solid var(--silver);
+      box-shadow:0 10px 26px rgba(214,214,214,.06);
+    }
+
+    .bronze{
+      border-left:5px solid var(--bronze);
+      box-shadow:0 10px 26px rgba(209,151,98,.06);
+    }
+
+    .podium .place{
+      font-size:26px;
+      margin-bottom:8px;
+    }
+
+    .podium .name{
+      font-size:18px;
+      color:#fff;
+      margin-bottom:6px;
+    }
+
+    .podium .amount{
+      color:#ffdede;
+      font-size:15px;
+    }
+
+    .ranking-list{
+      margin-top:14px;
     }
 
     .ranking-item{
-      background:linear-gradient(180deg,#181818,#101010);
-      border:1px solid #2a2a2a;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      background:linear-gradient(180deg,#171717,#111111);
+      border:1px solid #272727;
       border-left:4px solid var(--red);
-      border-radius:12px;
+      border-radius:14px;
       padding:12px 14px;
-      margin:10px 0;
+      margin:8px 0;
     }
 
-    .top1{ border-left-color:#ffd700; }
-    .top2{ border-left-color:#c0c0c0; }
-    .top3{ border-left-color:#cd7f32; }
+    .ranking-item .left{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
 
-    .tag{
-      display:inline-block;
-      font-size:12px;
-      padding:3px 8px;
-      border-radius:999px;
-      background:#241010;
-      border:1px solid #4a1919;
-      color:#ffb8b8;
-      margin-left:8px;
+    .ranking-item .pos{
+      color:#ffbaba;
+      font-weight:800;
+    }
+
+    .ranking-item .value{
+      font-weight:900;
+      color:#fff;
+    }
+
+    .sugestao{
+      margin-top:12px;
+      color:var(--green);
+      font-weight:800;
+    }
+
+    .divider{
+      height:1px;
+      background:#262626;
+      margin:18px 0;
+    }
+
+    .empty{
+      padding:16px;
+      border:1px dashed #353535;
+      border-radius:14px;
+      color:#aaaaaa;
+      background:#111;
+    }
+
+    @media (max-width:700px){
+      .title{
+        font-size:22px;
+      }
+
+      .tabs button{
+        min-width:unset;
+        font-size:13px;
+      }
+
+      .container{
+        padding:18px 12px 30px;
+      }
     }
   </style>
 </head>
@@ -285,75 +553,109 @@
 
 <header>
   <img src="logo.png" class="logo" alt="Logo Fenrir">
-  <h2>SISTEMA FENRIR</h2>
+  <h1 class="title">SISTEMA FENRIR</h1>
+  <div class="subtitle">PAINEL DE PEDIDOS • ENCOMENDAS • CONTROLE INTERNO</div>
 </header>
 
 <div class="tabs">
-  <button data-tab="pedidos" onclick="openTab('pedidos', this)">Pedidos</button>
-  <button data-tab="historico" onclick="openTab('historico', this)">Histórico</button>
-  <button data-tab="dashboard" onclick="openTab('dashboard', this)">Dashboard</button>
-  <button data-tab="ranking" onclick="openTab('ranking', this)">Ranking</button>
-  <button data-tab="encomendas" onclick="openTab('encomendas', this)">Encomendas</button>
+  <button data-tab="pedidos" onclick="openTab('pedidos', this)">🧾 Pedidos</button>
+  <button data-tab="historico" onclick="openTab('historico', this)">📚 Histórico</button>
+  <button data-tab="dashboard" onclick="openTab('dashboard', this)">📊 Dashboard</button>
+  <button data-tab="ranking" onclick="openTab('ranking', this)">🏆 Ranking</button>
+  <button data-tab="encomendas" onclick="openTab('encomendas', this)">📦 Encomendas</button>
 </div>
 
 <div class="container">
 
+  <!-- PEDIDOS -->
   <div id="pedidos" class="tab">
     <div class="card">
-      <h3>Novo Pedido <span class="tag">10% OFF acima de 10 armas</span></h3>
+      <h2 class="section-title">🧾 Novo Pedido</h2>
+      <div class="tag">✅ 10% de desconto acima de 10 armas</div>
 
-      <label for="contato">Contato</label>
-      <input id="contato" placeholder="Nome ou contato do cliente">
+      <div class="grid">
+        <div>
+          <label for="contato">Contato</label>
+          <input id="contato" placeholder="Nome ou contato do cliente">
+        </div>
 
-      <label for="arma">Arma</label>
-      <select id="arma">
-        <option>Colt 1911</option>
-        <option>HK USP</option>
-        <option>Desert Eagle</option>
-      </select>
+        <div>
+          <label for="arma">Arma</label>
+          <select id="arma">
+            <option>Colt 1911</option>
+            <option>HK USP</option>
+            <option>Desert Eagle</option>
+          </select>
+        </div>
 
-      <label for="qtd">Quantidade</label>
-      <input id="qtd" type="number" min="1" placeholder="Ex: 5">
+        <div>
+          <label for="qtd">Quantidade</label>
+          <input id="qtd" type="number" min="1" placeholder="Ex: 5">
+        </div>
 
-      <label for="pagamento">Pagamento</label>
-      <select id="pagamento">
-        <option>Limpo</option>
-        <option>Sujo</option>
-      </select>
+        <div>
+          <label for="pagamento">Pagamento</label>
+          <select id="pagamento">
+            <option>Limpo</option>
+            <option>Sujo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="helper">O desconto é aplicado automaticamente apenas em pedidos com 11 armas ou mais.</div>
 
       <div class="actions">
         <button class="action" onclick="gerarPedido()">Gerar Cupom</button>
-        <button class="action" onclick="copiarCupom()">Copiar Cupom</button>
+        <button class="secondary" onclick="copiarCupom()">Copiar Cupom</button>
       </div>
 
-      <div id="cupom" class="cupom"></div>
+      <div class="terminal">
+        <div class="terminal-head">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>cupom_pedido.fenrir</span>
+        </div>
+        <div id="cupom" class="cupom"></div>
+      </div>
     </div>
   </div>
 
+  <!-- HISTORICO -->
   <div id="historico" class="tab">
     <div class="card">
-      <h3>Histórico</h3>
+      <h2 class="section-title">📚 Histórico</h2>
+
+      <div class="search-row">
+        <input id="buscaHistorico" placeholder="Buscar por cliente, arma, produto ou fornecedor..." oninput="carregarHistorico()">
+        <button class="secondary" onclick="limparVendas()">Limpar pedidos</button>
+        <button class="secondary" onclick="limparEncomendas()">Limpar encomendas</button>
+      </div>
+
       <div id="listaHistorico"></div>
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div id="dashboard" class="tab">
     <div class="card">
-      <h3>Dashboard</h3>
+      <h2 class="section-title">📊 Dashboard</h2>
       <div id="relatorio"></div>
     </div>
   </div>
 
+  <!-- RANKING -->
   <div id="ranking" class="tab">
     <div class="card">
-      <h3>Ranking de Clientes</h3>
+      <h2 class="section-title">🏆 Ranking de Clientes</h2>
       <div id="rankingClientes"></div>
     </div>
   </div>
 
+  <!-- ENCOMENDAS -->
   <div id="encomendas" class="tab">
     <div class="card">
-      <h3>Nova Encomenda</h3>
+      <h2 class="section-title">📦 Nova Encomenda</h2>
 
       <div class="grid">
         <div>
@@ -413,13 +715,20 @@
 
       <div class="actions">
         <button class="action" onclick="gerarCompra()">Gerar Encomenda</button>
-        <button class="action" onclick="copiarCupomCompra()">Copiar Encomenda</button>
+        <button class="secondary" onclick="copiarCupomCompra()">Copiar Encomenda</button>
       </div>
 
-      <div id="cupomCompra" class="cupom"></div>
+      <div class="terminal">
+        <div class="terminal-head">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>cupom_encomenda.fenrir</span>
+        </div>
+        <div id="cupomCompra" class="cupom"></div>
+      </div>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -437,39 +746,6 @@
   const fornecedorBaratoEl = document.getElementById("fornecedorBarato");
   const cupomCompraEl = document.getElementById("cupomCompra");
   const resumoPagamentoEl = document.getElementById("resumoPagamento");
-
-  function dinheiro(valor){
-    if(valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))){
-      return "Indisponível";
-    }
-    return `$${Number(valor).toLocaleString("pt-BR")}`;
-  }
-
-  function dataHoraAtual(){
-    return new Date().toLocaleString("pt-BR");
-  }
-
-  function openTab(tab, btn = null){
-    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-
-    document.getElementById(tab).style.display = "block";
-
-    if(btn){
-      btn.classList.add("active");
-    }else{
-      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-      if(autoBtn) autoBtn.classList.add("active");
-    }
-
-    if(tab === "historico") carregarHistorico();
-    if(tab === "ranking") gerarRanking();
-    if(tab === "dashboard") gerarDashboard();
-    if(tab === "encomendas"){
-      atualizarResumoPagamento();
-      sugerirFornecedorMaisBarato();
-    }
-  }
 
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -512,6 +788,48 @@
     }
   };
 
+  function dinheiro(valor){
+    if(valor === null || valor === undefined || valor === "" || Number.isNaN(Number(valor))){
+      return "Indisponível";
+    }
+    return `$${Number(valor).toLocaleString("pt-BR")}`;
+  }
+
+  function dataHoraAtual(){
+    return new Date().toLocaleString("pt-BR");
+  }
+
+  function escapeHtml(texto){
+    return String(texto)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function openTab(tab, btn = null){
+    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+
+    document.getElementById(tab).style.display = "block";
+
+    if(btn){
+      btn.classList.add("active");
+    }else{
+      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+      if(autoBtn) autoBtn.classList.add("active");
+    }
+
+    if(tab === "historico") carregarHistorico();
+    if(tab === "ranking") gerarRanking();
+    if(tab === "dashboard") gerarDashboard();
+    if(tab === "encomendas"){
+      atualizarResumoPagamento();
+      sugerirFornecedorMaisBarato();
+    }
+  }
+
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
     let resto = caixas % 15;
@@ -519,6 +837,24 @@
     resto = resto % 10;
     let pequeno = Math.ceil(resto / 5);
     return { grande, medio, pequeno };
+  }
+
+  function renderTerminal(lines){
+    return lines.map(item => {
+      if(item.type === "title"){
+        return `<div class="title-terminal">${escapeHtml(item.text)}</div>`;
+      }
+      if(item.type === "line"){
+        return `<div class="line">${escapeHtml(item.text)}</div>`;
+      }
+      if(item.type === "discount"){
+        return `<div class="discount">${escapeHtml(item.text)}</div>`;
+      }
+      if(item.type === "total"){
+        return `<div class="total">${escapeHtml(item.text)}</div>`;
+      }
+      return `<div>${escapeHtml(item.text)}</div>`;
+    }).join("");
   }
 
   function gerarPedido(){
@@ -540,13 +876,14 @@
     const arma = armas[armaNome];
     const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
 
-    let total = qtd * preco;
+    let subtotal = qtd * preco;
+    let total = subtotal;
     let desconto = false;
     let valorDesconto = 0;
 
     if(qtd >= 11){
-      valorDesconto = total * 0.10;
-      total = total * 0.90;
+      valorDesconto = subtotal * 0.10;
+      total = subtotal - valorDesconto;
       desconto = true;
     }
 
@@ -564,31 +901,40 @@
 
     const numero = vendas.length + 1;
 
-    let descontoHtml = "";
+    const linhas = [
+      { type:"title", text:">> SISTEMA FENRIR" },
+      { type:"line", text:"==============================" },
+      { text:`VENDA #${String(numero).padStart(4,"0")}` },
+      { text:`DATA: ${dataHoraAtual()}` },
+      { text:`CLIENTE: ${contato}` },
+      { text:`PAGAMENTO: DINHEIRO ${pagamento.toUpperCase()}` },
+      { type:"line", text:"------------------------------" },
+      { text:`ITEM: ${armaNome}` },
+      { text:`QTD: ${qtd}` },
+      { text:`VALOR UN: ${dinheiro(preco)}` },
+      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotal))}` }
+    ];
+
     if(desconto){
-      descontoHtml = `<span class="verde">Desconto aplicado: 10% (-${dinheiro(Math.round(valorDesconto))})</span>\n`;
+      linhas.push({
+        type:"discount",
+        text:`DESCONTO: 10% (-${dinheiro(Math.round(valorDesconto))})`
+      });
     }
 
-    const cupomHtml =
-`VENDA #${String(numero).padStart(4,'0')}
+    linhas.push(
+      { type:"line", text:"------------------------------" },
+      { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(total))}` },
+      { type:"line", text:"==============================" },
+      { text:"MATERIAIS:" },
+      { text:`${cylinder} Cylinder` },
+      { text:`${components} Componente` },
+      { text:`${blueprint} Blueprint` },
+      { type:"line", text:"==============================" },
+      { text:`CARREGAMENTO: ${textoCarreg || "Não calculado"}` }
+    );
 
-Contato: ${contato}
-Data: ${dataHoraAtual()}
-Tipo de Pagamento: Dinheiro ${pagamento}
-
-Pedido:
-${qtd} ${armaNome} → ${dinheiro(preco)} (cada)
-
-${descontoHtml}Total do Pedido: ${dinheiro(Math.round(total))}
-
-Materiais Necessários:
-${cylinder} Cylinder
-${components} Componente
-${blueprint} Blueprint
-
-Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
-
-    document.getElementById("cupom").innerHTML = cupomHtml.replace(/\n/g, "<br>");
+    document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
     vendas.push({
       numero,
@@ -596,8 +942,10 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
       arma: armaNome,
       qtd,
       pagamento,
+      subtotal: Math.round(subtotal),
       total: Math.round(total),
       descontoAplicado: desconto,
+      valorDesconto: Math.round(valorDesconto),
       data: dataHoraAtual()
     });
 
@@ -618,47 +966,64 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
 
   function carregarHistorico(){
     const div = document.getElementById("listaHistorico");
+    const termo = (document.getElementById("buscaHistorico").value || "").toLowerCase().trim();
 
-    if(vendas.length === 0 && encomendasHistorico.length === 0){
-      div.innerHTML = `<div class="muted">Nenhum registro encontrado.</div>`;
+    const vendasFiltradas = vendas.filter(v =>
+      !termo ||
+      v.contato.toLowerCase().includes(termo) ||
+      v.arma.toLowerCase().includes(termo)
+    );
+
+    const encomendasFiltradas = encomendasHistorico.filter(e =>
+      !termo ||
+      e.produto.toLowerCase().includes(termo) ||
+      e.fornecedor.toLowerCase().includes(termo) ||
+      e.categoria.toLowerCase().includes(termo)
+    );
+
+    if(vendasFiltradas.length === 0 && encomendasFiltradas.length === 0){
+      div.innerHTML = `<div class="empty">Nenhum registro encontrado.</div>`;
       return;
     }
 
     let html = "";
 
-    if(vendas.length){
-      html += `<h4>Pedidos</h4>`;
-      vendas.forEach((v, i) => {
+    if(vendasFiltradas.length){
+      html += `<h3>🧾 Pedidos</h3>`;
+      vendasFiltradas.forEach((v, iOriginal) => {
+        const indexReal = vendas.indexOf(v);
         html += `
           <div class="history">
-            <strong>Venda #${String(v.numero).padStart(4,'0')}</strong><br>
-            Cliente: ${v.contato}<br>
-            Arma: ${v.arma}<br>
+            <strong>Venda #${String(v.numero).padStart(4,"0")}</strong><br>
+            Cliente: ${escapeHtml(v.contato)}<br>
+            Arma: ${escapeHtml(v.arma)}<br>
             Quantidade: ${v.qtd}<br>
-            Pagamento: ${v.pagamento}<br>
+            Pagamento: ${escapeHtml(v.pagamento)}<br>
+            Subtotal: ${dinheiro(v.subtotal || v.total)}<br>
+            ${v.descontoAplicado ? `<span class="ok">Desconto de 10% aplicado: -${dinheiro(v.valorDesconto || 0)}</span><br>` : ""}
             Total: ${dinheiro(v.total)}<br>
-            ${v.descontoAplicado ? `<span style="color:var(--green);font-weight:bold;">Desconto de 10% aplicado</span><br>` : ""}
-            <button class="small" onclick="excluirHistorico(${i})">Excluir pedido</button>
+            <button class="small" onclick="excluirHistorico(${indexReal})">Excluir pedido</button>
           </div>
         `;
       });
     }
 
-    if(encomendasHistorico.length){
-      html += `<div class="divider"></div><h4>Encomendas</h4>`;
-      encomendasHistorico.forEach((e, i) => {
+    if(encomendasFiltradas.length){
+      html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
+      encomendasFiltradas.forEach((e) => {
+        const indexReal = encomendasHistorico.indexOf(e);
         html += `
           <div class="history">
-            <strong>Encomenda #${String(e.numero).padStart(4,'0')}</strong><br>
-            Categoria: ${e.categoria}<br>
-            Produto: ${e.produto}<br>
-            Fornecedor: ${e.fornecedor}<br>
+            <strong>Encomenda #${String(e.numero).padStart(4,"0")}</strong><br>
+            Categoria: ${escapeHtml(e.categoria)}<br>
+            Produto: ${escapeHtml(e.produto)}<br>
+            Fornecedor: ${escapeHtml(e.fornecedor)}<br>
             Quantidade: ${e.qtd}<br>
-            Pagamento: ${e.tipoPagamento}<br>
+            Pagamento: ${escapeHtml(e.tipoPagamento)}<br>
             Unitário usado: ${dinheiro(e.valorUnitario)}<br>
             Total: ${dinheiro(e.total)}<br>
-            Observação: ${e.obs || "-"}<br>
-            <button class="small" onclick="excluirEncomenda(${i})">Excluir encomenda</button>
+            Observação: ${escapeHtml(e.obs || "-")}<br>
+            <button class="small" onclick="excluirEncomenda(${indexReal})">Excluir encomenda</button>
           </div>
         `;
       });
@@ -668,7 +1033,7 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
   }
 
   function excluirHistorico(i){
-    vendas.splice(i, 1);
+    vendas.splice(i,1);
     localStorage.setItem("fenrir_vendas", JSON.stringify(vendas));
     carregarHistorico();
     gerarDashboard();
@@ -676,10 +1041,29 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
   }
 
   function excluirEncomenda(i){
-    encomendasHistorico.splice(i, 1);
+    encomendasHistorico.splice(i,1);
     localStorage.setItem("fenrir_encomendas", JSON.stringify(encomendasHistorico));
     carregarHistorico();
     gerarDashboard();
+  }
+
+  function limparVendas(){
+    if(!confirm("Deseja apagar todo o histórico de pedidos?")) return;
+    vendas = [];
+    localStorage.setItem("fenrir_vendas", JSON.stringify(vendas));
+    carregarHistorico();
+    gerarDashboard();
+    gerarRanking();
+    document.getElementById("cupom").innerHTML = "";
+  }
+
+  function limparEncomendas(){
+    if(!confirm("Deseja apagar todo o histórico de encomendas?")) return;
+    encomendasHistorico = [];
+    localStorage.setItem("fenrir_encomendas", JSON.stringify(encomendasHistorico));
+    carregarHistorico();
+    gerarDashboard();
+    document.getElementById("cupomCompra").innerHTML = "";
   }
 
   function gerarRanking(){
@@ -690,37 +1074,76 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
       ranking[v.contato] += v.total;
     });
 
-    const lista = Object.entries(ranking).sort((a, b) => b[1] - a[1]);
+    const lista = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
     const div = document.getElementById("rankingClientes");
 
     if(lista.length === 0){
-      div.innerHTML = `<div class="muted">Sem vendas registradas para gerar ranking.</div>`;
+      div.innerHTML = `<div class="empty">Sem vendas registradas para gerar ranking.</div>`;
       return;
     }
 
-    div.innerHTML = "";
+    let html = `<div class="ranking-grid">`;
+
+    if(lista[0]){
+      html += `
+        <div class="podium gold">
+          <div class="place">🥇 1º Lugar</div>
+          <div class="name">${escapeHtml(lista[0][0])}</div>
+          <div class="amount">Total movimentado: ${dinheiro(lista[0][1])}</div>
+        </div>
+      `;
+    }
+
+    if(lista[1]){
+      html += `
+        <div class="podium silver">
+          <div class="place">🥈 2º Lugar</div>
+          <div class="name">${escapeHtml(lista[1][0])}</div>
+          <div class="amount">Total movimentado: ${dinheiro(lista[1][1])}</div>
+        </div>
+      `;
+    }
+
+    if(lista[2]){
+      html += `
+        <div class="podium bronze">
+          <div class="place">🥉 3º Lugar</div>
+          <div class="name">${escapeHtml(lista[2][0])}</div>
+          <div class="amount">Total movimentado: ${dinheiro(lista[2][1])}</div>
+        </div>
+      `;
+    }
+
+    html += `</div><div class="ranking-list">`;
 
     lista.forEach((c, i) => {
-      const classe = i === 0 ? "top1" : i === 1 ? "top2" : i === 2 ? "top3" : "";
-      const medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
-
-      div.innerHTML += `
-        <div class="ranking-item ${classe}">
-          <strong>${medalha} ${i + 1}º ${c[0]}</strong><br>
-          Total movimentado: ${dinheiro(c[1])}
+      html += `
+        <div class="ranking-item">
+          <div class="left">
+            <div class="pos">${i + 1}º colocado</div>
+            <div>${escapeHtml(c[0])}</div>
+          </div>
+          <div class="value">${dinheiro(c[1])}</div>
         </div>
       `;
     });
+
+    html += `</div>`;
+    div.innerHTML = html;
   }
 
   function gerarDashboard(){
     const relatorio = document.getElementById("relatorio");
 
     const totalVendas = vendas.length;
-    const faturamento = vendas.reduce((acc, v) => acc + v.total, 0);
+    const faturamento = vendas.reduce((acc,v) => acc + v.total, 0);
     const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
+
     const totalEncomendas = encomendasHistorico.length;
-    const gastoEncomendas = encomendasHistorico.reduce((acc, e) => acc + e.total, 0);
+    const gastoEncomendas = encomendasHistorico.reduce((acc,e) => acc + e.total, 0);
+
+    const vendasComDesconto = vendas.filter(v => v.descontoAplicado).length;
+    const economiaTotal = vendas.reduce((acc,v) => acc + (v.valorDesconto || 0), 0);
 
     const armasVendidas = {};
     vendas.forEach(v => {
@@ -729,51 +1152,61 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
 
     let armaTop = "Nenhuma";
     let maiorQtd = 0;
-
-    Object.entries(armasVendidas).forEach(([arma, qtd]) => {
+    Object.entries(armasVendidas).forEach(([arma,qtd]) => {
       if(qtd > maiorQtd){
         maiorQtd = qtd;
         armaTop = arma;
       }
     });
 
-    const vendasComDesconto = vendas.filter(v => v.descontoAplicado).length;
-
     relatorio.innerHTML = `
       <div class="stats">
         <div class="stat">
+          <div class="icon">🧾</div>
           <div class="title">Total de vendas</div>
           <div class="value">${totalVendas}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">💰</div>
           <div class="title">Faturamento</div>
           <div class="value">${dinheiro(faturamento)}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">📈</div>
           <div class="title">Ticket médio</div>
           <div class="value">${dinheiro(ticketMedio)}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">🔫</div>
           <div class="title">Arma mais vendida</div>
-          <div class="value" style="font-size:18px">${armaTop}</div>
+          <div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">📦</div>
           <div class="title">Encomendas feitas</div>
           <div class="value">${totalEncomendas}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">💸</div>
           <div class="title">Gasto em encomendas</div>
           <div class="value">${dinheiro(gastoEncomendas)}</div>
         </div>
 
         <div class="stat">
+          <div class="icon">✅</div>
           <div class="title">Pedidos com desconto</div>
           <div class="value">${vendasComDesconto}</div>
+        </div>
+
+        <div class="stat">
+          <div class="icon">🟢</div>
+          <div class="title">Desconto total concedido</div>
+          <div class="value">${dinheiro(economiaTotal)}</div>
         </div>
       </div>
     `;
@@ -794,7 +1227,7 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
     if(!cat) return;
 
     Object.keys(tabelaCompras[cat]).forEach(prod => {
-      produtoEl.innerHTML += `<option value="${prod}">${prod}</option>`;
+      produtoEl.innerHTML += `<option value="${escapeHtml(prod)}">${escapeHtml(prod)}</option>`;
     });
   }
 
@@ -813,7 +1246,7 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
     if(!cat || !prod) return;
 
     Object.keys(tabelaCompras[cat][prod]).forEach(org => {
-      orgCompraEl.innerHTML += `<option value="${org}">${org}</option>`;
+      orgCompraEl.innerHTML += `<option value="${escapeHtml(org)}">${escapeHtml(org)}</option>`;
     });
 
     sugerirFornecedorMaisBarato();
@@ -938,26 +1371,27 @@ Carregamento recomendado: ${textoCarreg || "Não calculado"}`;
     const total = qtd * valorUnitario;
     const numero = encomendasHistorico.length + 1;
 
-    const cupom =
-`ENCOMENDA #${String(numero).padStart(4,'0')}
+    const linhas = [
+      { type:"title", text:">> SISTEMA FENRIR" },
+      { type:"line", text:"==============================" },
+      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
+      { text:`DATA: ${dataHoraAtual()}` },
+      { text:`CATEGORIA: ${cat === "municoes" ? "MUNIÇÕES" : "DROGAS"}` },
+      { text:`PRODUTO: ${prod}` },
+      { text:`FORNECEDOR: ${org}` },
+      { type:"line", text:"------------------------------" },
+      { text:`QTD: ${qtd}` },
+      { text:`LIMPO: ${dados.limpo != null ? dinheiro(dados.limpo) : "Indisponível"}` },
+      { text:`SUJO: ${dados.sujo != null ? dinheiro(dados.sujo) : "Indisponível"}` },
+      { text:`PAGAMENTO USADO: ${tipo.toUpperCase()}` },
+      { text:`VALOR UNITÁRIO: ${dinheiro(valorUnitario)}` },
+      { type:"line", text:"------------------------------" },
+      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(total)}` },
+      { type:"line", text:"==============================" },
+      { text:`OBS: ${dados.obs || "-"}` }
+    ];
 
-Data: ${dataHoraAtual()}
-Categoria: ${cat === "municoes" ? "Munições" : "Drogas"}
-Produto: ${prod}
-Fornecedor: ${org}
-Quantidade: ${qtd}
-
-Valores unitários:
-- Limpo: ${dados.limpo != null ? dinheiro(dados.limpo) : "Indisponível"}
-- Sujo: ${dados.sujo != null ? dinheiro(dados.sujo) : "Indisponível"}
-
-Pagamento selecionado: ${tipo.toUpperCase()}
-Valor unitário usado: ${dinheiro(valorUnitario)}
-Total da compra: ${dinheiro(total)}
-
-Observação: ${dados.obs || "-"}`;
-
-    cupomCompraEl.innerHTML = cupom.replace(/\n/g, "<br>");
+    cupomCompraEl.innerHTML = renderTerminal(linhas);
 
     encomendasHistorico.push({
       numero,
