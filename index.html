@@ -116,10 +116,7 @@ font-weight:bold;
 
 <div class="container">
 
-<!-- PEDIDOS -->
-
 <div id="pedidos" class="tab">
-
 <h3>Novo Pedido</h3>
 
 Contato
@@ -141,34 +138,25 @@ Pagamento
 <option>Sujo</option>
 </select>
 
-<button class="action" onclick="gerarPedido()">Gerar Cupom</button>
+<button class="action">Gerar Cupom</button>
 
 <div id="cupom" class="cupom"></div>
-
 </div>
-
-<!-- HISTORICO -->
 
 <div id="historico" class="tab">
 <h3>Histórico</h3>
 <div id="listaHistorico"></div>
 </div>
 
-<!-- DASHBOARD -->
-
 <div id="dashboard" class="tab">
 <h3>Dashboard</h3>
 <div id="relatorio"></div>
 </div>
 
-<!-- RANKING -->
-
 <div id="ranking" class="tab">
 <h3>Ranking Clientes</h3>
 <div id="rankingClientes"></div>
 </div>
-
-<!-- ENCOMENDAS -->
 
 <div id="encomendas" class="tab">
 
@@ -182,20 +170,10 @@ Categoria
 </select>
 
 Produto
-<select id="produto" onchange="preencherValores()"></select>
+<select id="produto" onchange="carregarFornecedores()"></select>
 
 Organização
-<select id="orgCompra" onchange="preencherValores()">
-<option value="">Selecionar</option>
-<option>NINE</option>
-<option>FAMILIA CESARINE</option>
-<option>FAMILIES</option>
-<option>THUNDERS</option>
-<option>DVD</option>
-<option>BALLAS</option>
-<option>CLOUND</option>
-<option>OG's</option>
-</select>
+<select id="orgCompra" onchange="preencherValores()"></select>
 
 Quantidade
 <input id="qtdCompra" type="number">
@@ -221,7 +199,25 @@ Observação
 
 <script>
 
-/* BANCO DE DADOS ENCOMENDAS */
+/* CONTROLE DE ABAS */
+
+function openTab(tabId){
+
+let tabs=document.querySelectorAll(".tab")
+
+tabs.forEach(tab=>{
+tab.style.display="none"
+})
+
+document.getElementById(tabId).style.display="block"
+
+}
+
+window.onload=function(){
+openTab("pedidos")
+}
+
+/* BANCO DE DADOS */
 
 const tabelaCompras={
 
@@ -244,6 +240,7 @@ municoes:{
 },
 
 drogas:{
+
 "Coca":{
 "FAMILIES":{limpo:230,sujo:460,obs:"Venda média 280 a 290"},
 "THUNDERS":{limpo:300,sujo:460,obs:"Venda média 280 a 290"},
@@ -273,14 +270,42 @@ function carregarProdutos(){
 
 let categoria=document.getElementById("categoria").value
 let produtoSelect=document.getElementById("produto")
+let orgSelect=document.getElementById("orgCompra")
 
 produtoSelect.innerHTML=""
+orgSelect.innerHTML=""
 
 if(!categoria) return
+
+produtoSelect.innerHTML='<option value="">Selecionar</option>'
 
 Object.keys(tabelaCompras[categoria]).forEach(prod=>{
 
 produtoSelect.innerHTML+=`<option>${prod}</option>`
+
+})
+
+}
+
+/* CARREGAR FORNECEDORES */
+
+function carregarFornecedores(){
+
+let categoria=document.getElementById("categoria").value
+let produto=document.getElementById("produto").value
+let orgSelect=document.getElementById("orgCompra")
+
+orgSelect.innerHTML=""
+
+if(!categoria||!produto) return
+
+let fornecedores=tabelaCompras[categoria][produto]
+
+orgSelect.innerHTML='<option value="">Selecionar</option>'
+
+Object.keys(fornecedores).forEach(org=>{
+
+orgSelect.innerHTML+=`<option>${org}</option>`
 
 })
 
@@ -297,8 +322,6 @@ let org=document.getElementById("orgCompra").value
 if(!categoria||!produto||!org) return
 
 let dados=tabelaCompras[categoria][produto][org]
-
-if(!dados) return
 
 document.getElementById("precoLimpo").value=dados.limpo
 document.getElementById("precoSujo").value=dados.sujo
@@ -371,25 +394,7 @@ ${obs}
 document.getElementById("cupomCompra").innerText=cupom
 
 }
-/* CONTROLE DE ABAS */
 
-function openTab(tabId){
-
-let tabs=document.querySelectorAll(".tab")
-
-tabs.forEach(tab=>{
-tab.style.display="none"
-})
-
-document.getElementById(tabId).style.display="block"
-
-}
-
-/* ABRIR PRIMEIRA ABA AO INICIAR */
-
-window.onload=function(){
-openTab("pedidos")
-}
 </script>
 
 </body>
