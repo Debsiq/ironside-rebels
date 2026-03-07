@@ -121,9 +121,9 @@ Contato
 
 Arma
 <select id="arma">
-<option value="colt">Colt 1911</option>
-<option value="usp">HK USP</option>
-<option value="deagle">Desert Eagle</option>
+<option>Colt 1911</option>
+<option>HK USP</option>
+<option>Desert Eagle</option>
 </select>
 
 Quantidade
@@ -263,45 +263,154 @@ salvarHistorico()
 
 /* PEDIDOS */
 
+const armas={
+
+"Colt 1911":{limpo:10000,sujo:12500,materiais:{cylinder:1,components:1,blueprint:1}},
+"HK USP":{limpo:12000,sujo:15000,materiais:{cylinder:1,components:2,blueprint:1}},
+"Desert Eagle":{limpo:14000,sujo:17500,materiais:{cylinder:2,components:1,blueprint:1}}
+
+}
+
+let vendas=JSON.parse(localStorage.getItem("fenrir_vendas"))||[]
+
+function openTab(tab){
+
+document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+
+document.getElementById(tab).style.display="block"
+
+if(tab=="historico")carregarHistorico()
+if(tab=="dashboard")calcularDashboard()
+if(tab=="ranking")gerarRanking()
+
+}
+
+openTab("pedidos")
+
+function calcularCarregamento(caixas){
+
+let grande=Math.floor(caixas/15)
+let resto=caixas%15
+
+let medio=Math.floor(resto/10)
+resto=resto%10
+
+let pequeno=Math.ceil(resto/5)
+
+return{grande,medio,pequeno}
+
+}
+
 function gerarPedido(){
 
 let contato=document.getElementById("contato").value
-let arma=document.getElementById("arma").value
+let armaNome=document.getElementById("arma").value
 let qtd=Number(document.getElementById("qtd").value)
 let pagamento=document.getElementById("pagamento").value
 
-if(!contato||!qtd){
-alert("Preencha contato e quantidade")
-return
+let arma=armas[armaNome]
+
+let preco=pagamento=="Limpo"?arma.limpo:arma.sujo
+
+let total=qtd*preco
+
+let desconto=false
+
+if(qtd>=11){
+total=total*0.9
+desconto=true
 }
 
-let pecas=qtd*1
-let carregadores=Math.ceil(qtd/12)
+let cylinder=qtd*arma.materiais.cylinder
+let components=qtd*arma.materiais.components
+let blueprint=qtd*arma.materiais.blueprint
+
+let caixas=Math.max(cylinder,components,blueprint)
+
+let carreg=calcularCarregamento(caixas)
+
+let custoLimpo=
+carreg.grande*80000+
+carreg.medio*60000+
+carreg.pequeno*30000
+
+let custoSujo=
+carreg.grande*120000+
+carreg.medio*90000+
+carreg.pequeno*45000
+
+let textoCarreg=""
+
+if(carreg.grande>0)textoCarreg+=`${carreg.grande} Grande `
+if(carreg.medio>0)textoCarreg+=`${carreg.medio} Médio `
+if(carreg.pequeno>0)textoCarreg+=`${carreg.pequeno} Pequeno`
+
+let numero=vendas.length+1
+
+let data=new Date().toLocaleDateString()
 
 let cupom=
 
-`PEDIDO
+`VENDA #${String(numero).padStart(4,'0')}
 
-Cliente: ${contato}
+Contato: ${contato}
+Data: ${data}
+Tipo de Pagamento: Dinheiro ${pagamento}
 
-Arma: ${arma}
+Pedido:
+${qtd} ${armaNome} → $${preco.toLocaleString()} (cada)
 
-Quantidade: ${qtd}
+${desconto?"Desconto aplicado: 10%\n":""}
 
-Peças necessárias: ${pecas}
+Total do Pedido: $${Math.round(total).toLocaleString()}
 
-Carregamentos necessários: ${carregadores}
+Materiais Necessários para Produção:
 
-Pagamento: ${pagamento}
+${cylinder} Cylinder
+${components} Componente
+${blueprint} Blueprint
+
+Para atender o pedido o carregamento recomendado é ${textoCarreg}
+
+Que custará $${custoLimpo.toLocaleString()} ou no Sujo: $${custoSujo.toLocaleString()}
 `
 
 document.getElementById("cupom").innerText=cupom
 
-historico.push(cupom)
-salvarHistorico()
+vendas.push({numero,contato,arma:armaNome,qtd,total})
+
+localStorage.setItem("fenrir_vendas",JSON.stringify(vendas))
+
+carregarHistorico()
+calcularDashboard()
+gerarRanking()
 
 }
+function gerarRanking(){
 
+let ranking={}
+
+vendas.forEach(v=>{
+
+if(!ranking[v.contato])ranking[v.contato]=0
+
+ranking[v.contato]+=v.total
+
+})
+
+let lista=Object.entries(ranking).sort((a,b)=>b[1]-a[1])
+
+let div=document.getElementById("rankingClientes")
+
+div.innerHTML=""
+
+lista.forEach((c,i)=>{
+
+div.innerHTML+=`<div>${i+1}º ${c[0]} — $${c[1].toLocaleString()}</div>`
+
+})
+
+}
 function copiarCupom(){
 navigator.clipboard.writeText(document.getElementById("cupom").innerText)
 alert("Cupom copiado")
