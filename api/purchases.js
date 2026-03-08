@@ -37,7 +37,6 @@ export default {
 
       await client.query('BEGIN');
 
-      // Gera automaticamente o próximo número se o frontend mandar vazio/repetido
       let finalPurchaseNumber = Number(purchaseNumber);
 
       if (!finalPurchaseNumber || Number.isNaN(finalPurchaseNumber)) {
