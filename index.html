@@ -714,16 +714,18 @@
 </div>
 
 <script>
-  async function carregarHistoricoEncomendasInterno() {
-  const res = await fetch('/api/purchases-history');
+ async function carregarHistoricoEncomendasInterno() {
+  const res = await fetch('/api/purchases-history', { cache: 'no-store' });
   const data = await res.json();
+
+  console.log('GET /api/purchases-history =>', data);
 
   if (!res.ok) {
     alert(data.error || "Erro ao carregar histórico de encomendas.");
     return;
   }
 
-  encomendasHistorico = data.purchases || [];
+  encomendasHistorico = Array.isArray(data.purchases) ? data.purchases : [];
   renderHistoricoEncomendasInterno();
 }
   const membrosMeta = [
@@ -1615,27 +1617,28 @@ async function carregarHistoricoBanco(usarFiltros = true) {
   document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
 
   const res = await fetch('/api/purchases', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      purchaseNumber: numero,
-      buyerName: comprador || null,
-      sellerName: vendedor || null,
-      total: totalGeral,
-      items
-    }),
-  });
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({
+    purchaseNumber: null,
+    buyerName: comprador || null,
+    sellerName: vendedor || null,
+    total: totalGeral,
+    items
+  }),
+});
 
-  const data = await res.json();
+const data = await res.json();
+console.log('POST /api/purchases =>', data);
 
- if(!res.ok){
+if(!res.ok){
   alert(data.error || "Erro ao salvar encomenda.");
   return;
 }
 
 await carregarHistoricoBanco();
 await carregarHistoricoEncomendasInterno();
-alert(`Encomenda #${String(data.purchaseNumber).padStart(4, "0")} salva e histórico atualizado.`);
+alert(`Encomenda #${String(data.saved.purchase_number).padStart(4, "0")} salva e histórico atualizado.`);
   }
 
   function copiarCupomCompra(){
