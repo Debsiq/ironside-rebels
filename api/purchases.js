@@ -21,7 +21,45 @@ export default {
         items,
       } = body;
 
+      if (!Array.isArray(items) || items.length === 0) {
+        return new Response(JSON.stringify({ error: 'A encomenda precisa ter pelo menos um item.' }), {
+          status: 400,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
+      if (total == null || Number.isNaN(Number(total)) || Number(total) <= 0) {
+        return new Response(JSON.stringify({ error: 'Total da encomenda inválido.' }), {
+          status: 400,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+
       await client.query('BEGIN');
+
+      // Gera automaticamente o próximo número se o frontend mandar vazio/repetido
+      let finalPurchaseNumber = Number(purchaseNumber);
+
+      if (!finalPurchaseNumber || Number.isNaN(finalPurchaseNumber)) {
+        const nextNumberRes = await client.query(`
+          select coalesce(max(purchase_number), 0) + 1 as next_number
+          from purchases
+        `);
+        finalPurchaseNumber = Number(nextNumberRes.rows[0].next_number);
+      } else {
+        const existsRes = await client.query(
+          `select 1 from purchases where purchase_number = $1 limit 1`,
+          [finalPurchaseNumber]
+        );
+
+        if (existsRes.rowCount > 0) {
+          const nextNumberRes = await client.query(`
+            select coalesce(max(purchase_number), 0) + 1 as next_number
+            from purchases
+          `);
+          finalPurchaseNumber = Number(nextNumberRes.rows[0].next_number);
+        }
+      }
 
       const purchaseResult = await client.query(
         `
@@ -32,19 +70,31 @@ export default {
           total
         )
         values ($1,$2,$3,$4)
-        returning id
+        returning id, purchase_number
         `,
         [
-          purchaseNumber,
+          finalPurchaseNumber,
           buyerName || null,
           sellerName || null,
-          total,
+          Number(total),
         ]
       );
 
       const purchaseId = purchaseResult.rows[0].id;
 
       for (const item of items) {
+        if (
+          !item?.category ||
+          !item?.productName ||
+          !item?.supplierName ||
+          !item?.quantity ||
+          !item?.paymentType ||
+          item?.unitPrice == null ||
+          item?.total == null
+        ) {
+          throw new Error('Um ou mais itens da encomenda estão incompletos.');
+        }
+
         await client.query(
           `
           insert into purchase_items (
@@ -65,10 +115,10 @@ export default {
             item.category,
             item.productName,
             item.supplierName,
-            item.quantity,
+            Number(item.quantity),
             item.paymentType,
-            item.unitPrice,
-            item.total,
+            Number(item.unitPrice),
+            Number(item.total),
             item.obs || null,
           ]
         );
@@ -76,13 +126,19 @@ export default {
 
       await client.query('COMMIT');
 
-      return new Response(JSON.stringify({ ok: true, id: purchaseId }), {
+      return new Response(JSON.stringify({
+        ok: true,
+        id: purchaseId,
+        purchaseNumber: purchaseResult.rows[0].purchase_number,
+      }), {
         headers: { 'content-type': 'application/json' },
       });
     } catch (error) {
       await client.query('ROLLBACK');
 
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({
+        error: error.message || 'Erro ao salvar encomenda.',
+      }), {
         status: 500,
         headers: { 'content-type': 'application/json' },
       });
