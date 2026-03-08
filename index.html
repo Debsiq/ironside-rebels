@@ -714,6 +714,18 @@
 </div>
 
 <script>
+  async function carregarHistoricoEncomendasInterno() {
+  const res = await fetch('/api/purchases-history');
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Erro ao carregar histórico de encomendas.");
+    return;
+  }
+
+  encomendasHistorico = data.purchases || [];
+  renderHistoricoEncomendasInterno();
+}
   const membrosMeta = [
     'Maximilian Leclerc',
     'Pietro "Devil" D\'Lenfer',
@@ -814,29 +826,29 @@
   }
 
   function openTab(tab, btn = null){
-    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-    document.getElementById(tab).style.display = "block";
+  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+  document.getElementById(tab).style.display = "block";
 
-    if(btn){
-      btn.classList.add("active");
-    }else{
-      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-      if(autoBtn) autoBtn.classList.add("active");
-    }
-
-    if(tab === "historico") carregarHistoricoBanco();
-    if(tab === "dashboard"){
-      gerarDashboard();
-      gerarRanking();
-    }
-    if(tab === "meta"){
-      carregarMetaBanco();
-    }
-    if(tab === "encomendas"){
-      carregarHistoricoBanco(false);
-    }
+  if(btn){
+    btn.classList.add("active");
+  }else{
+    const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+    if(autoBtn) autoBtn.classList.add("active");
   }
+
+  if(tab === "historico") carregarHistoricoBanco();
+  if(tab === "dashboard"){
+    gerarDashboard();
+    gerarRanking();
+  }
+  if(tab === "meta"){
+    carregarMetaBanco();
+  }
+  if(tab === "encomendas"){
+    carregarHistoricoEncomendasInterno();
+  }
+}
 
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
@@ -922,7 +934,8 @@ async function carregarHistoricoBanco(usarFiltros = true) {
       return;
     }
 
-    await carregarHistoricoBanco();
+  await carregarHistoricoBanco();
+  await carregarHistoricoEncomendasInterno();
   }
 
   async function carregarMetaBanco() {
@@ -1620,7 +1633,8 @@ async function carregarHistoricoBanco(usarFiltros = true) {
     return;
   }
 
-  await carregarHistoricoBanco(false);
+  await carregarHistoricoBanco();
+  await carregarHistoricoEncomendasInterno();
     alert('Encomenda salva e histórico atualizado.');
   }
 
@@ -1817,14 +1831,15 @@ async function carregarHistoricoBanco(usarFiltros = true) {
   }
 
   window.onload = async () => {
-    openTab("pedidos");
-    adicionarItemPedido();
-    adicionarItemEncomenda();
-    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-    carregarPessoasMeta();
-    await carregarMetaBanco();
-    await carregarHistoricoBanco();
-  };
+  openTab("pedidos");
+  adicionarItemPedido();
+  adicionarItemEncomenda();
+  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+  carregarPessoasMeta();
+  await carregarMetaBanco();
+  await carregarHistoricoBanco();
+  await carregarHistoricoEncomendasInterno();
+};
 </script>
 
 </body>
