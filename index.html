@@ -1624,7 +1624,7 @@ async function carregarHistoricoBanco(usarFiltros = true) {
     buyerName: comprador || null,
     sellerName: vendedor || null,
     total: totalGeral,
-    items
+    items: itens
   }),
 });
 
@@ -1638,7 +1638,7 @@ if(!res.ok){
 
 await carregarHistoricoBanco();
 await carregarHistoricoEncomendasInterno();
-alert(`Encomenda #${String(data.saved.purchase_number).padStart(4, "0")} salva e histórico atualizado.`);
+alert(`Encomenda #${String(data.saved?.purchase_number || data.purchaseNumber || 0).padStart(4, "0")} salva e histórico atualizado.`);
   }
 
   function copiarCupomCompra(){
