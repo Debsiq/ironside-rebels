@@ -37,14 +37,20 @@ export default {
         from purchases p
         left join purchase_items pi on pi.purchase_id = p.id
         group by p.id
-        order by p.created_at desc
+        order by p.created_at desc, p.id desc
       `);
 
-      return new Response(JSON.stringify({ purchases: result.rows }), {
+      return new Response(JSON.stringify({
+        ok: true,
+        count: result.rows.length,
+        purchases: result.rows,
+      }), {
         headers: { 'content-type': 'application/json' },
       });
     } catch (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({
+        error: error.message || 'Erro ao carregar histórico de encomendas.',
+      }), {
         status: 500,
         headers: { 'content-type': 'application/json' },
       });
