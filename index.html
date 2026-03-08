@@ -1585,7 +1585,7 @@ async function carregarHistoricoBanco(usarFiltros = true) {
     });
   }
 
- const numero = null;
+ const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
 
   const linhas = [
     { type:"title", text:">> SISTEMA FENRIR" },
