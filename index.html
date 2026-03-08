@@ -1285,7 +1285,7 @@
 
     document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
-    await fetch('/api/orders', {
+    const res = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -1308,7 +1308,14 @@
       }),
     });
 
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Erro ao salvar pedido no histórico (banco de dados).');
+      return;
+    }
+
     await carregarHistoricoBanco();
+    alert('Pedido salvo e histórico atualizado.');
   }
 
   function copiarCupom(){
@@ -1583,7 +1590,7 @@
 
     document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
 
-    await fetch('/api/purchases', {
+    const res = await fetch('/api/purchases', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
@@ -1595,7 +1602,14 @@
       }),
     });
 
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Erro ao salvar encomenda no histórico (banco de dados).');
+      return;
+    }
+
     await carregarHistoricoBanco();
+    alert('Encomenda salva e histórico atualizado.');
   }
 
   function copiarCupomCompra(){
