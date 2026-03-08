@@ -1585,7 +1585,7 @@ async function carregarHistoricoBanco(usarFiltros = true) {
     });
   }
 
-  const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
+ const numero = null;
 
   const linhas = [
     { type:"title", text:">> SISTEMA FENRIR" },
@@ -1628,14 +1628,14 @@ async function carregarHistoricoBanco(usarFiltros = true) {
 
   const data = await res.json();
 
-  if(!res.ok){
-    alert(data.error || "Erro ao salvar encomenda.");
-    return;
-  }
+ if(!res.ok){
+  alert(data.error || "Erro ao salvar encomenda.");
+  return;
+}
 
-  await carregarHistoricoBanco();
-  await carregarHistoricoEncomendasInterno();
-    alert('Encomenda salva e histórico atualizado.');
+await carregarHistoricoBanco();
+await carregarHistoricoEncomendasInterno();
+alert(`Encomenda #${String(data.purchaseNumber).padStart(4, "0")} salva e histórico atualizado.`);
   }
 
   function copiarCupomCompra(){
