@@ -834,7 +834,7 @@
       carregarMetaBanco();
     }
     if(tab === "encomendas"){
-      renderHistoricoEncomendasInterno();
+      carregarHistoricoBanco(false);
     }
   }
 
@@ -857,22 +857,33 @@
     }).join("");
   }
 
-  async function carregarHistoricoBanco() {
-    const buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
-    const seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
-    const sort = document.getElementById("filtroOrdem")?.value || "newest";
+async function carregarHistoricoBanco(usarFiltros = true) {
+  let buyer = "";
+  let seller = "";
+  let sort = "newest";
 
-    const params = new URLSearchParams({ sort, buyer, seller });
-    const res = await fetch(`/api/history?${params.toString()}`);
-    const data = await res.json();
-
-    vendas = data.orders || [];
-    encomendasHistorico = data.purchases || [];
-
-    carregarHistorico();
-    renderHistoricoEncomendasInterno();
-    gerarDashboard();
+  if (usarFiltros) {
+    buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
+    seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
+    sort = document.getElementById("filtroOrdem")?.value || "newest";
   }
+
+  const params = new URLSearchParams({ sort, buyer, seller });
+  const res = await fetch(`/api/history?${params.toString()}`);
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Erro ao carregar histórico.");
+    return;
+  }
+
+  vendas = data.orders || [];
+  encomendasHistorico = data.purchases || [];
+
+  carregarHistorico();
+  renderHistoricoEncomendasInterno();
+  gerarDashboard();
+}
 
   async function excluirHistorico(id){
     const ok = confirm("Deseja excluir este pedido?");
@@ -1507,108 +1518,109 @@
   }
 
   async function gerarCompra(){
-    const itensEls = document.querySelectorAll("#itensEncomenda .item-pedido");
-    const comprador = document.getElementById("compradorEncomenda").value.trim();
-    const vendedor = document.getElementById("vendedorEncomenda").value.trim();
+  const itensEls = document.querySelectorAll("#itensEncomenda .item-pedido");
+  const comprador = document.getElementById("compradorEncomenda").value.trim();
+  const vendedor = document.getElementById("vendedorEncomenda").value.trim();
 
-    if(itensEls.length === 0){
-      alert("Adicione pelo menos um item.");
+  if(itensEls.length === 0){
+    alert("Adicione pelo menos um item.");
+    return;
+  }
+
+  let itens = [];
+  let totalGeral = 0;
+
+  for(const itemEl of itensEls){
+    const categoria = itemEl.querySelector(".categoria-item").value;
+    const produto = itemEl.querySelector(".produto-item").value;
+    const fornecedor = itemEl.querySelector(".fornecedor-item").value;
+    const qtd = Number(itemEl.querySelector(".qtd-encomenda-item").value);
+    const tipo = itemEl.querySelector(".tipo-pagamento-item").value;
+
+    if(!categoria){ alert("Selecione a categoria de todos os itens."); return; }
+    if(!produto){ alert("Selecione o produto de todos os itens."); return; }
+    if(!fornecedor){ alert("Selecione o fornecedor de todos os itens."); return; }
+    if(!qtd || qtd <= 0){ alert("Informe uma quantidade válida para todos os itens."); return; }
+
+    const dados = tabelaCompras[categoria][produto][fornecedor];
+    const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+    if(valorUnitario == null){
+      alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
       return;
     }
 
-    let itens = [];
-    let totalGeral = 0;
-
-    for(const itemEl of itensEls){
-      const categoria = itemEl.querySelector(".categoria-item").value;
-      const produto = itemEl.querySelector(".produto-item").value;
-      const fornecedor = itemEl.querySelector(".fornecedor-item").value;
-      const qtd = Number(itemEl.querySelector(".qtd-encomenda-item").value);
-      const tipo = itemEl.querySelector(".tipo-pagamento-item").value;
-
-      if(!categoria){ alert("Selecione a categoria de todos os itens."); return; }
-      if(!produto){ alert("Selecione o produto de todos os itens."); return; }
-      if(!fornecedor){ alert("Selecione o fornecedor de todos os itens."); return; }
-      if(!qtd || qtd <= 0){ alert("Informe uma quantidade válida para todos os itens."); return; }
-
-      const dados = tabelaCompras[categoria][produto][fornecedor];
-      const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
-
-      if(valorUnitario == null){
-        alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
-        return;
-      }
-
-      if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
-        alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
-        return;
-      }
-
-      const total = qtd * valorUnitario;
-      totalGeral += total;
-
-      itens.push({
-        category: categoria === "municoes" ? "Munições" : "Drogas",
-        productName: produto,
-        supplierName: fornecedor,
-        quantity: qtd,
-        paymentType: tipo.toUpperCase(),
-        unitPrice: valorUnitario,
-        total,
-        limpo: dados.limpo,
-        sujo: dados.sujo,
-        obs: dados.obs || ""
-      });
-    }
-
-    const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
-
-    const linhas = [
-      { type:"title", text:">> SISTEMA FENRIR" },
-      { type:"line", text:"==============================" },
-      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
-      { text:`DATA: ${dataAtualBR()}` },
-      { text:`COMPRADOR: ${comprador || "-"}` },
-      { text:`VENDEDOR: ${vendedor || "-"}` },
-      { type:"line", text:"------------------------------" },
-      { text:"ITENS:" }
-    ];
-
-    itens.forEach(item => {
-      linhas.push({ text:`${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)` });
-      linhas.push({ text:`Fornecedor: ${item.supplierName} | Pagamento: ${item.paymentType}` });
-      if(item.obs){
-        linhas.push({ text:`Obs: ${item.obs}` });
-      }
-      linhas.push({ type:"line", text:"------------------------------" });
-    });
-
-    linhas.push(
-      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
-      { type:"line", text:"==============================" }
-    );
-
-    document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
-
-    const res = await fetch('/api/purchases', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        purchaseNumber: numero,
-        buyerName: comprador || null,
-        sellerName: vendedor || null,
-        total: totalGeral,
-        items
-      }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      alert(data.error || 'Erro ao salvar encomenda no histórico (banco de dados).');
+    if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
+      alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
       return;
     }
 
-    await carregarHistoricoBanco();
+    const total = qtd * valorUnitario;
+    totalGeral += total;
+
+    itens.push({
+      category: categoria === "municoes" ? "Munições" : "Drogas",
+      productName: produto,
+      supplierName: fornecedor,
+      quantity: qtd,
+      paymentType: tipo.toUpperCase(),
+      unitPrice: valorUnitario,
+      total,
+      limpo: dados.limpo,
+      sujo: dados.sujo,
+      obs: dados.obs || ""
+    });
+  }
+
+  const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
+
+  const linhas = [
+    { type:"title", text:">> SISTEMA FENRIR" },
+    { type:"line", text:"==============================" },
+    { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
+    { text:`DATA: ${dataAtualBR()}` },
+    { text:`COMPRADOR: ${comprador || "-"}` },
+    { text:`VENDEDOR: ${vendedor || "-"}` },
+    { type:"line", text:"------------------------------" },
+    { text:"ITENS:" }
+  ];
+
+  itens.forEach(item => {
+    linhas.push({ text:`${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)` });
+    linhas.push({ text:`Fornecedor: ${item.supplierName} | Pagamento: ${item.paymentType}` });
+    if(item.obs){
+      linhas.push({ text:`Obs: ${item.obs}` });
+    }
+    linhas.push({ type:"line", text:"------------------------------" });
+  });
+
+  linhas.push(
+    { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
+    { type:"line", text:"==============================" }
+  );
+
+  document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
+
+  const res = await fetch('/api/purchases', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      purchaseNumber: numero,
+      buyerName: comprador || null,
+      sellerName: vendedor || null,
+      total: totalGeral,
+      items
+    }),
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao salvar encomenda.");
+    return;
+  }
+
+  await carregarHistoricoBanco(false);
     alert('Encomenda salva e histórico atualizado.');
   }
 
