@@ -31,8 +31,8 @@ const prospectsMeta = [
   'Jesse "Foster" Foster'
 ];
 
-function startOfWeekString() {
-  const d = new Date();
+function startOfWeekString(referenceDate = new Date()) {
+  const d = new Date(referenceDate);
   const day = d.getDay();
   const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
@@ -40,12 +40,33 @@ function startOfWeekString() {
   return d.toISOString().slice(0, 10);
 }
 
-async function ensureWeek(client, weekNumber) {
+function sortNames(list) {
+  return [...list].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+}
+
+async function getLatestWeek(client) {
+  const res = await client.query(`
+    select id, week_number, week_start
+    from weekly_goals
+    order by week_number desc
+    limit 1
+  `);
+
+  return res.rows[0] || null;
+}
+
+async function ensureWeek(client, requestedWeekNumber = null) {
   const weekStart = startOfWeekString();
+  const latestWeek = await getLatestWeek(client);
+
+  let finalWeekNumber = Number(requestedWeekNumber);
+  if (!Number.isFinite(finalWeekNumber) || finalWeekNumber <= 0) {
+    finalWeekNumber = latestWeek?.week_number ? Number(latestWeek.week_number) : 1;
+  }
 
   let res = await client.query(
     `select id, week_number, week_start from weekly_goals where week_number = $1`,
-    [weekNumber]
+    [finalWeekNumber]
   );
 
   if (res.rows.length) return res.rows[0];
@@ -57,12 +78,12 @@ async function ensureWeek(client, weekNumber) {
     on conflict (week_number) do update set week_start = excluded.week_start
     returning id, week_number, week_start
     `,
-    [weekNumber, weekStart]
+    [finalWeekNumber, weekStart]
   );
 
   const weeklyGoal = insertWeek.rows[0];
 
-  for (const nome of membrosMeta) {
+  for (const nome of sortNames(membrosMeta)) {
     await client.query(
       `
       insert into weekly_goal_entries (
@@ -75,7 +96,7 @@ async function ensureWeek(client, weekNumber) {
     );
   }
 
-  for (const nome of prospectsMeta) {
+  for (const nome of sortNames(prospectsMeta)) {
     await client.query(
       `
       insert into weekly_goal_entries (
@@ -98,7 +119,8 @@ export default {
     try {
       if (request.method === 'GET') {
         const url = new URL(request.url);
-        const weekNumber = Number(url.searchParams.get('week') || 0);
+        const weekParam = url.searchParams.get('week');
+        const weekNumber = weekParam ? Number(weekParam) : null;
 
         const weeklyGoal = await ensureWeek(client, weekNumber);
 
@@ -118,9 +140,39 @@ export default {
           [weeklyGoal.id]
         );
 
+        const history = await client.query(
+          `
+          select
+            wg.id,
+            wg.week_number,
+            wg.week_start,
+            coalesce(
+              json_agg(
+                json_build_object(
+                  'id', wge.id,
+                  'person_name', wge.person_name,
+                  'person_type', wge.person_type,
+                  'amount', wge.amount,
+                  'status', wge.status,
+                  'justification', wge.justification
+                )
+                order by wge.person_type asc, wge.person_name asc
+              ) filter (where wge.id is not null),
+              '[]'::json
+            ) as entries
+          from weekly_goals wg
+          left join weekly_goal_entries wge on wge.weekly_goal_id = wg.id
+          where wg.week_number < $1
+          group by wg.id
+          order by wg.week_number desc
+          `,
+          [weeklyGoal.week_number]
+        );
+
         return new Response(JSON.stringify({
           week: weeklyGoal,
-          entries: entries.rows
+          entries: entries.rows,
+          history: history.rows
         }), {
           headers: { 'content-type': 'application/json' }
         });
@@ -180,7 +232,9 @@ export default {
       if (request.method === 'PUT') {
         const body = await request.json();
         const { currentWeekNumber } = body;
-        const newWeekNumber = Number(currentWeekNumber || 0) + 1;
+        const latestWeek = await getLatestWeek(client);
+        const baseWeekNumber = Math.max(Number(currentWeekNumber || 0), Number(latestWeek?.week_number || 0), 0);
+        const newWeekNumber = baseWeekNumber + 1;
 
         await ensureWeek(client, newWeekNumber);
 
