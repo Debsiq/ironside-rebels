@@ -539,58 +539,59 @@
 
 <div class="container">
 
-  <div id="meta" class="tab">
-    <div class="card">
-      <h2 class="section-title">💰 Meta Semanal</h2>
-      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
+ <div id="meta" class="tab">
+  <div class="card">
+    <h2 class="section-title">💰 Meta Semanal</h2>
+    <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
 
-      <div class="actions" style="margin-top:0; margin-bottom:14px;">
-        <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
-      </div>
-
-      <div id="metaResumoSemana" class="helper"></div>
-
-      <div class="grid">
-        <div>
-          <label for="tipoMetaPessoa">Tipo</label>
-          <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
-            <option value="membro">Membro</option>
-            <option value="prospect">Prospect</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="nomeMetaPessoa">Nome</label>
-          <select id="nomeMetaPessoa"></select>
-        </div>
-
-        <div>
-          <label for="valorMetaPessoa">Valor</label>
-          <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
-        </div>
-
-        <div>
-          <label for="statusMetaPessoa">Status</label>
-          <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
-            <option value="pago">Pago</option>
-            <option value="pendente">Pendente</option>
-            <option value="justificado">Justificado</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
-        <label for="justificativaMetaPessoa">Justificativa</label>
-        <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
-      </div>
-
-      <div class="actions">
-        <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
-      </div>
-
-      <div id="metaTabelaSemana" style="margin-top:18px;"></div>
+    <div class="actions" style="margin-top:0; margin-bottom:14px;">
+      <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
     </div>
+
+    <div id="metaResumoSemana" class="helper"></div>
+
+    <div class="grid">
+      <div>
+        <label for="tipoMetaPessoa">Tipo</label>
+        <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
+          <option value="membro">Membro</option>
+          <option value="prospect">Prospect</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="nomeMetaPessoa">Nome</label>
+        <select id="nomeMetaPessoa"></select>
+      </div>
+
+      <div>
+        <label for="valorMetaPessoa">Valor</label>
+        <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
+      </div>
+
+      <div>
+        <label for="statusMetaPessoa">Status</label>
+        <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
+          <option value="pago">Pago</option>
+          <option value="pendente">Pendente</option>
+          <option value="justificado">Justificado</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
+      <label for="justificativaMetaPessoa">Justificativa</label>
+      <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
+    </div>
+
+    <div class="actions">
+      <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
+    </div>
+
+    <div id="metaTabelaSemana" style="margin-top:18px;"></div>
+    <div id="metaHistoricoSemanas" style="margin-top:18px;"></div>
   </div>
+</div>
 
   <div id="pedidos" class="tab">
     <div class="card">
@@ -729,42 +730,46 @@
   renderHistoricoEncomendasInterno();
 }
   const membrosMeta = [
-    'Maximilian Leclerc',
-    'Pietro "Devil" D\'Lenfer',
-    'Bjorn "Thor" D\'Lenfer',
-    'Jazmin "Jazz" Reis',
-    'Wolfgang "Kaiser" Larsen',
-    'Lucas Vance',
-    'Apollo "Lobo" Castillo',
-    'Siegfried "Tekken" Larsen',
-    'Ricardo Lionhearth',
-    'Chuck Silver',
-    'Dante D\'Lenfer',
-    'Isaiah D\'Lenfer',
-    'Tristan D\'Lenfer',
-    'Angelique "Angel" Melbourne',
-    'Kaleb Chester',
-    'Søren "Caju" D\'Ulven',
-    'Matteo "Tet" Brown',
-    'Baltazar "Bills" D\'Lenfer'
-  ];
+  'Maximilian Leclerc',
+  'Pietro "Devil" D\'Lenfer',
+  'Bjorn "Thor" D\'Lenfer',
+  'Jazmin "Jazz" Reis',
+  'Wolfgang "Kaiser" Larsen',
+  'Lucas Vance',
+  'Apollo "Lobo" Castillo',
+  'Siegfried "Tekken" Larsen',
+  'Ricardo Lionhearth',
+  'Chuck Silver',
+  'Dante D\'Lenfer',
+  'Isaiah D\'Lenfer',
+  'Tristan D\'Lenfer',
+  'Angelique "Angel" Melbourne',
+  'Kaleb Chester',
+  'Søren "Caju" D\'Ulven',
+  'Matteo "Tet" Brown',
+  'Baltazar "Bills" D\'Lenfer'
+];
 
-  const prospectsMeta = [
-    'Aurora "Castillo" Castillo',
-    'Jorsh Garcia',
-    'Rebecca "Belladonna" Celestine',
-    'Amanda "Valquíria" Winters',
-    'Amora Corvus',
-    'Carraig "Corvo" Dubhghaill',
-    'Jesse "Foster" Foster'
-  ];
+const prospectsMeta = [
+  'Aurora "Castillo" Castillo',
+  'Jorsh Garcia',
+  'Rebecca "Belladonna" Celestine',
+  'Amanda "Valquíria" Winters',
+  'Amora Corvus',
+  'Carraig "Corvo" Dubhghaill',
+  'Jesse "Foster" Foster'
+];
 
-  let metaSemanaAtualNumero = 0;
-  let metaSemanaAtual = null;
-  let metaEntradas = [];
+const membrosMetaOrdenados = [...membrosMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+const prospectsMetaOrdenados = [...prospectsMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
 
-  let vendas = [];
-  let encomendasHistorico = [];
+let metaSemanaAtualNumero = 0;
+let metaSemanaAtual = null;
+let metaEntradas = [];
+let metaHistoricoSemanas = [];
+
+let vendas = [];
+let encomendasHistorico = [];
 
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -940,13 +945,220 @@ async function carregarHistoricoBanco(usarFiltros = true) {
   await carregarHistoricoEncomendasInterno();
   }
 
-  async function carregarMetaBanco() {
-    const res = await fetch(`/api/meta?week=${metaSemanaAtualNumero}`);
-    const data = await res.json();
+ async function carregarMetaBanco() {
+  const query = metaSemanaAtualNumero > 0 ? `?week=${metaSemanaAtualNumero}` : '';
+  const res = await fetch(`/api/meta${query}`);
+  const data = await res.json();
 
-    metaSemanaAtual = data.week;
-    metaEntradas = data.entries || [];
-    metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
+  metaSemanaAtual = data.week;
+  metaEntradas = data.entries || [];
+  metaHistoricoSemanas = data.history || [];
+  metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
+
+  renderMeta();
+}
+
+async function novaSemanaMeta(){
+  const res = await fetch('/api/meta', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ currentWeekNumber: metaSemanaAtualNumero })
+  });
+
+  const data = await res.json();
+  metaSemanaAtualNumero = Number(data.weekNumber || 0);
+  await carregarMetaBanco();
+}
+
+function carregarPessoasMeta(){
+  const tipo = document.getElementById("tipoMetaPessoa").value;
+  const select = document.getElementById("nomeMetaPessoa");
+  const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
+
+  select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
+  document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
+
+  const status = document.getElementById("statusMetaPessoa");
+  if(tipo === "prospect" && status.value === "justificado"){
+    status.value = "pendente";
+  }
+
+  toggleJustificativaMeta();
+}
+
+function toggleJustificativaMeta(){
+  const status = document.getElementById("statusMetaPessoa").value;
+  document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
+}
+
+async function registrarMetaPessoa(){
+  const tipo = document.getElementById("tipoMetaPessoa").value;
+  const nome = document.getElementById("nomeMetaPessoa").value;
+  const valor = Number(document.getElementById("valorMetaPessoa").value || 0);
+  const status = document.getElementById("statusMetaPessoa").value;
+  const justificativa = document.getElementById("justificativaMetaPessoa").value.trim();
+
+  if(!nome){
+    alert("Selecione uma pessoa.");
+    return;
+  }
+
+  if(status === "pago" && valor <= 0){
+    alert("Informe um valor maior que 0 para marcar como pago.");
+    return;
+  }
+
+  await fetch('/api/meta', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      weekNumber: metaSemanaAtualNumero,
+      personName: nome,
+      personType: tipo,
+      amount: valor,
+      status,
+      justification: status === "justificado" ? justificativa : ""
+    })
+  });
+
+  await carregarMetaBanco();
+}
+
+function renderMeta(){
+  if(!metaSemanaAtual){
+    document.getElementById("metaTabelaSemana").innerHTML = `<div class="empty">Carregando meta...</div>`;
+    document.getElementById("metaHistoricoSemanas").innerHTML = '';
+    return;
+  }
+
+  document.getElementById("metaResumoSemana").innerHTML =
+    `Meta Semanal #${String(metaSemanaAtual.week_number).padStart(3, "0")} • Início: ${dataAtualBR(metaSemanaAtual.week_start)}`;
+
+  const membros = [...metaEntradas.filter(r => r.person_type === "membro")]
+    .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+  const prospects = [...metaEntradas.filter(r => r.person_type === "prospect")]
+    .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+  const membrosPagos = membros.filter(r => r.status === "pago").length;
+  const membrosPendentes = membros.filter(r => r.status === "pendente").length;
+  const membrosJustificados = membros.filter(r => r.status === "justificado").length;
+  const prospectsPagos = prospects.filter(r => r.status === "pago").length;
+  const totalArrecadado = metaEntradas.reduce((acc, r) => acc + Number(r.amount || 0), 0);
+
+  let html = `
+    <div class="meta-total-box">
+      <div class="meta-total-item">
+        <div class="title">Meta Semanal</div>
+        <div class="value">#${String(metaSemanaAtual.week_number).padStart(3, "0")}</div>
+      </div>
+
+      <div class="meta-total-item">
+        <div class="title">Membros pagos</div>
+        <div class="value">${membrosPagos}</div>
+      </div>
+
+      <div class="meta-total-item">
+        <div class="title">Membros pendentes</div>
+        <div class="value">${membrosPendentes}</div>
+      </div>
+
+      <div class="meta-total-item">
+        <div class="title">Membros justificados</div>
+        <div class="value">${membrosJustificados}</div>
+      </div>
+
+      <div class="meta-total-item">
+        <div class="title">Prospects pagos</div>
+        <div class="value">${prospectsPagos}</div>
+      </div>
+
+      <div class="meta-total-item">
+        <div class="title">Total arrecadado</div>
+        <div class="value">${dinheiro(totalArrecadado)}</div>
+      </div>
+    </div>
+  `;
+
+  html += `<h3>👑 Membros</h3><div class="meta-grid">`;
+  membros.forEach(r => {
+    html += `
+      <div class="meta-card">
+        <div class="nome">${escapeHtml(r.person_name)}</div>
+        <div class="tipo">Membro • Obrigatório $5.000</div>
+        <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
+        <div>Valor: ${dinheiro(r.amount || 0)}</div>
+        <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+  prospects.forEach(r => {
+    let statusExibido = r.status;
+    if(r.status === "pendente" && Number(r.amount || 0) === 0){
+      statusExibido = "opcional";
+    }
+
+    const classe = statusExibido === "opcional" ? "pendente" : r.status;
+
+    html += `
+      <div class="meta-card">
+        <div class="nome">${escapeHtml(r.person_name)}</div>
+        <div class="tipo">Prospect • Ajuda opcional</div>
+        <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
+        <div>Valor: ${dinheiro(r.amount || 0)}</div>
+        <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  document.getElementById("metaTabelaSemana").innerHTML = html;
+
+  if(!metaHistoricoSemanas.length){
+    document.getElementById("metaHistoricoSemanas").innerHTML = `<div class="empty">Nenhum histórico de metas ainda.</div>`;
+    return;
+  }
+
+  let historicoHtml = `<h3>📚 Histórico das metas</h3>`;
+
+  metaHistoricoSemanas.forEach(semana => {
+    const entradas = Array.isArray(semana.entries) ? [...semana.entries] : [];
+    entradas.sort((a, b) => {
+      if (a.person_type !== b.person_type) return a.person_type.localeCompare(b.person_type);
+      return a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' });
+    });
+
+    const totalPago = entradas.reduce((acc, item) => acc + Number(item.amount || 0), 0);
+
+    historicoHtml += `
+      <div class="meta-history-week">
+        <div class="meta-history-head">
+          <h4>Relatório da Meta Semanal #${String(semana.week_number).padStart(3, '0')}</h4>
+          <div class="helper">Início: ${dataAtualBR(semana.week_start)} • Total pago: ${dinheiro(totalPago)}</div>
+        </div>
+        <div class="meta-history-list">
+    `;
+
+    entradas.forEach(item => {
+      const statusHistorico = item.status === 'pendente' ? 'não pago' : item.status;
+      historicoHtml += `
+        <div class="meta-card">
+          <div class="nome">${escapeHtml(item.person_name)}</div>
+          <div class="tipo">Relatório • ${item.person_type === 'membro' ? 'Membro' : 'Prospect'}</div>
+          <div class="meta-status ${item.status}">${escapeHtml(statusHistorico.toUpperCase())}</div><br>
+          <div>Valor pago: ${dinheiro(item.amount || 0)}</div>
+          <div>Justificativa: ${escapeHtml(item.justification || '-')}</div>
+        </div>
+      `;
+    });
+
+    historicoHtml += `</div></div>`;
+  });
+
+  document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
+}
 
     renderMeta();
   }
