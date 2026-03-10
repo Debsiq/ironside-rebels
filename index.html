@@ -18,6 +18,8 @@
       --muted:#a9a9a9;
       --green:#00ff87;
       --gold:#ffd166;
+      --yellow:#ffd166;
+      --orange:#ffb347;
       --silver:#d6d6d6;
       --bronze:#d19762;
       --shadow:0 14px 38px rgba(0,0,0,.35);
@@ -95,7 +97,7 @@
     }
 
     .container{
-      max-width:1180px;
+      max-width:1280px;
       margin:0 auto;
       padding:24px 18px 36px;
     }
@@ -170,36 +172,26 @@
       border:1px solid rgba(0,255,135,.25);
     }
 
-       .meta-status.pendente{
+    .meta-status.pendente{
       background:rgba(255,80,80,.12);
       color:#ff6b6b;
       border:1px solid rgba(255,80,80,.25);
     }
-    
+
     .meta-status.justificado{
       background:rgba(255,209,102,.12);
       color:#ffd166;
       border:1px solid rgba(255,209,102,.25);
     }
 
-   .meta-total-box{
-  display:grid;
-  grid-template-columns:repeat(6, minmax(0, 1fr));
-  gap:12px;
-  margin-top:16px;
-  margin-bottom:12px;
-}
-@media (max-width: 1100px){
-  .meta-total-box{
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-  }
-}
+    .meta-total-box{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:12px;
+      margin-top:16px;
+      margin-bottom:12px;
+    }
 
-@media (max-width: 700px){
-  .meta-total-box{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-  }
-}
     .meta-total-item{
       background:linear-gradient(180deg,#1a1a1a,#121212);
       border:1px solid #2a2a2a;
@@ -379,6 +371,23 @@
       font-size:16px;
     }
 
+    .cupom-linha-status{
+      margin:2px 0;
+      font-weight:700;
+    }
+
+    .cupom-linha-status.pago{ color:#00ff87; }
+    .cupom-linha-status.nao-pago{ color:#ff6b6b; }
+    .cupom-linha-status.justificado{ color:#ffd166; }
+
+    .cupom-subtitulo{
+      color:#ffffff;
+      font-weight:900;
+      margin-top:10px;
+      margin-bottom:6px;
+      display:block;
+    }
+
     .search-row{
       display:flex;
       flex-wrap:wrap;
@@ -523,37 +532,257 @@
       margin:18px 0;
     }
 
+    /* BANCO */
+    .bank-hero{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+
+    .bank-card{
+      background:linear-gradient(180deg,#171717,#101010);
+      border:1px solid #2a2a2a;
+      border-radius:16px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bank-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at top right, rgba(255,0,0,.08), transparent 35%);
+      pointer-events:none;
+    }
+
+    .bank-card .bank-label{
+      color:#c6c6c6;
+      font-size:13px;
+      margin-bottom:10px;
+      letter-spacing:.5px;
+    }
+
+    .bank-card .bank-value{
+      font-size:38px;
+      font-weight:900;
+      color:#fff;
+      line-height:1.1;
+    }
+
+    .bank-card.clean .bank-value{ color:#8fffd0; }
+    .bank-card.dirty .bank-value{ color:#ffb0b0; }
+    .bank-card.total .bank-value{ color:#ffffff; }
+
+    .bank-status-card{
+      margin-top:14px;
+      background:linear-gradient(180deg,#171717,#101010);
+      border:1px solid #2a2a2a;
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow);
+    }
+
+    .bank-status-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .bank-status-title{
+      font-size:22px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .bank-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      font-weight:900;
+      font-size:13px;
+    }
+
+    .bank-badge.green{
+      background:rgba(0,255,135,.12);
+      color:#00ff87;
+      border:1px solid rgba(0,255,135,.25);
+    }
+
+    .bank-badge.yellow{
+      background:rgba(255,209,102,.12);
+      color:#ffd166;
+      border:1px solid rgba(255,209,102,.25);
+    }
+
+    .bank-badge.red{
+      background:rgba(255,80,80,.12);
+      color:#ff6b6b;
+      border:1px solid rgba(255,80,80,.25);
+    }
+
+    .bank-progress{
+      width:100%;
+      height:18px;
+      background:#111;
+      border:1px solid #2a2a2a;
+      border-radius:999px;
+      overflow:hidden;
+      margin:12px 0 8px;
+    }
+
+    .bank-progress-fill{
+      height:100%;
+      border-radius:999px;
+      transition:.2s ease;
+    }
+
+    .bank-progress-fill.green{
+      background:linear-gradient(90deg, rgba(0,255,135,.7), #00ff87);
+    }
+
+    .bank-progress-fill.yellow{
+      background:linear-gradient(90deg, rgba(255,209,102,.7), #ffd166);
+    }
+
+    .bank-progress-fill.red{
+      background:linear-gradient(90deg, rgba(255,80,80,.7), #ff6b6b);
+    }
+
+    .bank-status-details{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .bank-detail{
+      background:linear-gradient(180deg,#1a1a1a,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .bank-detail .title{
+      color:#bdbdbd;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .bank-detail .value{
+      font-size:22px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .bank-grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .bank-movement-positive{
+      color:#00ff87;
+      font-weight:900;
+    }
+
+    .bank-movement-negative{
+      color:#ff6b6b;
+      font-weight:900;
+    }
+
+    .bank-mini-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .bank-mini-card{
+      background:linear-gradient(180deg,#191919,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .bank-mini-card .title{
+      color:#bdbdbd;
+      font-size:12px;
+      margin-bottom:6px;
+    }
+
+    .bank-mini-card .value{
+      font-size:24px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .bank-log{
+      background:linear-gradient(180deg,#171717,#101010);
+      border:1px solid #292929;
+      border-radius:14px;
+      padding:14px;
+      margin-top:10px;
+    }
+
+    .bank-log + .bank-log{
+      margin-top:12px;
+    }
+
+    .bank-log-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+
+    .bank-log-kind{
+      font-weight:900;
+      color:#fff;
+    }
+
+    .bank-log-meta{
+      color:#a9a9a9;
+      font-size:12px;
+    }
+
+    @media (max-width:1100px){
+      .meta-total-box{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+      }
+
+      .bank-hero{
+        grid-template-columns:1fr;
+      }
+
+      .bank-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
     @media (max-width:700px){
       .title{ font-size:22px; }
       .tabs button{ min-width:unset; font-size:13px; }
       .container{ padding:18px 12px 30px; }
       .item-pedido{ grid-template-columns:1fr; }
+
+      .meta-total-box{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+
+      .bank-card .bank-value{
+        font-size:28px;
+      }
     }
-        .cupom-linha-status{
-      margin: 2px 0;
-      font-weight: 700;
-    }
-    
-    .cupom-linha-status.pago{
-      color: #00ff87;
-    }
-    
-    .cupom-linha-status.nao-pago{
-      color: #ff6b6b;
-    }
-    
-    .cupom-linha-status.justificado{
-      color: #ffd166;
-    }
-    
-    .cupom-subtitulo{
-      color: #ffffff;
-      font-weight: 900;
-      margin-top: 10px;
-      margin-bottom: 6px;
-      display: block;
-    }
-    
   </style>
 </head>
 <body>
@@ -570,63 +799,188 @@
   <button data-tab="dashboard" onclick="openTab('dashboard', this)">📊 Dashboard</button>
   <button data-tab="encomendas" onclick="openTab('encomendas', this)">📦 Encomendas</button>
   <button data-tab="meta" onclick="openTab('meta', this)">💰 Meta</button>
+  <button data-tab="banco" onclick="openTab('banco', this)">🏦 Banco</button>
 </div>
 
 <div class="container">
 
- <div id="meta" class="tab">
-  <div class="card">
-    <h2 class="section-title">💰 Meta Semanal</h2>
-    <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
+  <div id="banco" class="tab">
+    <div class="card">
+      <h2 class="section-title">🏦 Banco Fenrir</h2>
+      <div class="tag">Controle de caixa • limpo • sujo • meta ideal do cofre</div>
 
-    <div class="actions" style="margin-top:0; margin-bottom:14px;">
-      <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
-    </div>
+      <div class="bank-hero">
+        <div class="bank-card clean">
+          <div class="bank-label">Caixa Limpo</div>
+          <div class="bank-value" id="bankCleanValue">$0</div>
+        </div>
 
-    <div id="metaResumoSemana" class="helper"></div>
+        <div class="bank-card dirty">
+          <div class="bank-label">Caixa Sujo</div>
+          <div class="bank-value" id="bankDirtyValue">$0</div>
+        </div>
 
-    <div class="grid">
-      <div>
-        <label for="tipoMetaPessoa">Tipo</label>
-        <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
-          <option value="membro">Membro</option>
-          <option value="prospect">Prospect</option>
-        </select>
+        <div class="bank-card total">
+          <div class="bank-label">Caixa Total</div>
+          <div class="bank-value" id="bankTotalValue">$0</div>
+        </div>
       </div>
 
-      <div>
-        <label for="nomeMetaPessoa">Nome</label>
-        <select id="nomeMetaPessoa"></select>
-      </div>
+      <div class="bank-status-card">
+        <div class="bank-status-head">
+          <div class="bank-status-title">Status do Caixa</div>
+          <div id="bankStatusBadge" class="bank-badge red">🔴 ABAIXO DO IDEAL</div>
+        </div>
 
-      <div>
-        <label for="valorMetaPessoa">Valor</label>
-        <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
-      </div>
+        <div class="helper">Meta ideal do caixa: <strong id="bankIdealTargetText">$194.800</strong></div>
 
-      <div>
-        <label for="statusMetaPessoa">Status</label>
-        <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
-          <option value="pago">Pago</option>
-          <option value="pendente">Pendente</option>
-          <option value="justificado">Justificado</option>
-        </select>
+        <div class="bank-progress">
+          <div id="bankProgressFill" class="bank-progress-fill red" style="width:0%;"></div>
+        </div>
+
+        <div class="helper" id="bankProgressText">0% da meta ideal atingida</div>
+
+        <div class="bank-status-details">
+          <div class="bank-detail">
+            <div class="title">Meta ideal</div>
+            <div class="value" id="bankIdealTargetValue">$194.800</div>
+          </div>
+
+          <div class="bank-detail">
+            <div class="title">Diferença para a meta</div>
+            <div class="value" id="bankTargetDiff">$0</div>
+          </div>
+
+          <div class="bank-detail">
+            <div class="title">Movimentações hoje</div>
+            <div class="value" id="bankTodayCount">0</div>
+          </div>
+
+          <div class="bank-detail">
+            <div class="title">Última movimentação</div>
+            <div class="value" id="bankLastMovement" style="font-size:16px;">-</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
-      <label for="justificativaMetaPessoa">Justificativa</label>
-      <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
-    </div>
+    <div class="bank-grid">
+      <div class="card">
+        <h2 class="section-title">💸 Movimentar Caixa</h2>
 
-    <div class="actions">
-      <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
-    </div>
+        <div class="grid">
+          <div>
+            <label for="bankActionType">Ação</label>
+            <select id="bankActionType">
+              <option value="entrada">Adicionar dinheiro</option>
+              <option value="saida">Retirar dinheiro</option>
+            </select>
+          </div>
 
-    <div id="metaTabelaSemana" style="margin-top:18px;"></div>
-    <div id="metaHistoricoSemanas" style="margin-top:18px;"></div>
+          <div>
+            <label for="bankMoneyType">Tipo de dinheiro</label>
+            <select id="bankMoneyType">
+              <option value="limpo">Dinheiro Limpo</option>
+              <option value="sujo">Dinheiro Sujo</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="bankAmount">Valor</label>
+            <input id="bankAmount" type="number" min="1" step="1" placeholder="Ex: 5000">
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label for="bankReason">Motivo</label>
+          <input id="bankReason" placeholder="Ex: venda da fac, pagamento de fornecedor, retirada para operação...">
+        </div>
+
+        <div class="actions">
+          <button class="action" onclick="registrarMovimentacaoBanco()">Salvar movimentação</button>
+          <button class="secondary" onclick="resetBancoForm()">Limpar</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="bank-mini-grid">
+          <div class="bank-mini-card">
+            <div class="title">Entradas</div>
+            <div class="value" id="bankEntriesValue">$0</div>
+          </div>
+          <div class="bank-mini-card">
+            <div class="title">Saídas</div>
+            <div class="value" id="bankExitsValue">$0</div>
+          </div>
+          <div class="bank-mini-card">
+            <div class="title">Movimentações totais</div>
+            <div class="value" id="bankMovementsCount">0</div>
+          </div>
+        </div>
+
+        <div class="helper">Tudo salvo localmente no navegador desta máquina.</div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">📚 Histórico do Caixa</h2>
+        <div id="bankHistoryList"></div>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div id="meta" class="tab">
+    <div class="card">
+      <h2 class="section-title">💰 Meta Semanal</h2>
+      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
+
+      <div class="actions" style="margin-top:0; margin-bottom:14px;">
+        <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
+      </div>
+
+      <div id="metaResumoSemana" class="helper"></div>
+
+      <div class="grid">
+        <div>
+          <label for="tipoMetaPessoa">Tipo</label>
+          <select id="tipoMetaPessoa" onchange="carregarPessoasMeta()">
+            <option value="membro">Membro</option>
+            <option value="prospect">Prospect</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="nomeMetaPessoa">Nome</label>
+          <select id="nomeMetaPessoa"></select>
+        </div>
+
+        <div>
+          <label for="valorMetaPessoa">Valor</label>
+          <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
+        </div>
+
+        <div>
+          <label for="statusMetaPessoa">Status</label>
+          <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+            <option value="justificado">Justificado</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
+        <label for="justificativaMetaPessoa">Justificativa</label>
+        <input id="justificativaMetaPessoa" placeholder="Ex: ausência justificada, viagem, etc.">
+      </div>
+
+      <div class="actions">
+        <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
+      </div>
+
+      <div id="metaTabelaSemana" style="margin-top:18px;"></div>
+      <div id="metaHistoricoSemanas" style="margin-top:18px;"></div>
+    </div>
+  </div>
 
   <div id="pedidos" class="tab">
     <div class="card">
@@ -750,61 +1104,63 @@
 </div>
 
 <script>
- async function carregarHistoricoEncomendasInterno() {
-  const res = await fetch('/api/purchases-history', { cache: 'no-store' });
-  const data = await res.json();
+  async function carregarHistoricoEncomendasInterno() {
+    const res = await fetch('/api/purchases-history', { cache: 'no-store' });
+    const data = await res.json();
 
-  console.log('GET /api/purchases-history =>', data);
+    if (!res.ok) {
+      alert(data.error || "Erro ao carregar histórico de encomendas.");
+      return;
+    }
 
-  if (!res.ok) {
-    alert(data.error || "Erro ao carregar histórico de encomendas.");
-    return;
+    encomendasHistorico = Array.isArray(data.purchases) ? data.purchases : [];
+    renderHistoricoEncomendasInterno();
   }
 
-  encomendasHistorico = Array.isArray(data.purchases) ? data.purchases : [];
-  renderHistoricoEncomendasInterno();
-}
   const membrosMeta = [
-  'Maximilian Leclerc',
-  'Pietro "Devil" D\'Lenfer',
-  'Bjorn "Thor" D\'Lenfer',
-  'Jazmin "Jazz" Reis',
-  'Wolfgang "Kaiser" Larsen',
-  'Lucas Vance',
-  'Apollo "Lobo" Castillo',
-  'Siegfried "Tekken" Larsen',
-  'Ricardo Lionhearth',
-  'Chuck Silver',
-  'Dante D\'Lenfer',
-  'Isaiah D\'Lenfer',
-  'Tristan D\'Lenfer',
-  'Angelique "Angel" Melbourne',
-  'Kaleb Chester',
-  'Søren "Caju" D\'Ulven',
-  'Matteo "Tet" Brown',
-  'Baltazar "Bills" D\'Lenfer'
-];
+    'Maximilian Leclerc',
+    'Pietro "Devil" D\'Lenfer',
+    'Bjorn "Thor" D\'Lenfer',
+    'Jazmin "Jazz" Reis',
+    'Wolfgang "Kaiser" Larsen',
+    'Lucas Vance',
+    'Apollo "Lobo" Castillo',
+    'Siegfried "Tekken" Larsen',
+    'Ricardo Lionhearth',
+    'Chuck Silver',
+    'Dante D\'Lenfer',
+    'Isaiah D\'Lenfer',
+    'Tristan D\'Lenfer',
+    'Angelique "Angel" Melbourne',
+    'Kaleb Chester',
+    'Søren "Caju" D\'Ulven',
+    'Matteo "Tet" Brown',
+    'Baltazar "Bills" D\'Lenfer'
+  ];
 
-const prospectsMeta = [
-  'Aurora "Castillo" Castillo',
-  'Jorsh Garcia',
-  'Rebecca "Belladonna" Celestine',
-  'Amanda "Valquíria" Winters',
-  'Amora Corvus',
-  'Carraig "Corvo" Dubhghaill',
-  'Jesse "Foster" Foster'
-];
+  const prospectsMeta = [
+    'Aurora "Castillo" Castillo',
+    'Jorsh Garcia',
+    'Rebecca "Belladonna" Celestine',
+    'Amanda "Valquíria" Winters',
+    'Amora Corvus',
+    'Carraig "Corvo" Dubhghaill',
+    'Jesse "Foster" Foster'
+  ];
 
-const membrosMetaOrdenados = [...membrosMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
-const prospectsMetaOrdenados = [...prospectsMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+  const membrosMetaOrdenados = [...membrosMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+  const prospectsMetaOrdenados = [...prospectsMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
 
-let metaSemanaAtualNumero = 0;
-let metaSemanaAtual = null;
-let metaEntradas = [];
-let metaHistoricoSemanas = [];
+  let metaSemanaAtualNumero = 0;
+  let metaSemanaAtual = null;
+  let metaEntradas = [];
+  let metaHistoricoSemanas = [];
 
-let vendas = [];
-let encomendasHistorico = [];
+  let vendas = [];
+  let encomendasHistorico = [];
+
+  const BANK_STORAGE_KEY = "fenrir_bank_data_v1";
+  const BANK_IDEAL_TARGET = 194800;
 
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -858,6 +1214,10 @@ let encomendasHistorico = [];
     return new Date(iso || Date.now()).toLocaleDateString("pt-BR");
   }
 
+  function dataHoraBR(iso){
+    return new Date(iso || Date.now()).toLocaleString("pt-BR");
+  }
+
   function escapeHtml(texto){
     return String(texto)
       .replaceAll("&","&amp;")
@@ -868,29 +1228,32 @@ let encomendasHistorico = [];
   }
 
   function openTab(tab, btn = null){
-  document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
-  document.getElementById(tab).style.display = "block";
+    document.querySelectorAll(".tab").forEach(t => t.style.display = "none");
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    document.getElementById(tab).style.display = "block";
 
-  if(btn){
-    btn.classList.add("active");
-  }else{
-    const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
-    if(autoBtn) autoBtn.classList.add("active");
-  }
+    if(btn){
+      btn.classList.add("active");
+    }else{
+      const autoBtn = document.querySelector(`.tabs button[data-tab="${tab}"]`);
+      if(autoBtn) autoBtn.classList.add("active");
+    }
 
-  if(tab === "historico") carregarHistoricoBanco();
-  if(tab === "dashboard"){
-    gerarDashboard();
-    gerarRanking();
+    if(tab === "historico") carregarHistoricoBanco();
+    if(tab === "dashboard"){
+      gerarDashboard();
+      gerarRanking();
+    }
+    if(tab === "meta"){
+      carregarMetaBanco();
+    }
+    if(tab === "encomendas"){
+      carregarHistoricoEncomendasInterno();
+    }
+    if(tab === "banco"){
+      renderBanco();
+    }
   }
-  if(tab === "meta"){
-    carregarMetaBanco();
-  }
-  if(tab === "encomendas"){
-    carregarHistoricoEncomendasInterno();
-  }
-}
 
   function calcularCarregamento(caixas){
     let grande = Math.floor(caixas / 15);
@@ -911,33 +1274,33 @@ let encomendasHistorico = [];
     }).join("");
   }
 
-async function carregarHistoricoBanco(usarFiltros = true) {
-  let buyer = "";
-  let seller = "";
-  let sort = "newest";
+  async function carregarHistoricoBanco(usarFiltros = true) {
+    let buyer = "";
+    let seller = "";
+    let sort = "newest";
 
-  if (usarFiltros) {
-    buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
-    seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
-    sort = document.getElementById("filtroOrdem")?.value || "newest";
+    if (usarFiltros) {
+      buyer = document.getElementById("filtroComprador")?.value?.trim() || "";
+      seller = document.getElementById("filtroVendedor")?.value?.trim() || "";
+      sort = document.getElementById("filtroOrdem")?.value || "newest";
+    }
+
+    const params = new URLSearchParams({ sort, buyer, seller });
+    const res = await fetch(`/api/history?${params.toString()}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Erro ao carregar histórico.");
+      return;
+    }
+
+    vendas = data.orders || [];
+    encomendasHistorico = data.purchases || [];
+
+    carregarHistorico();
+    renderHistoricoEncomendasInterno();
+    gerarDashboard();
   }
-
-  const params = new URLSearchParams({ sort, buyer, seller });
-  const res = await fetch(`/api/history?${params.toString()}`);
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data.error || "Erro ao carregar histórico.");
-    return;
-  }
-
-  vendas = data.orders || [];
-  encomendasHistorico = data.purchases || [];
-
-  carregarHistorico();
-  renderHistoricoEncomendasInterno();
-  gerarDashboard();
-}
 
   async function excluirHistorico(id){
     const ok = confirm("Deseja excluir este pedido?");
@@ -976,268 +1339,268 @@ async function carregarHistoricoBanco(usarFiltros = true) {
       return;
     }
 
-  await carregarHistoricoBanco();
-  await carregarHistoricoEncomendasInterno();
+    await carregarHistoricoBanco();
+    await carregarHistoricoEncomendasInterno();
   }
 
- async function carregarMetaBanco() {
-  const query = metaSemanaAtualNumero > 0 ? `?week=${metaSemanaAtualNumero}` : '';
-  const res = await fetch(`/api/meta${query}`);
-  const data = await res.json();
+  async function carregarMetaBanco() {
+    const query = metaSemanaAtualNumero > 0 ? `?week=${metaSemanaAtualNumero}` : '';
+    const res = await fetch(`/api/meta${query}`);
+    const data = await res.json();
 
-  metaSemanaAtual = data.week;
-  metaEntradas = data.entries || [];
-  metaHistoricoSemanas = data.history || [];
-  metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
+    metaSemanaAtual = data.week;
+    metaEntradas = data.entries || [];
+    metaHistoricoSemanas = data.history || [];
+    metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
 
-  renderMeta();
-}
-
-async function novaSemanaMeta(){
-  const res = await fetch('/api/meta', {
-    method: 'PUT',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ currentWeekNumber: metaSemanaAtualNumero })
-  });
-
-  const data = await res.json();
-  metaSemanaAtualNumero = Number(data.weekNumber || 0);
-  await carregarMetaBanco();
-}
-
-function carregarPessoasMeta(){
-  const tipo = document.getElementById("tipoMetaPessoa").value;
-  const select = document.getElementById("nomeMetaPessoa");
-  const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
-
-  select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
-  document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
-
-  const status = document.getElementById("statusMetaPessoa");
-  if(tipo === "prospect" && status.value === "justificado"){
-    status.value = "pendente";
+    renderMeta();
   }
 
-  toggleJustificativaMeta();
-}
+  async function novaSemanaMeta(){
+    const res = await fetch('/api/meta', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ currentWeekNumber: metaSemanaAtualNumero })
+    });
 
-function toggleJustificativaMeta(){
-  const status = document.getElementById("statusMetaPessoa").value;
-  document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
-}
-
-async function registrarMetaPessoa(){
-  const tipo = document.getElementById("tipoMetaPessoa").value;
-  const nome = document.getElementById("nomeMetaPessoa").value;
-  const valor = Number(document.getElementById("valorMetaPessoa").value || 0);
-  const status = document.getElementById("statusMetaPessoa").value;
-  const justificativa = document.getElementById("justificativaMetaPessoa").value.trim();
-
-  if(!nome){
-    alert("Selecione uma pessoa.");
-    return;
+    const data = await res.json();
+    metaSemanaAtualNumero = Number(data.weekNumber || 0);
+    await carregarMetaBanco();
   }
 
-  if(status === "pago" && valor <= 0){
-    alert("Informe um valor maior que 0 para marcar como pago.");
-    return;
-  }
+  function carregarPessoasMeta(){
+    const tipo = document.getElementById("tipoMetaPessoa").value;
+    const select = document.getElementById("nomeMetaPessoa");
+    const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
 
-  await fetch('/api/meta', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      weekNumber: metaSemanaAtualNumero,
-      personName: nome,
-      personType: tipo,
-      amount: valor,
-      status,
-      justification: status === "justificado" ? justificativa : ""
-    })
-  });
+    select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
+    document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
 
-  await carregarMetaBanco();
-}
-
-function renderMeta(){
-  if(!metaSemanaAtual){
-    document.getElementById("metaTabelaSemana").innerHTML = `<div class="empty">Carregando meta...</div>`;
-    document.getElementById("metaHistoricoSemanas").innerHTML = '';
-    return;
-  }
-
-  document.getElementById("metaResumoSemana").innerHTML =
-    `Meta Semanal #${String(metaSemanaAtual.week_number).padStart(3, "0")} • Início: ${dataAtualBR(metaSemanaAtual.week_start)}`;
-
-  const membros = [...metaEntradas.filter(r => r.person_type === "membro")]
-    .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
-  const prospects = [...metaEntradas.filter(r => r.person_type === "prospect")]
-    .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
-
-  const membrosPagos = membros.filter(r => r.status === "pago").length;
-  const membrosPendentes = membros.filter(r => r.status === "pendente").length;
-  const membrosJustificados = membros.filter(r => r.status === "justificado").length;
-  const prospectsPagos = prospects.filter(r => r.status === "pago").length;
-  const totalArrecadado = metaEntradas.reduce((acc, r) => acc + Number(r.amount || 0), 0);
-
-  let html = `
-    <div class="meta-total-box">
-      <div class="meta-total-item">
-        <div class="title">Meta Semanal</div>
-        <div class="value">#${String(metaSemanaAtual.week_number).padStart(3, "0")}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros pagos</div>
-        <div class="value">${membrosPagos}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros pendentes</div>
-        <div class="value">${membrosPendentes}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Membros justificados</div>
-        <div class="value">${membrosJustificados}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Prospects pagos</div>
-        <div class="value">${prospectsPagos}</div>
-      </div>
-
-      <div class="meta-total-item">
-        <div class="title">Total arrecadado</div>
-        <div class="value">${dinheiro(totalArrecadado)}</div>
-      </div>
-    </div>
-  `;
-
-  html += `<h3>👑 Membros</h3><div class="meta-grid">`;
-  membros.forEach(r => {
-    html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.person_name)}</div>
-        <div class="tipo">Membro • Obrigatório $5.000</div>
-        <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
-        <div>Valor: ${dinheiro(r.amount || 0)}</div>
-        <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
-  prospects.forEach(r => {
-    let statusExibido = r.status;
-    if(r.status === "pendente" && Number(r.amount || 0) === 0){
-      statusExibido = "opcional";
+    const status = document.getElementById("statusMetaPessoa");
+    if(tipo === "prospect" && status.value === "justificado"){
+      status.value = "pendente";
     }
 
-    const classe = statusExibido === "opcional" ? "pendente" : r.status;
-
-    html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.person_name)}</div>
-        <div class="tipo">Prospect • Ajuda opcional</div>
-        <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
-        <div>Valor: ${dinheiro(r.amount || 0)}</div>
-        <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  document.getElementById("metaTabelaSemana").innerHTML = html;
-
-   if(!metaHistoricoSemanas.length){
-    document.getElementById("metaHistoricoSemanas").innerHTML = `<div class="empty">Nenhum histórico de metas ainda.</div>`;
-    return;
+    toggleJustificativaMeta();
   }
 
-  let historicoHtml = `<div class="divider"></div><h3>📚 Histórico das metas</h3>`;
+  function toggleJustificativaMeta(){
+    const status = document.getElementById("statusMetaPessoa").value;
+    document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
+  }
 
-  metaHistoricoSemanas.forEach(semana => {
-    const entradas = Array.isArray(semana.entries) ? [...semana.entries] : [];
+  async function registrarMetaPessoa(){
+    const tipo = document.getElementById("tipoMetaPessoa").value;
+    const nome = document.getElementById("nomeMetaPessoa").value;
+    const valor = Number(document.getElementById("valorMetaPessoa").value || 0);
+    const status = document.getElementById("statusMetaPessoa").value;
+    const justificativa = document.getElementById("justificativaMetaPessoa").value.trim();
 
-    const membrosHistorico = entradas
-      .filter(item => item.person_type === "membro")
-      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
-
-    const prospectsHistorico = entradas
-      .filter(item => item.person_type === "prospect")
-      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
-
-    function montarLinhaHistorico(item){
-      const valor = Number(item.amount || 0);
-      const justificativa = (item.justification || "").trim();
-
-      if(item.status === "pago"){
-        return {
-          classe: "pago",
-          texto: `${item.person_name}: Pago ${dinheiro(valor)}`
-        };
-      }
-
-      if(item.status === "justificado"){
-        return {
-          classe: "justificado",
-          texto: justificativa
-            ? `${item.person_name}: Justificado (${justificativa})`
-            : `${item.person_name}: Justificado`
-        };
-      }
-
-      return {
-        classe: "nao-pago",
-        texto: `${item.person_name}: Não Pago`
-      };
+    if(!nome){
+      alert("Selecione uma pessoa.");
+      return;
     }
 
-    historicoHtml += `
-      <div class="terminal">
-        <div class="terminal-head">
-          <span class="dot red"></span>
-          <span class="dot yellow"></span>
-          <span class="dot green"></span>
-          <span>relatorio_meta_${String(semana.week_number).padStart(3, "0")}.fenrir</span>
+    if(status === "pago" && valor <= 0){
+      alert("Informe um valor maior que 0 para marcar como pago.");
+      return;
+    }
+
+    await fetch('/api/meta', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        weekNumber: metaSemanaAtualNumero,
+        personName: nome,
+        personType: tipo,
+        amount: valor,
+        status,
+        justification: status === "justificado" ? justificativa : ""
+      })
+    });
+
+    await carregarMetaBanco();
+  }
+
+  function renderMeta(){
+    if(!metaSemanaAtual){
+      document.getElementById("metaTabelaSemana").innerHTML = `<div class="empty">Carregando meta...</div>`;
+      document.getElementById("metaHistoricoSemanas").innerHTML = '';
+      return;
+    }
+
+    document.getElementById("metaResumoSemana").innerHTML =
+      `Meta Semanal #${String(metaSemanaAtual.week_number).padStart(3, "0")} • Início: ${dataAtualBR(metaSemanaAtual.week_start)}`;
+
+    const membros = [...metaEntradas.filter(r => r.person_type === "membro")]
+      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+    const prospects = [...metaEntradas.filter(r => r.person_type === "prospect")]
+      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+    const membrosPagos = membros.filter(r => r.status === "pago").length;
+    const membrosPendentes = membros.filter(r => r.status === "pendente").length;
+    const membrosJustificados = membros.filter(r => r.status === "justificado").length;
+    const prospectsPagos = prospects.filter(r => r.status === "pago").length;
+    const totalArrecadado = metaEntradas.reduce((acc, r) => acc + Number(r.amount || 0), 0);
+
+    let html = `
+      <div class="meta-total-box">
+        <div class="meta-total-item">
+          <div class="title">Meta Semanal</div>
+          <div class="value">#${String(metaSemanaAtual.week_number).padStart(3, "0")}</div>
         </div>
-        <div class="cupom">
-          <div class="title-terminal">Relatório da Meta Semanal #${String(semana.week_number).padStart(3, "0")}</div>
 
-          <span class="cupom-subtitulo">Membros:</span>
-          ${
-            membrosHistorico.length
-              ? membrosHistorico.map(item => {
-                  const linha = montarLinhaHistorico(item);
-                  return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
-                }).join("")
-              : `<div>Nenhum membro registrado</div>`
-          }
+        <div class="meta-total-item">
+          <div class="title">Membros pagos</div>
+          <div class="value">${membrosPagos}</div>
+        </div>
 
-          <br>
+        <div class="meta-total-item">
+          <div class="title">Membros pendentes</div>
+          <div class="value">${membrosPendentes}</div>
+        </div>
 
-          <span class="cupom-subtitulo">Prospects:</span>
-          ${
-            prospectsHistorico.length
-              ? prospectsHistorico.map(item => {
-                  const linha = montarLinhaHistorico(item);
-                  return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
-                }).join("")
-              : `<div>Nenhum prospect registrado</div>`
-          }
+        <div class="meta-total-item">
+          <div class="title">Membros justificados</div>
+          <div class="value">${membrosJustificados}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Prospects pagos</div>
+          <div class="value">${prospectsPagos}</div>
+        </div>
+
+        <div class="meta-total-item">
+          <div class="title">Total arrecadado</div>
+          <div class="value">${dinheiro(totalArrecadado)}</div>
         </div>
       </div>
     `;
-  });
 
-  document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
+    html += `<h3>👑 Membros</h3><div class="meta-grid">`;
+    membros.forEach(r => {
+      html += `
+        <div class="meta-card">
+          <div class="nome">${escapeHtml(r.person_name)}</div>
+          <div class="tipo">Membro • Obrigatório $5.000</div>
+          <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
+          <div>Valor: ${dinheiro(r.amount || 0)}</div>
+          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+
+    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+    prospects.forEach(r => {
+      let statusExibido = r.status;
+      if(r.status === "pendente" && Number(r.amount || 0) === 0){
+        statusExibido = "opcional";
+      }
+
+      const classe = statusExibido === "opcional" ? "pendente" : r.status;
+
+      html += `
+        <div class="meta-card">
+          <div class="nome">${escapeHtml(r.person_name)}</div>
+          <div class="tipo">Prospect • Ajuda opcional</div>
+          <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
+          <div>Valor: ${dinheiro(r.amount || 0)}</div>
+          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+
+    document.getElementById("metaTabelaSemana").innerHTML = html;
+
+    if(!metaHistoricoSemanas.length){
+      document.getElementById("metaHistoricoSemanas").innerHTML = `<div class="empty">Nenhum histórico de metas ainda.</div>`;
+      return;
+    }
+
+    let historicoHtml = `<div class="divider"></div><h3>📚 Histórico das metas</h3>`;
+
+    metaHistoricoSemanas.forEach(semana => {
+      const entradas = Array.isArray(semana.entries) ? [...semana.entries] : [];
+
+      const membrosHistorico = entradas
+        .filter(item => item.person_type === "membro")
+        .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+      const prospectsHistorico = entradas
+        .filter(item => item.person_type === "prospect")
+        .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+      function montarLinhaHistorico(item){
+        const valor = Number(item.amount || 0);
+        const justificativa = (item.justification || "").trim();
+
+        if(item.status === "pago"){
+          return {
+            classe: "pago",
+            texto: `${item.person_name}: Pago ${dinheiro(valor)}`
+          };
+        }
+
+        if(item.status === "justificado"){
+          return {
+            classe: "justificado",
+            texto: justificativa
+              ? `${item.person_name}: Justificado (${justificativa})`
+              : `${item.person_name}: Justificado`
+          };
+        }
+
+        return {
+          classe: "nao-pago",
+          texto: `${item.person_name}: Não Pago`
+        };
+      }
+
+      historicoHtml += `
+        <div class="terminal">
+          <div class="terminal-head">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span>relatorio_meta_${String(semana.week_number).padStart(3, "0")}.fenrir</span>
+          </div>
+          <div class="cupom">
+            <div class="title-terminal">Relatório da Meta Semanal #${String(semana.week_number).padStart(3, "0")}</div>
+
+            <span class="cupom-subtitulo">Membros:</span>
+            ${
+              membrosHistorico.length
+                ? membrosHistorico.map(item => {
+                    const linha = montarLinhaHistorico(item);
+                    return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
+                  }).join("")
+                : `<div>Nenhum membro registrado</div>`
+            }
+
+            <br>
+
+            <span class="cupom-subtitulo">Prospects:</span>
+            ${
+              prospectsHistorico.length
+                ? prospectsHistorico.map(item => {
+                    const linha = montarLinhaHistorico(item);
+                    return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
+                  }).join("")
+                : `<div>Nenhum prospect registrado</div>`
+            }
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
   }
 
-function getArmasOptionsHtml(selected = "Colt 1911"){
-  return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
-}
+  function getArmasOptionsHtml(selected = "Colt 1911"){
+    return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
+  }
 
   function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = ""){
     const container = document.getElementById("itensPedido");
@@ -1667,112 +2030,111 @@ function getArmasOptionsHtml(selected = "Colt 1911"){
   }
 
   async function gerarCompra(){
-  const itensEls = document.querySelectorAll("#itensEncomenda .item-pedido");
-  const comprador = document.getElementById("compradorEncomenda").value.trim();
-  const vendedor = document.getElementById("vendedorEncomenda").value.trim();
+    const itensEls = document.querySelectorAll("#itensEncomenda .item-pedido");
+    const comprador = document.getElementById("compradorEncomenda").value.trim();
+    const vendedor = document.getElementById("vendedorEncomenda").value.trim();
 
-  if(itensEls.length === 0){
-    alert("Adicione pelo menos um item.");
-    return;
-  }
-
-  let itens = [];
-  let totalGeral = 0;
-
-  for(const itemEl of itensEls){
-    const categoria = itemEl.querySelector(".categoria-item").value;
-    const produto = itemEl.querySelector(".produto-item").value;
-    const fornecedor = itemEl.querySelector(".fornecedor-item").value;
-    const qtd = Number(itemEl.querySelector(".qtd-encomenda-item").value);
-    const tipo = itemEl.querySelector(".tipo-pagamento-item").value;
-
-    if(!categoria){ alert("Selecione a categoria de todos os itens."); return; }
-    if(!produto){ alert("Selecione o produto de todos os itens."); return; }
-    if(!fornecedor){ alert("Selecione o fornecedor de todos os itens."); return; }
-    if(!qtd || qtd <= 0){ alert("Informe uma quantidade válida para todos os itens."); return; }
-
-    const dados = tabelaCompras[categoria][produto][fornecedor];
-    const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
-
-    if(valorUnitario == null){
-      alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
+    if(itensEls.length === 0){
+      alert("Adicione pelo menos um item.");
       return;
     }
 
-    if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
-      alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
-      return;
+    let itens = [];
+    let totalGeral = 0;
+
+    for(const itemEl of itensEls){
+      const categoria = itemEl.querySelector(".categoria-item").value;
+      const produto = itemEl.querySelector(".produto-item").value;
+      const fornecedor = itemEl.querySelector(".fornecedor-item").value;
+      const qtd = Number(itemEl.querySelector(".qtd-encomenda-item").value);
+      const tipo = itemEl.querySelector(".tipo-pagamento-item").value;
+
+      if(!categoria){ alert("Selecione a categoria de todos os itens."); return; }
+      if(!produto){ alert("Selecione o produto de todos os itens."); return; }
+      if(!fornecedor){ alert("Selecione o fornecedor de todos os itens."); return; }
+      if(!qtd || qtd <= 0){ alert("Informe uma quantidade válida para todos os itens."); return; }
+
+      const dados = tabelaCompras[categoria][produto][fornecedor];
+      const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+      if(valorUnitario == null){
+        alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
+        return;
+      }
+
+      if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
+        alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
+        return;
+      }
+
+      const total = qtd * valorUnitario;
+      totalGeral += total;
+
+      itens.push({
+        category: categoria === "municoes" ? "Munições" : "Drogas",
+        productName: produto,
+        supplierName: fornecedor,
+        quantity: qtd,
+        paymentType: tipo.toUpperCase(),
+        unitPrice: valorUnitario,
+        total,
+        limpo: dados.limpo,
+        sujo: dados.sujo,
+        obs: dados.obs || ""
+      });
     }
 
-    const total = qtd * valorUnitario;
-    totalGeral += total;
+    const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
 
-    itens.push({
-      category: categoria === "municoes" ? "Munições" : "Drogas",
-      productName: produto,
-      supplierName: fornecedor,
-      quantity: qtd,
-      paymentType: tipo.toUpperCase(),
-      unitPrice: valorUnitario,
-      total,
-      limpo: dados.limpo,
-      sujo: dados.sujo,
-      obs: dados.obs || ""
+    const linhas = [
+      { type:"title", text:">> SISTEMA FENRIR" },
+      { type:"line", text:"==============================" },
+      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
+      { text:`DATA: ${dataAtualBR()}` },
+      { text:`COMPRADOR: ${comprador || "-"}` },
+      { text:`VENDEDOR: ${vendedor || "-"}` },
+      { type:"line", text:"------------------------------" },
+      { text:"ITENS:" }
+    ];
+
+    itens.forEach(item => {
+      linhas.push({ text:`${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)` });
+      linhas.push({ text:`Fornecedor: ${item.supplierName} | Pagamento: ${item.paymentType}` });
+      if(item.obs){
+        linhas.push({ text:`Obs: ${item.obs}` });
+      }
+      linhas.push({ type:"line", text:"------------------------------" });
     });
-  }
 
- const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
+    linhas.push(
+      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
+      { type:"line", text:"==============================" }
+    );
 
-  const linhas = [
-    { type:"title", text:">> SISTEMA FENRIR" },
-    { type:"line", text:"==============================" },
-    { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
-    { text:`DATA: ${dataAtualBR()}` },
-    { text:`COMPRADOR: ${comprador || "-"}` },
-    { text:`VENDEDOR: ${vendedor || "-"}` },
-    { type:"line", text:"------------------------------" },
-    { text:"ITENS:" }
-  ];
+    document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
 
-  itens.forEach(item => {
-    linhas.push({ text:`${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)` });
-    linhas.push({ text:`Fornecedor: ${item.supplierName} | Pagamento: ${item.paymentType}` });
-    if(item.obs){
-      linhas.push({ text:`Obs: ${item.obs}` });
+    const res = await fetch('/api/purchases', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        purchaseNumber: null,
+        buyerName: comprador || null,
+        sellerName: vendedor || null,
+        total: totalGeral,
+        items: itens
+      }),
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || "Erro ao salvar encomenda.");
+      return;
     }
-    linhas.push({ type:"line", text:"------------------------------" });
-  });
 
-  linhas.push(
-    { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
-    { type:"line", text:"==============================" }
-  );
-
-  document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
-
-  const res = await fetch('/api/purchases', {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({
-    purchaseNumber: null,
-    buyerName: comprador || null,
-    sellerName: vendedor || null,
-    total: totalGeral,
-    items: itens
-  }),
-});
-
-const data = await res.json();
-console.log('POST /api/purchases =>', data);
-
-if(!res.ok){
-  alert(data.error || "Erro ao salvar encomenda.");
-  return;
-}
-
-await carregarHistoricoBanco();
-await carregarHistoricoEncomendasInterno();
-alert(`Encomenda #${String(data.saved?.purchase_number || data.purchaseNumber || 0).padStart(4, "0")} salva e histórico atualizado.`);
+    await carregarHistoricoBanco();
+    await carregarHistoricoEncomendasInterno();
+    alert(`Encomenda #${String(data.saved?.purchase_number || data.purchaseNumber || 0).padStart(4, "0")} salva e histórico atualizado.`);
   }
 
   function copiarCupomCompra(){
@@ -1967,16 +2329,203 @@ alert(`Encomenda #${String(data.saved?.purchase_number || data.purchaseNumber ||
     gerarRanking();
   }
 
+  function getBancoData(){
+    const raw = localStorage.getItem(BANK_STORAGE_KEY);
+    if(!raw){
+      return {
+        clean: 0,
+        dirty: 0,
+        movements: []
+      };
+    }
+
+    try{
+      const parsed = JSON.parse(raw);
+      return {
+        clean: Number(parsed.clean || 0),
+        dirty: Number(parsed.dirty || 0),
+        movements: Array.isArray(parsed.movements) ? parsed.movements : []
+      };
+    }catch{
+      return {
+        clean: 0,
+        dirty: 0,
+        movements: []
+      };
+    }
+  }
+
+  function saveBancoData(data){
+    localStorage.setItem(BANK_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function getBankStatus(total){
+    if(total >= BANK_IDEAL_TARGET){
+      return {
+        color: "green",
+        text: "🟢 CAIXA IDEAL",
+        progress: 100
+      };
+    }
+
+    if(total >= 150000){
+      return {
+        color: "yellow",
+        text: "🟡 ATENÇÃO NO CAIXA",
+        progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+      };
+    }
+
+    return {
+      color: "red",
+      text: "🔴 ABAIXO DO IDEAL",
+      progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+    };
+  }
+
+  function renderBanco(){
+    const banco = getBancoData();
+    const clean = Number(banco.clean || 0);
+    const dirty = Number(banco.dirty || 0);
+    const total = clean + dirty;
+    const diff = total - BANK_IDEAL_TARGET;
+    const status = getBankStatus(total);
+
+    const hoje = new Date().toLocaleDateString("pt-BR");
+
+    const movimentosHoje = banco.movements.filter(m => dataAtualBR(m.createdAt) === hoje);
+    const totalEntradas = banco.movements
+      .filter(m => m.action === "entrada")
+      .reduce((acc, m) => acc + Number(m.amount || 0), 0);
+
+    const totalSaidas = banco.movements
+      .filter(m => m.action === "saida")
+      .reduce((acc, m) => acc + Number(m.amount || 0), 0);
+
+    document.getElementById("bankCleanValue").textContent = dinheiro(clean);
+    document.getElementById("bankDirtyValue").textContent = dinheiro(dirty);
+    document.getElementById("bankTotalValue").textContent = dinheiro(total);
+    document.getElementById("bankIdealTargetText").textContent = dinheiro(BANK_IDEAL_TARGET);
+    document.getElementById("bankIdealTargetValue").textContent = dinheiro(BANK_IDEAL_TARGET);
+    document.getElementById("bankTargetDiff").textContent = `${diff >= 0 ? "+" : "-"}${dinheiro(Math.abs(diff)).replace("$","$")}`;
+    document.getElementById("bankTodayCount").textContent = movimentosHoje.length;
+    document.getElementById("bankEntriesValue").textContent = dinheiro(totalEntradas);
+    document.getElementById("bankExitsValue").textContent = dinheiro(totalSaidas);
+    document.getElementById("bankMovementsCount").textContent = banco.movements.length;
+
+    const badge = document.getElementById("bankStatusBadge");
+    badge.className = `bank-badge ${status.color}`;
+    badge.textContent = status.text;
+
+    const fill = document.getElementById("bankProgressFill");
+    fill.className = `bank-progress-fill ${status.color}`;
+    fill.style.width = `${Math.max(0, Math.min(status.progress, 100))}%`;
+
+    document.getElementById("bankProgressText").textContent =
+      `${Math.round(Math.max(0, Math.min(status.progress, 100)))}% da meta ideal atingida`;
+
+    const ultima = banco.movements[0];
+    document.getElementById("bankLastMovement").textContent =
+      ultima ? `${ultima.action === "entrada" ? "Entrada" : "Saída"} • ${dinheiro(ultima.amount)}` : "-";
+
+    const historyEl = document.getElementById("bankHistoryList");
+    if(!banco.movements.length){
+      historyEl.innerHTML = `<div class="empty">Nenhuma movimentação registrada no banco ainda.</div>`;
+      return;
+    }
+
+    let html = "";
+    banco.movements.forEach((m, index) => {
+      const classeValor = m.action === "entrada" ? "bank-movement-positive" : "bank-movement-negative";
+      const sinal = m.action === "entrada" ? "+" : "-";
+
+      html += `
+        <div class="bank-log">
+          <div class="bank-log-top">
+            <div class="bank-log-kind">${m.type === "limpo" ? "💵 LIMPO" : "🩸 SUJO"} • ${m.action === "entrada" ? "ENTRADA" : "SAÍDA"}</div>
+            <div class="${classeValor}">${sinal}${dinheiro(m.amount)}</div>
+          </div>
+          <div>Motivo: ${escapeHtml(m.reason || "-")}</div>
+          <div class="bank-log-meta">Data: ${dataHoraBR(m.createdAt)} • Registro #${String(index + 1).padStart(3, "0")}</div>
+        </div>
+      `;
+    });
+
+    historyEl.innerHTML = html;
+  }
+
+  function resetBancoForm(){
+    document.getElementById("bankActionType").value = "entrada";
+    document.getElementById("bankMoneyType").value = "limpo";
+    document.getElementById("bankAmount").value = "";
+    document.getElementById("bankReason").value = "";
+  }
+
+  function registrarMovimentacaoBanco(){
+    const action = document.getElementById("bankActionType").value;
+    const type = document.getElementById("bankMoneyType").value;
+    const amount = Number(document.getElementById("bankAmount").value || 0);
+    const reason = document.getElementById("bankReason").value.trim();
+
+    if(amount <= 0){
+      alert("Informe um valor maior que 0.");
+      return;
+    }
+
+    if(!reason){
+      alert("Informe o motivo da movimentação.");
+      return;
+    }
+
+    const banco = getBancoData();
+
+    if(action === "entrada"){
+      if(type === "limpo"){
+        banco.clean += amount;
+      }else{
+        banco.dirty += amount;
+      }
+    }else{
+      if(type === "limpo"){
+        if(banco.clean < amount){
+          alert("Saldo limpo insuficiente.");
+          return;
+        }
+        banco.clean -= amount;
+      }else{
+        if(banco.dirty < amount){
+          alert("Saldo sujo insuficiente.");
+          return;
+        }
+        banco.dirty -= amount;
+      }
+    }
+
+    banco.movements.unshift({
+      action,
+      type,
+      amount,
+      reason,
+      createdAt: new Date().toISOString()
+    });
+
+    saveBancoData(banco);
+    resetBancoForm();
+    renderBanco();
+    alert("Movimentação registrada no banco.");
+  }
+
   window.onload = async () => {
-  openTab("pedidos");
-  adicionarItemPedido();
-  adicionarItemEncomenda();
-  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-  carregarPessoasMeta();
-  await carregarMetaBanco();
-  await carregarHistoricoBanco();
-  await carregarHistoricoEncomendasInterno();
-};
+    openTab("pedidos");
+    adicionarItemPedido();
+    adicionarItemEncomenda();
+    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+    carregarPessoasMeta();
+    renderBanco();
+    await carregarMetaBanco();
+    await carregarHistoricoBanco();
+    await carregarHistoricoEncomendasInterno();
+  };
 </script>
 
 </body>
