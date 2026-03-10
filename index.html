@@ -1121,44 +1121,66 @@ function renderMeta(){
     return;
   }
 
-  let historicoHtml = `<h3>📚 Histórico das metas</h3>`;
+  let historicoHtml = `<div class="divider"></div><h3>📚 Histórico das metas</h3>`;
 
   metaHistoricoSemanas.forEach(semana => {
     const entradas = Array.isArray(semana.entries) ? [...semana.entries] : [];
-    entradas.sort((a, b) => {
-      if (a.person_type !== b.person_type) return a.person_type.localeCompare(b.person_type);
-      return a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' });
-    });
 
-    const totalPago = entradas.reduce((acc, item) => acc + Number(item.amount || 0), 0);
+    const membrosHistorico = entradas
+      .filter(item => item.person_type === "membro")
+      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+    const prospectsHistorico = entradas
+      .filter(item => item.person_type === "prospect")
+      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+
+    function montarLinhaHistorico(item){
+      const valor = Number(item.amount || 0);
+      const justificativa = (item.justification || "").trim();
+
+      if(item.status === "pago"){
+        return `${item.person_name}: Pago ${dinheiro(valor)}`;
+      }
+
+      if(item.status === "justificado"){
+        return justificativa
+          ? `${item.person_name}: Justificado (${justificativa})`
+          : `${item.person_name}: Justificado`;
+      }
+
+      return `${item.person_name}: Não Pago`;
+    }
 
     historicoHtml += `
-      <div class="meta-history-week">
-        <div class="meta-history-head">
-          <h4>Relatório da Meta Semanal #${String(semana.week_number).padStart(3, '0')}</h4>
-          <div class="helper">Início: ${dataAtualBR(semana.week_start)} • Total pago: ${dinheiro(totalPago)}</div>
+      <div class="terminal">
+        <div class="terminal-head">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span>relatorio_meta_${String(semana.week_number).padStart(3, "0")}.fenrir</span>
         </div>
-        <div class="meta-history-list">
+        <div class="cupom">
+          <div class="title-terminal">Relatório da Meta Semanal #${String(semana.week_number).padStart(3, "0")}</div>
+          <div class="line">Membros:</div>
+          ${
+            membrosHistorico.length
+              ? membrosHistorico.map(item => `<div>${escapeHtml(montarLinhaHistorico(item))}</div>`).join("")
+              : `<div>Nenhum membro registrado</div>`
+          }
+
+          <br>
+          <div class="line">Prospects:</div>
+          ${
+            prospectsHistorico.length
+              ? prospectsHistorico.map(item => `<div>${escapeHtml(montarLinhaHistorico(item))}</div>`).join("")
+              : `<div>Nenhum prospect registrado</div>`
+          }
+        </div>
+      </div>
     `;
-
-    entradas.forEach(item => {
-      const statusHistorico = item.status === 'pendente' ? 'não pago' : item.status;
-      historicoHtml += `
-        <div class="meta-card">
-          <div class="nome">${escapeHtml(item.person_name)}</div>
-          <div class="tipo">Relatório • ${item.person_type === 'membro' ? 'Membro' : 'Prospect'}</div>
-          <div class="meta-status ${item.status}">${escapeHtml(statusHistorico.toUpperCase())}</div><br>
-          <div>Valor pago: ${dinheiro(item.amount || 0)}</div>
-          <div>Justificativa: ${escapeHtml(item.justification || '-')}</div>
-        </div>
-      `;
-    });
-
-    historicoHtml += `</div></div>`;
   });
 
   document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
-}
 
   function getArmasOptionsHtml(selected = "Colt 1911"){
     return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
