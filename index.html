@@ -919,10 +919,19 @@
       </div>
     </div>
 
-    <div class="card">
-      <h2 class="section-title">📚 Histórico do Caixa</h2>
-      <div id="bankHistoryList"></div>
-    </div>
+   <div class="card">
+  <h2 class="section-title">📚 Histórico do Caixa</h2>
+
+  <div class="search-row" style="margin-bottom:12px;">
+    <select id="bankFilterType" onchange="carregarBanco()">
+      <option value="todos">Todos</option>
+      <option value="limpo">Somente limpo</option>
+      <option value="sujo">Somente sujo</option>
+    </select>
+  </div>
+
+  <div id="bankHistoryList"></div>
+</div>
   </div>
 </div>
 
@@ -2282,7 +2291,10 @@
     div.innerHTML = html;
   }
 async function carregarBanco(){
-  const res = await fetch('/api/bank');
+  const filterType = document.getElementById("bankFilterType")?.value || "todos";
+  const query = filterType !== "todos" ? `?type=${encodeURIComponent(filterType)}` : "";
+
+  const res = await fetch(`/api/bank${query}`);
   const data = await res.json();
 
   if(!res.ok){
@@ -2362,7 +2374,72 @@ async function registrarMovimentacaoBanco(){
   renderBanco(data);
   alert("Movimentação registrada no banco.");
 }
+function editarMovimentacaoBanco(id, action, type, amount, reason){
+  const novoAction = prompt("Ação: entrada ou saida", action);
+  if(!novoAction) return;
 
+  const novoType = prompt("Tipo: limpo ou sujo", type);
+  if(!novoType) return;
+
+  const novoAmount = Number(prompt("Valor:", amount));
+  if(!novoAmount || novoAmount <= 0){
+    alert("Valor inválido.");
+    return;
+  }
+
+  const novoReason = prompt("Motivo:", reason || "");
+  if(novoReason === null || !novoReason.trim()){
+    alert("Motivo é obrigatório.");
+    return;
+  }
+
+  atualizarMovimentacaoBanco(id, novoAction.trim(), novoType.trim(), novoAmount, novoReason.trim());
+}
+
+async function atualizarMovimentacaoBanco(id, action, type, amount, reason){
+  const res = await fetch('/api/bank', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      id,
+      action,
+      type,
+      amount,
+      reason
+    })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao editar movimentação.");
+    return;
+  }
+
+  renderBanco(data);
+  alert("Movimentação atualizada.");
+}
+
+async function excluirMovimentacaoBanco(id){
+  const ok = confirm("Deseja excluir esta movimentação?");
+  if(!ok) return;
+
+  const res = await fetch('/api/bank', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao excluir movimentação.");
+    return;
+  }
+
+  renderBanco(data);
+  alert("Movimentação excluída.");
+}
 function renderBanco(data){
   const clean = Number(data.clean || 0);
   const dirty = Number(data.dirty || 0);
@@ -2428,6 +2505,10 @@ function renderBanco(data){
         </div>
         <div>Motivo: ${escapeHtml(m.reason || "-")}</div>
         <div class="bank-log-meta">Data: ${dataHoraBR(m.created_at)} • Registro #${String(index + 1).padStart(3, "0")}</div>
+        <div class="actions" style="margin-top:10px;">
+          <button class="small" onclick="editarMovimentacaoBanco(${m.id}, '${escapeHtml(m.action)}', '${escapeHtml(m.type)}', ${Number(m.amount || 0)}, '${escapeHtml(m.reason || "")}')">Editar</button>
+          <button class="small" onclick="excluirMovimentacaoBanco(${m.id})">Excluir</button>
+        </div>
       </div>
     `;
   });
