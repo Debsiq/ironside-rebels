@@ -519,6 +519,31 @@
       .container{ padding:18px 12px 30px; }
       .item-pedido{ grid-template-columns:1fr; }
     }
+        .cupom-linha-status{
+      margin: 2px 0;
+      font-weight: 700;
+    }
+    
+    .cupom-linha-status.pago{
+      color: #00ff87;
+    }
+    
+    .cupom-linha-status.nao-pago{
+      color: #ff6b6b;
+    }
+    
+    .cupom-linha-status.justificado{
+      color: #ffd166;
+    }
+    
+    .cupom-subtitulo{
+      color: #ffffff;
+      font-weight: 900;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    
   </style>
 </head>
 <body>
@@ -1116,7 +1141,7 @@ function renderMeta(){
 
   document.getElementById("metaTabelaSemana").innerHTML = html;
 
-  if(!metaHistoricoSemanas.length){
+   if(!metaHistoricoSemanas.length){
     document.getElementById("metaHistoricoSemanas").innerHTML = `<div class="empty">Nenhum histórico de metas ainda.</div>`;
     return;
   }
@@ -1139,16 +1164,25 @@ function renderMeta(){
       const justificativa = (item.justification || "").trim();
 
       if(item.status === "pago"){
-        return `${item.person_name}: Pago ${dinheiro(valor)}`;
+        return {
+          classe: "pago",
+          texto: `${item.person_name}: Pago ${dinheiro(valor)}`
+        };
       }
 
       if(item.status === "justificado"){
-        return justificativa
-          ? `${item.person_name}: Justificado (${justificativa})`
-          : `${item.person_name}: Justificado`;
+        return {
+          classe: "justificado",
+          texto: justificativa
+            ? `${item.person_name}: Justificado (${justificativa})`
+            : `${item.person_name}: Justificado`
+        };
       }
 
-      return `${item.person_name}: Não Pago`;
+      return {
+        classe: "nao-pago",
+        texto: `${item.person_name}: Não Pago`
+      };
     }
 
     historicoHtml += `
@@ -1161,18 +1195,26 @@ function renderMeta(){
         </div>
         <div class="cupom">
           <div class="title-terminal">Relatório da Meta Semanal #${String(semana.week_number).padStart(3, "0")}</div>
-          <div class="line">Membros:</div>
+
+          <span class="cupom-subtitulo">Membros:</span>
           ${
             membrosHistorico.length
-              ? membrosHistorico.map(item => `<div>${escapeHtml(montarLinhaHistorico(item))}</div>`).join("")
+              ? membrosHistorico.map(item => {
+                  const linha = montarLinhaHistorico(item);
+                  return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
+                }).join("")
               : `<div>Nenhum membro registrado</div>`
           }
 
           <br>
-          <div class="line">Prospects:</div>
+
+          <span class="cupom-subtitulo">Prospects:</span>
           ${
             prospectsHistorico.length
-              ? prospectsHistorico.map(item => `<div>${escapeHtml(montarLinhaHistorico(item))}</div>`).join("")
+              ? prospectsHistorico.map(item => {
+                  const linha = montarLinhaHistorico(item);
+                  return `<div class="cupom-linha-status ${linha.classe}">${escapeHtml(linha.texto)}</div>`;
+                }).join("")
               : `<div>Nenhum prospect registrado</div>`
           }
         </div>
@@ -1180,8 +1222,7 @@ function renderMeta(){
     `;
   });
 
-   document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
-}
+  document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
 
 function getArmasOptionsHtml(selected = "Colt 1911"){
   return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
