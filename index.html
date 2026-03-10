@@ -1180,11 +1180,12 @@ function renderMeta(){
     `;
   });
 
-  document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
+   document.getElementById("metaHistoricoSemanas").innerHTML = historicoHtml;
+}
 
-  function getArmasOptionsHtml(selected = "Colt 1911"){
-    return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
-  }
+function getArmasOptionsHtml(selected = "Colt 1911"){
+  return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
+}
 
   function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = ""){
     const container = document.getElementById("itensPedido");
