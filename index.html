@@ -804,129 +804,127 @@
 
 <div class="container">
 
-  <div id="banco" class="tab">
-    <div class="card">
-      <h2 class="section-title">🏦 Banco Fenrir</h2>
-      <div class="tag">Controle de caixa • limpo • sujo • meta ideal do cofre</div>
+<div id="banco" class="tab">
+  <div class="card">
+    <h2 class="section-title">🏦 Banco Fenrir</h2>
+    <div class="tag">Controle de caixa • limpo • sujo • meta ideal do cofre</div>
 
-      <div class="bank-hero">
-        <div class="bank-card clean">
-          <div class="bank-label">Caixa Limpo</div>
-          <div class="bank-value" id="bankCleanValue">$0</div>
-        </div>
-
-        <div class="bank-card dirty">
-          <div class="bank-label">Caixa Sujo</div>
-          <div class="bank-value" id="bankDirtyValue">$0</div>
-        </div>
-
-        <div class="bank-card total">
-          <div class="bank-label">Caixa Total</div>
-          <div class="bank-value" id="bankTotalValue">$0</div>
-        </div>
+    <div class="bank-hero">
+      <div class="bank-card clean">
+        <div class="bank-label">Caixa Limpo</div>
+        <div class="bank-value" id="bankCleanValue">$0</div>
       </div>
 
-      <div class="bank-status-card">
-        <div class="bank-status-head">
-          <div class="bank-status-title">Status do Caixa</div>
-          <div id="bankStatusBadge" class="bank-badge red">🔴 ABAIXO DO IDEAL</div>
-        </div>
+      <div class="bank-card dirty">
+        <div class="bank-label">Caixa Sujo</div>
+        <div class="bank-value" id="bankDirtyValue">$0</div>
+      </div>
 
-        <div class="helper">Meta ideal do caixa: <strong id="bankIdealTargetText">$194.800</strong></div>
-
-        <div class="bank-progress">
-          <div id="bankProgressFill" class="bank-progress-fill red" style="width:0%;"></div>
-        </div>
-
-        <div class="helper" id="bankProgressText">0% da meta ideal atingida</div>
-
-        <div class="bank-status-details">
-          <div class="bank-detail">
-            <div class="title">Meta ideal</div>
-            <div class="value" id="bankIdealTargetValue">$194.800</div>
-          </div>
-
-          <div class="bank-detail">
-            <div class="title">Diferença para a meta</div>
-            <div class="value" id="bankTargetDiff">$0</div>
-          </div>
-
-          <div class="bank-detail">
-            <div class="title">Movimentações hoje</div>
-            <div class="value" id="bankTodayCount">0</div>
-          </div>
-
-          <div class="bank-detail">
-            <div class="title">Última movimentação</div>
-            <div class="value" id="bankLastMovement" style="font-size:16px;">-</div>
-          </div>
-        </div>
+      <div class="bank-card total">
+        <div class="bank-label">Caixa Total</div>
+        <div class="bank-value" id="bankTotalValue">$0</div>
       </div>
     </div>
 
-    <div class="bank-grid">
-      <div class="card">
-        <h2 class="section-title">💸 Movimentar Caixa</h2>
-
-        <div class="grid">
-          <div>
-            <label for="bankActionType">Ação</label>
-            <select id="bankActionType">
-              <option value="entrada">Adicionar dinheiro</option>
-              <option value="saida">Retirar dinheiro</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="bankMoneyType">Tipo de dinheiro</label>
-            <select id="bankMoneyType">
-              <option value="limpo">Dinheiro Limpo</option>
-              <option value="sujo">Dinheiro Sujo</option>
-            </select>
-          </div>
-
-          <div>
-            <label for="bankAmount">Valor</label>
-            <input id="bankAmount" type="number" min="1" step="1" placeholder="Ex: 5000">
-          </div>
-        </div>
-
-        <div style="margin-top:12px;">
-          <label for="bankReason">Motivo</label>
-          <input id="bankReason" placeholder="Ex: venda da fac, pagamento de fornecedor, retirada para operação...">
-        </div>
-
-        <div class="actions">
-          <button class="action" onclick="registrarMovimentacaoBanco()">Salvar movimentação</button>
-          <button class="secondary" onclick="resetBancoForm()">Limpar</button>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="bank-mini-grid">
-          <div class="bank-mini-card">
-            <div class="title">Entradas</div>
-            <div class="value" id="bankEntriesValue">$0</div>
-          </div>
-          <div class="bank-mini-card">
-            <div class="title">Saídas</div>
-            <div class="value" id="bankExitsValue">$0</div>
-          </div>
-          <div class="bank-mini-card">
-            <div class="title">Movimentações totais</div>
-            <div class="value" id="bankMovementsCount">0</div>
-          </div>
-        </div>
-
-        <div class="helper">Tudo salvo localmente no navegador desta máquina.</div>
+    <div class="bank-status-card">
+      <div class="bank-status-head">
+        <div class="bank-status-title">Status do Caixa</div>
+        <div id="bankStatusBadge" class="bank-badge red">🔴 ABAIXO DO IDEAL</div>
       </div>
 
-      <div class="card">
-        <h2 class="section-title">📚 Histórico do Caixa</h2>
-        <div id="bankHistoryList"></div>
+      <div class="helper">Meta ideal do caixa: <strong id="bankIdealTargetText">$194.800</strong></div>
+
+      <div class="bank-progress">
+        <div id="bankProgressFill" class="bank-progress-fill red" style="width:0%;"></div>
+      </div>
+
+      <div class="helper" id="bankProgressText">0% da meta ideal atingida</div>
+
+      <div class="bank-status-details">
+        <div class="bank-detail">
+          <div class="title">Meta ideal</div>
+          <div class="value" id="bankIdealTargetValue">$194.800</div>
+        </div>
+
+        <div class="bank-detail">
+          <div class="title">Diferença para a meta</div>
+          <div class="value" id="bankTargetDiff">$0</div>
+        </div>
+
+        <div class="bank-detail">
+          <div class="title">Movimentações hoje</div>
+          <div class="value" id="bankTodayCount">0</div>
+        </div>
+
+        <div class="bank-detail">
+          <div class="title">Última movimentação</div>
+          <div class="value" id="bankLastMovement" style="font-size:16px;">-</div>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="bank-grid">
+    <div class="card">
+      <h2 class="section-title">💸 Movimentar Caixa</h2>
+
+      <div class="grid">
+        <div>
+          <label for="bankActionType">Ação</label>
+          <select id="bankActionType">
+            <option value="entrada">Adicionar dinheiro</option>
+            <option value="saida">Retirar dinheiro</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="bankMoneyType">Tipo de dinheiro</label>
+          <select id="bankMoneyType">
+            <option value="limpo">Dinheiro Limpo</option>
+            <option value="sujo">Dinheiro Sujo</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="bankAmount">Valor</label>
+          <input id="bankAmount" type="number" min="1" step="1" placeholder="Ex: 5000">
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label for="bankReason">Motivo</label>
+        <input id="bankReason" placeholder="Ex: venda da fac, pagamento de fornecedor, retirada para operação...">
+      </div>
+
+      <div class="actions">
+        <button class="action" onclick="registrarMovimentacaoBanco()">Salvar movimentação</button>
+        <button class="secondary" onclick="resetBancoForm()">Limpar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="bank-mini-grid">
+        <div class="bank-mini-card">
+          <div class="title">Entradas</div>
+          <div class="value" id="bankEntriesValue">$0</div>
+        </div>
+        <div class="bank-mini-card">
+          <div class="title">Saídas</div>
+          <div class="value" id="bankExitsValue">$0</div>
+        </div>
+        <div class="bank-mini-card">
+          <div class="title">Movimentações totais</div>
+          <div class="value" id="bankMovementsCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">📚 Histórico do Caixa</h2>
+      <div id="bankHistoryList"></div>
+    </div>
+  </div>
+</div>
 
   <div id="meta" class="tab">
     <div class="card">
@@ -1158,8 +1156,6 @@
 
   let vendas = [];
   let encomendasHistorico = [];
-
-  const BANK_STORAGE_KEY = "fenrir_bank_data_v1";
   const BANK_IDEAL_TARGET = 194800;
 
   const armas = {
@@ -1250,8 +1246,8 @@
     if(tab === "encomendas"){
       carregarHistoricoEncomendasInterno();
     }
-    if(tab === "banco"){
-      renderBanco();
+   if(tab === "banco"){
+    carregarBanco();
     }
   }
 
@@ -2285,7 +2281,159 @@
     html += `</div>`;
     div.innerHTML = html;
   }
+async function carregarBanco(){
+  const res = await fetch('/api/bank');
+  const data = await res.json();
 
+  if(!res.ok){
+    alert(data.error || "Erro ao carregar banco.");
+    return;
+  }
+
+  renderBanco(data);
+}
+
+function getBankStatus(total){
+  if(total >= BANK_IDEAL_TARGET){
+    return {
+      color: "green",
+      text: "🟢 CAIXA IDEAL",
+      progress: 100
+    };
+  }
+
+  if(total >= 150000){
+    return {
+      color: "yellow",
+      text: "🟡 ATENÇÃO NO CAIXA",
+      progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+    };
+  }
+
+  return {
+    color: "red",
+    text: "🔴 ABAIXO DO IDEAL",
+    progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+  };
+}
+
+function resetBancoForm(){
+  document.getElementById("bankActionType").value = "entrada";
+  document.getElementById("bankMoneyType").value = "limpo";
+  document.getElementById("bankAmount").value = "";
+  document.getElementById("bankReason").value = "";
+}
+
+async function registrarMovimentacaoBanco(){
+  const action = document.getElementById("bankActionType").value;
+  const type = document.getElementById("bankMoneyType").value;
+  const amount = Number(document.getElementById("bankAmount").value || 0);
+  const reason = document.getElementById("bankReason").value.trim();
+
+  if(amount <= 0){
+    alert("Informe um valor maior que 0.");
+    return;
+  }
+
+  if(!reason){
+    alert("Informe o motivo da movimentação.");
+    return;
+  }
+
+  const res = await fetch('/api/bank', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      action,
+      type,
+      amount,
+      reason
+    })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao salvar movimentação.");
+    return;
+  }
+
+  resetBancoForm();
+  renderBanco(data);
+  alert("Movimentação registrada no banco.");
+}
+
+function renderBanco(data){
+  const clean = Number(data.clean || 0);
+  const dirty = Number(data.dirty || 0);
+  const total = clean + dirty;
+  const diff = total - BANK_IDEAL_TARGET;
+  const status = getBankStatus(total);
+
+  const hoje = new Date().toLocaleDateString("pt-BR");
+  const movements = Array.isArray(data.movements) ? data.movements : [];
+
+  const movimentosHoje = movements.filter(m => dataAtualBR(m.created_at) === hoje);
+
+  const totalEntradas = movements
+    .filter(m => m.action === "entrada")
+    .reduce((acc, m) => acc + Number(m.amount || 0), 0);
+
+  const totalSaidas = movements
+    .filter(m => m.action === "saida")
+    .reduce((acc, m) => acc + Number(m.amount || 0), 0);
+
+  document.getElementById("bankCleanValue").textContent = dinheiro(clean);
+  document.getElementById("bankDirtyValue").textContent = dinheiro(dirty);
+  document.getElementById("bankTotalValue").textContent = dinheiro(total);
+  document.getElementById("bankIdealTargetText").textContent = dinheiro(BANK_IDEAL_TARGET);
+  document.getElementById("bankIdealTargetValue").textContent = dinheiro(BANK_IDEAL_TARGET);
+  document.getElementById("bankTargetDiff").textContent = `${diff >= 0 ? "+" : "-"}${dinheiro(Math.abs(diff)).replace("$","$")}`;
+  document.getElementById("bankTodayCount").textContent = movimentosHoje.length;
+  document.getElementById("bankEntriesValue").textContent = dinheiro(totalEntradas);
+  document.getElementById("bankExitsValue").textContent = dinheiro(totalSaidas);
+  document.getElementById("bankMovementsCount").textContent = movements.length;
+
+  const badge = document.getElementById("bankStatusBadge");
+  badge.className = `bank-badge ${status.color}`;
+  badge.textContent = status.text;
+
+  const fill = document.getElementById("bankProgressFill");
+  fill.className = `bank-progress-fill ${status.color}`;
+  fill.style.width = `${Math.max(0, Math.min(status.progress, 100))}%`;
+
+  document.getElementById("bankProgressText").textContent =
+    `${Math.round(Math.max(0, Math.min(status.progress, 100)))}% da meta ideal atingida`;
+
+  const ultima = movements[0];
+  document.getElementById("bankLastMovement").textContent =
+    ultima ? `${ultima.action === "entrada" ? "Entrada" : "Saída"} • ${dinheiro(ultima.amount)}` : "-";
+
+  const historyEl = document.getElementById("bankHistoryList");
+  if(!movements.length){
+    historyEl.innerHTML = `<div class="empty">Nenhuma movimentação registrada no banco ainda.</div>`;
+    return;
+  }
+
+  let html = "";
+  movements.forEach((m, index) => {
+    const classeValor = m.action === "entrada" ? "bank-movement-positive" : "bank-movement-negative";
+    const sinal = m.action === "entrada" ? "+" : "-";
+
+    html += `
+      <div class="bank-log">
+        <div class="bank-log-top">
+          <div class="bank-log-kind">${m.type === "limpo" ? "💵 LIMPO" : "🩸 SUJO"} • ${m.action === "entrada" ? "ENTRADA" : "SAÍDA"}</div>
+          <div class="${classeValor}">${sinal}${dinheiro(m.amount)}</div>
+        </div>
+        <div>Motivo: ${escapeHtml(m.reason || "-")}</div>
+        <div class="bank-log-meta">Data: ${dataHoraBR(m.created_at)} • Registro #${String(index + 1).padStart(3, "0")}</div>
+      </div>
+    `;
+  });
+
+  historyEl.innerHTML = html;
+}
   function gerarDashboard(){
     const relatorio = document.getElementById("relatorio");
 
@@ -2515,17 +2663,17 @@
     alert("Movimentação registrada no banco.");
   }
 
-  window.onload = async () => {
-    openTab("pedidos");
-    adicionarItemPedido();
-    adicionarItemEncomenda();
-    document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
-    carregarPessoasMeta();
-    renderBanco();
-    await carregarMetaBanco();
-    await carregarHistoricoBanco();
-    await carregarHistoricoEncomendasInterno();
-  };
+window.onload = async () => {
+  openTab("pedidos");
+  adicionarItemPedido();
+  adicionarItemEncomenda();
+  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+  carregarPessoasMeta();
+  await carregarBanco();
+  await carregarMetaBanco();
+  await carregarHistoricoBanco();
+  await carregarHistoricoEncomendasInterno();
+};
 </script>
 
 </body>
