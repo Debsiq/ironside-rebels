@@ -137,7 +137,20 @@
       gap:12px;
       margin-top:16px;
     }
-
+      .meta-info-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        margin-top:8px;
+        flex-wrap:wrap;
+     }
+      
+      .meta-value-inline{
+        font-weight:900;
+        color:#fff;
+        font-size:14px;
+    }
     .meta-card{
       background:linear-gradient(180deg,#181818,#121212);
       border:1px solid #2a2a2a;
@@ -1485,13 +1498,15 @@
     html += `<h3>👑 Membros</h3><div class="meta-grid">`;
     membros.forEach(r => {
     html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.person_name)}</div>
-        <div class="tipo">Membro • Obrigatório $5.000</div>
-        <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
-        ${Number(r.amount || 0) > 0 ? `<div>Valor: ${dinheiro(r.amount || 0)}</div>` : ``}
-      </div>
-    `;
+  <div class="meta-card">
+    <div class="nome">${escapeHtml(r.person_name)}</div>
+    <div class="tipo">Membro • Obrigatório $5.000</div>
+    <div class="meta-info-row">
+      <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
+      ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
+    </div>
+  </div>
+`;
     });
     html += `</div>`;
 
@@ -1505,13 +1520,15 @@
       const classe = statusExibido === "opcional" ? "pendente" : r.status;
 
          html += `
-      <div class="meta-card">
-        <div class="nome">${escapeHtml(r.person_name)}</div>
-        <div class="tipo">Prospect • Ajuda opcional</div>
-        <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
-        ${Number(r.amount || 0) > 0 ? `<div>Valor: ${dinheiro(r.amount || 0)}</div>` : ``}
-      </div>
-    `;
+  <div class="meta-card">
+    <div class="nome">${escapeHtml(r.person_name)}</div>
+    <div class="tipo">Prospect • Ajuda opcional</div>
+    <div class="meta-info-row">
+      <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div>
+      ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
+    </div>
+  </div>
+`;
     });
     html += `</div>`;
 
