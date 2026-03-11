@@ -1785,6 +1785,13 @@ function resetarPedido(){
       });
       totalArmas += qtd;
       subtotalGeral += subtotalItem;
+
+      if(pagamento === "Limpo"){
+        totalLimpo += subtotalItem;
+      }else{
+        totalSujo += subtotalItem;
+      }
+      
       totalCylinder += qtd * arma.materiais.cylinder;
       totalComponents += qtd * arma.materiais.components;
       totalBlueprint += qtd * arma.materiais.blueprint;
@@ -1798,12 +1805,33 @@ function resetarPedido(){
     let desconto = false;
     let valorDesconto = 0;
     let totalFinal = subtotalGeral;
+    let totalLimpo = 0;
+    let totalSujo = 0;
 
-    if(qtdElegivelDesconto >= 11){
-      desconto = true;
-      valorDesconto = subtotalElegivelDesconto * 0.10;
-      totalFinal = subtotalGeral - valorDesconto;
+   if(qtdElegivelDesconto >= 11){
+  desconto = true;
+  valorDesconto = subtotalElegivelDesconto * 0.10;
+  totalFinal = subtotalGeral - valorDesconto;
+
+  const descontoPorItem = 0.10;
+
+  let descontoLimpo = 0;
+  let descontoSujo = 0;
+
+  itens.forEach(item => {
+    if(item.elegivelDesconto){
+      const descontoItem = item.subtotal * descontoPorItem;
+      if(item.pagamento === "Limpo"){
+        descontoLimpo += descontoItem;
+      }else{
+        descontoSujo += descontoItem;
+      }
     }
+  });
+
+  totalLimpo -= descontoLimpo;
+  totalSujo -= descontoSujo;
+}
 
     const caixas = Math.max(totalCylinder, totalComponents, totalBlueprint);
     const carreg = calcularCarregamento(caixas);
@@ -1815,15 +1843,24 @@ function resetarPedido(){
 
     const numero = (vendas[0]?.order_number || 0) + 1;
 
-    const linhas = [
-      { text:`VENDA #${String(numero).padStart(4,"0")}` },
-      { text:`DATA: ${dataAtualBR()}` },
-      { text:`COMPRADOR: ${contato}` },
-      { text:`VENDEDOR: ${vendedor || "-"}` },
-      { text:`PAGAMENTO: MISTO / POR ITEM` },
-      { type:"line", text:"------------------------------" },
-      { text:"ITENS:" }
-    ];
+    const pagamentosUnicos = [...new Set(itens.map(item => item.pagamento))];
+
+let tipoPagamentoCupom = "DINHEIRO MISTO";
+if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Limpo"){
+  tipoPagamentoCupom = "DINHEIRO LIMPO";
+}else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Sujo"){
+  tipoPagamentoCupom = "DINHEIRO SUJO";
+}
+
+const linhas = [
+  { text:`VENDA #${String(numero).padStart(4,"0")}` },
+  { text:`DATA: ${dataAtualBR()}` },
+  { text:`COMPRADOR: ${contato}` },
+  { text:`VENDEDOR: ${vendedor || "-"}` },
+  { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
+  { type:"line", text:"------------------------------" },
+  { text:"ITENS:" }
+];
 
     itens.forEach(item => {
       const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
@@ -1850,18 +1887,31 @@ function resetarPedido(){
       });
     }
 
-    linhas.push(
-      { type:"line", text:"------------------------------" },
-      { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(totalFinal))}` },
-      { type:"line", text:"==============================" },
-      { text:"MATERIAIS:" },
-      { text:`${totalCylinder} Cylinder` },
-      { text:`${totalComponents} Componente` },
-      { text:`${totalBlueprint} Blueprint` },
-      { type:"line", text:"==============================" },
-      { text:`CARREGAMENTO: ${textoCarreg || "Não calculado"}` }
-    );
+  linhas.push(
+  { type:"line", text:"------------------------------" }
+);
 
+if(pagamentosUnicos.length > 1){
+  linhas.push(
+    { type:"total", text:`TOTAL LIMPO: ${dinheiro(Math.round(totalLimpo))}` },
+    { type:"total", text:`TOTAL SUJO: ${dinheiro(Math.round(totalSujo))}` },
+    { type:"total", text:`TOTAL GERAL: ${dinheiro(Math.round(totalFinal))}` }
+  );
+}else{
+  linhas.push(
+    { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(totalFinal))}` }
+  );
+}
+
+linhas.push(
+  { type:"line", text:"==============================" },
+  { text:"MATERIAIS:" },
+  { text:`${totalCylinder} Cylinder` },
+  { text:`${totalComponents} Componente` },
+  { text:`${totalBlueprint} Blueprint` },
+  { type:"line", text:"==============================" },
+  { text:`CARREGAMENTO: ${textoCarreg || "Não calculado"}` }
+);
     document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
     const res = await fetch('/api/orders', {
