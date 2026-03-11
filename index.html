@@ -1484,15 +1484,14 @@
 
     html += `<h3>👑 Membros</h3><div class="meta-grid">`;
     membros.forEach(r => {
-      html += `
-        <div class="meta-card">
-          <div class="nome">${escapeHtml(r.person_name)}</div>
-          <div class="tipo">Membro • Obrigatório $5.000</div>
-          <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
-          <div>Valor: ${dinheiro(r.amount || 0)}</div>
-          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
-        </div>
-      `;
+    html += `
+      <div class="meta-card">
+        <div class="nome">${escapeHtml(r.person_name)}</div>
+        <div class="tipo">Membro • Obrigatório $5.000</div>
+        <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div><br>
+        ${Number(r.amount || 0) > 0 ? `<div>Valor: ${dinheiro(r.amount || 0)}</div>` : ``}
+      </div>
+    `;
     });
     html += `</div>`;
 
@@ -1505,15 +1504,14 @@
 
       const classe = statusExibido === "opcional" ? "pendente" : r.status;
 
-      html += `
-        <div class="meta-card">
-          <div class="nome">${escapeHtml(r.person_name)}</div>
-          <div class="tipo">Prospect • Ajuda opcional</div>
-          <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
-          <div>Valor: ${dinheiro(r.amount || 0)}</div>
-          <div>Justificativa: ${escapeHtml(r.justification || "-")}</div>
-        </div>
-      `;
+         html += `
+      <div class="meta-card">
+        <div class="nome">${escapeHtml(r.person_name)}</div>
+        <div class="tipo">Prospect • Ajuda opcional</div>
+        <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div><br>
+        ${Number(r.amount || 0) > 0 ? `<div>Valor: ${dinheiro(r.amount || 0)}</div>` : ``}
+      </div>
+    `;
     });
     html += `</div>`;
 
