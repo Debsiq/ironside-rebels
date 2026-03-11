@@ -227,7 +227,32 @@
       font-weight:900;
       color:#fff;
     }
-
+    .meta-value-visibility{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    
+    .meta-value-text.blur{
+      filter: blur(8px);
+      user-select: none;
+    }
+    
+    .meta-eye-btn{
+      background:transparent;
+      border:1px solid #2f2f2f;
+      color:#d8d8d8;
+      border-radius:10px;
+      padding:6px 8px;
+      cursor:pointer;
+      font-size:14px;
+      line-height:1;
+    }
+    
+    .meta-eye-btn:hover{
+      background:#1c1c1c;
+    }
     .grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
@@ -1179,6 +1204,7 @@
   let metaSemanaAtual = null;
   let metaEntradas = [];
   let metaHistoricoSemanas = [];
+  let metaTotalVisivel = true;
 
   let vendas = [];
   let encomendasHistorico = [];
@@ -1405,7 +1431,10 @@
 
     toggleJustificativaMeta();
   }
-
+  function toggleMetaTotalVisivel(){
+    metaTotalVisivel = !metaTotalVisivel;
+    renderMeta();
+  }
   function toggleJustificativaMeta(){
     const status = document.getElementById("statusMetaPessoa").value;
     document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
@@ -1493,9 +1522,14 @@
         </div>
 
         <div class="meta-total-item">
-          <div class="title">Total arrecadado</div>
-          <div class="value">${dinheiro(totalArrecadado)}</div>
-        </div>
+  <div class="title">Total arrecadado</div>
+  <div class="meta-value-visibility">
+    <div class="value meta-value-text ${metaTotalVisivel ? '' : 'blur'}">${dinheiro(totalArrecadado)}</div>
+    <button type="button" class="meta-eye-btn" onclick="toggleMetaTotalVisivel()">
+      ${metaTotalVisivel ? '🌕' : '🌑'}
+    </button>
+  </div>
+</div>
       </div>
     `;
 
