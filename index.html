@@ -534,9 +534,9 @@
       background:#111;
     }
 
-    .item-pedido{
+      .item-pedido{
       display:grid;
-      grid-template-columns:1.5fr 1fr auto;
+      grid-template-columns:1.4fr .9fr .9fr auto;
       gap:12px;
       align-items:end;
       background:linear-gradient(180deg,#181818,#121212);
@@ -1046,18 +1046,11 @@
           <label for="vendedorPedido">Vendedor</label>
           <input id="vendedorPedido" placeholder="Nome do vendedor">
         </div>
-
-        <div>
-          <label for="pagamento">Pagamento</label>
-          <select id="pagamento">
-            <option>Limpo</option>
-            <option>Sujo</option>
-          </select>
-        </div>
+        
       </div>
 
-      <div class="helper">Você pode adicionar várias armas no mesmo pedido. A HK USP não recebe desconto.</div>
-
+<div class="helper">Você pode adicionar várias armas no mesmo pedido e definir o pagamento de cada arma separadamente. A HK USP não recebe desconto.</div>
+      
       <div id="itensPedido"></div>
 
       <div class="actions">
@@ -1660,32 +1653,40 @@
     return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
   }
 
-  function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = ""){
-    const container = document.getElementById("itensPedido");
-    const div = document.createElement("div");
-    div.className = "item-pedido";
+function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pagamentoSelecionado = "Limpo"){
+  const container = document.getElementById("itensPedido");
+  const div = document.createElement("div");
+  div.className = "item-pedido";
 
-    div.innerHTML = `
-      <div>
-        <label>Arma</label>
-        <select class="arma-item" onchange="atualizarResumoItensPedido()">
-          ${getArmasOptionsHtml(armaSelecionada)}
-        </select>
-      </div>
+  div.innerHTML = `
+    <div>
+      <label>Arma</label>
+      <select class="arma-item" onchange="atualizarResumoItensPedido()">
+        ${getArmasOptionsHtml(armaSelecionada)}
+      </select>
+    </div>
 
-      <div>
-        <label>Quantidade</label>
-        <input class="qtd-item" type="number" min="1" value="${quantidade}" placeholder="Ex: 5" oninput="atualizarResumoItensPedido()">
-      </div>
+    <div>
+      <label>Quantidade</label>
+      <input class="qtd-item" type="number" min="1" value="${quantidade}" placeholder="Ex: 5" oninput="atualizarResumoItensPedido()">
+    </div>
 
-      <div>
-        <button class="remove-item" onclick="removerItemPedido(this)">Remover</button>
-      </div>
-    `;
+    <div>
+      <label>Pagamento</label>
+      <select class="pagamento-item" onchange="atualizarResumoItensPedido()">
+        <option value="Limpo" ${pagamentoSelecionado === "Limpo" ? "selected" : ""}>Limpo</option>
+        <option value="Sujo" ${pagamentoSelecionado === "Sujo" ? "selected" : ""}>Sujo</option>
+      </select>
+    </div>
 
-    container.appendChild(div);
-    atualizarResumoItensPedido();
-  }
+    <div>
+      <button class="remove-item" onclick="removerItemPedido(this)">Remover</button>
+    </div>
+  `;
+
+  container.appendChild(div);
+  atualizarResumoItensPedido();
+}
 
   function removerItemPedido(botao){
     const container = document.getElementById("itensPedido");
@@ -1698,45 +1699,43 @@
     atualizarResumoItensPedido();
   }
 
-  function atualizarResumoItensPedido(){
-    const itens = document.querySelectorAll("#itensPedido .item-pedido");
-    const pagamento = document.getElementById("pagamento").value;
+ function atualizarResumoItensPedido(){
+  const itens = document.querySelectorAll("#itensPedido .item-pedido");
 
-    itens.forEach(item => {
-      let resumo = item.querySelector(".item-resumo");
-      if(!resumo){
-        resumo = document.createElement("div");
-        resumo.className = "item-resumo full";
-        item.appendChild(resumo);
-      }
+  itens.forEach(item => {
+    let resumo = item.querySelector(".item-resumo");
+    if(!resumo){
+      resumo = document.createElement("div");
+      resumo.className = "item-resumo full";
+      item.appendChild(resumo);
+    }
 
-      const armaNome = item.querySelector(".arma-item").value;
-      const qtd = Number(item.querySelector(".qtd-item").value);
-      const valorUnitario = armas[armaNome][pagamento.toLowerCase()];
-      const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
+    const armaNome = item.querySelector(".arma-item").value;
+    const qtd = Number(item.querySelector(".qtd-item").value);
+    const pagamento = item.querySelector(".pagamento-item").value;
+    const valorUnitario = armas[armaNome][pagamento.toLowerCase()];
+    const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
 
-      if(!qtd || qtd <= 0){
-        resumo.innerHTML = `Valor unitário: ${dinheiro(valorUnitario)}${semDesconto}`;
-        return;
-      }
+    if(!qtd || qtd <= 0){
+      resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)}${semDesconto}`;
+      return;
+    }
 
-      resumo.innerHTML = `Valor unitário: ${dinheiro(valorUnitario)} | Subtotal: ${dinheiro(qtd * valorUnitario)}${semDesconto}`;
-    });
-  }
+    resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)} | Subtotal: ${dinheiro(qtd * valorUnitario)}${semDesconto}`;
+  });
+}
 
-  function resetarPedido(){
-    document.getElementById("contato").value = "";
-    document.getElementById("vendedorPedido").value = "";
-    document.getElementById("pagamento").value = "Limpo";
-    document.getElementById("itensPedido").innerHTML = "";
-    document.getElementById("cupom").innerHTML = "";
-    adicionarItemPedido();
-  }
+function resetarPedido(){
+  document.getElementById("contato").value = "";
+  document.getElementById("vendedorPedido").value = "";
+  document.getElementById("itensPedido").innerHTML = "";
+  document.getElementById("cupom").innerHTML = "";
+  adicionarItemPedido();
+}
 
   async function gerarPedido(){
     const contato = document.getElementById("contato").value.trim();
     const vendedor = document.getElementById("vendedorPedido").value.trim();
-    const pagamento = document.getElementById("pagamento").value;
     const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
 
     if(!contato){
@@ -1762,6 +1761,7 @@
     for(const itemEl of itensEls){
       const armaNome = itemEl.querySelector(".arma-item").value;
       const qtd = Number(itemEl.querySelector(".qtd-item").value);
+      const pagamento = itemEl.querySelector(".pagamento-item").value;
 
       if(!qtd || qtd <= 0){
         alert("Todas as armas precisam ter uma quantidade válida.");
@@ -1778,11 +1778,11 @@
       itens.push({
         arma: armaNome,
         qtd,
+        pagamento,
         preco,
         subtotal: subtotalItem,
         elegivelDesconto
       });
-
       totalArmas += qtd;
       subtotalGeral += subtotalItem;
       totalCylinder += qtd * arma.materiais.cylinder;
@@ -1816,13 +1816,11 @@
     const numero = (vendas[0]?.order_number || 0) + 1;
 
     const linhas = [
-      { type:"title", text:">> SISTEMA FENRIR" },
-      { type:"line", text:"==============================" },
       { text:`VENDA #${String(numero).padStart(4,"0")}` },
       { text:`DATA: ${dataAtualBR()}` },
       { text:`COMPRADOR: ${contato}` },
       { text:`VENDEDOR: ${vendedor || "-"}` },
-      { text:`PAGAMENTO: DINHEIRO ${pagamento.toUpperCase()}` },
+      { text:`PAGAMENTO: MISTO / POR ITEM` },
       { type:"line", text:"------------------------------" },
       { text:"ITENS:" }
     ];
@@ -1830,7 +1828,7 @@
     itens.forEach(item => {
       const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
       linhas.push({
-        text:`${item.qtd} ${item.arma} → ${dinheiro(item.preco)} (cada)${marcador}`
+        text:`${item.qtd} ${item.arma} → ${dinheiro(item.preco)} (cada) • ${item.pagamento.toUpperCase()}${marcador}`
       });
     });
 
@@ -1879,13 +1877,14 @@
         subtotal: Math.round(subtotalGeral),
         discountValue: Math.round(valorDesconto),
         total: Math.round(totalFinal),
-        items: itens.map(i => ({
-          weapon: i.arma,
-          quantity: i.qtd,
-          unitPrice: i.preco,
-          subtotal: i.subtotal,
-          eligibleDiscount: i.elegivelDesconto,
-        })),
+           items: itens.map(i => ({
+            weapon: i.arma,
+            quantity: i.qtd,
+            paymentType: i.pagamento,
+            unitPrice: i.preco,
+            subtotal: i.subtotal,
+            eligibleDiscount: i.elegivelDesconto,
+          })),
       }),
     });
 
@@ -2615,7 +2614,7 @@ window.onload = async () => {
   openTab("pedidos");
   adicionarItemPedido();
   adicionarItemEncomenda();
-  document.getElementById("pagamento").addEventListener("change", atualizarResumoItensPedido);
+
   carregarPessoasMeta();
   await carregarBanco();
   await carregarMetaBanco();
