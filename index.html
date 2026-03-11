@@ -2442,60 +2442,6 @@ const resumoLucro = calcularLucroVendaHistorica(v);
 
     div.innerHTML = html;
   }
-
-function gerarDashboard(){
-  const relatorio = document.getElementById("relatorio");
-
-  const totalVendas = vendas.length;
-  const faturamento = vendas.reduce((acc, v) => acc + Number(v.total || 0), 0);
-
-  const lucroTotal = Math.round(vendas.reduce((acc, v) => {
-    const resumoLucro = calcularLucroVendaHistorica(v);
-    return acc + Number(resumoLucro.lucro || 0);
-  }, 0));
-
-  const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
-  const lucroMedio = totalVendas ? Math.round(lucroTotal / totalVendas) : 0;
-
-  const totalEncomendas = encomendasHistorico.length;
-  const gastoEncomendas = encomendasHistorico.reduce((acc, e) => acc + Number(e.total || 0), 0);
-  const vendasComDesconto = vendas.filter(v => Number(v.discount_value || 0) > 0).length;
-  const economiaTotal = vendas.reduce((acc, v) => acc + Number(v.discount_value || 0), 0);
-
-  const armasVendidas = {};
-  vendas.forEach(v => {
-    (v.items || []).forEach(item => {
-      armasVendidas[item.weapon] = (armasVendidas[item.weapon] || 0) + Number(item.quantity || 0);
-    });
-  });
-
-  let armaTop = "Nenhuma";
-  let maiorQtd = 0;
-  Object.entries(armasVendidas).forEach(([arma, qtd]) => {
-    if(qtd > maiorQtd){
-      maiorQtd = qtd;
-      armaTop = arma;
-    }
-  });
-
-  relatorio.innerHTML = `
-    <div class="stats">
-      <div class="stat"><div class="icon">🧾</div><div class="title">Total de vendas</div><div class="value">${totalVendas}</div></div>
-      <div class="stat"><div class="icon">💰</div><div class="title">Faturamento</div><div class="value">${dinheiro(Math.round(faturamento))}</div></div>
-      <div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(lucroTotal)}</div></div>
-      <div class="stat"><div class="icon">📈</div><div class="title">Ticket médio</div><div class="value">${dinheiro(ticketMedio)}</div></div>
-      <div class="stat"><div class="icon">🔫</div><div class="title">Arma mais vendida</div><div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div></div>
-      
-      <div class="stat"><div class="icon">📦</div><div class="title">Encomendas feitas</div><div class="value">${totalEncomendas}</div></div>
-      <div class="stat"><div class="icon">💸</div><div class="title">Gasto em encomendas</div><div class="value">${dinheiro(Math.round(gastoEncomendas))}</div></div>
-      <div class="stat"><div class="icon">⭐</div><div class="title">Pedidos com desconto</div><div class="value">${vendasComDesconto}</div></div>
-      <div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(Math.round(economiaTotal))}</div></div>
-      <div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(lucroMedio)}</div></div>
-    </div>
-  `;
-
-  gerarRanking();
-}
 async function carregarBanco(){
   const filterType = document.getElementById("bankFilterType")?.value || "todos";
   const query = filterType !== "todos" ? `?type=${encodeURIComponent(filterType)}` : "";
@@ -2721,56 +2667,58 @@ function renderBanco(data){
 
   historyEl.innerHTML = html;
 }
-  function gerarDashboard(){
-    const relatorio = document.getElementById("relatorio");
+ function gerarDashboard(){
+  const relatorio = document.getElementById("relatorio");
 
-    const totalVendas = vendas.length;
-const faturamento = vendas.reduce((acc,v) => acc + Number(v.total || 0), 0);
-const lucroTotal = Math.round(vendas.reduce((acc, v) => {
-  const resumoLucro = calcularLucroVendaHistorica(v);
-  return acc + Number(resumoLucro.lucro || 0);
-}, 0));
+  const totalVendas = vendas.length;
+  const faturamento = vendas.reduce((acc, v) => acc + Number(v.total || 0), 0);
 
-const lucroMedio = totalVendas ? Math.round(lucroTotal / totalVendas) : 0;
-const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
-const totalEncomendas = encomendasHistorico.length;
-const gastoEncomendas = encomendasHistorico.reduce((acc,e) => acc + Number(e.total || 0), 0);
-const vendasComDesconto = vendas.filter(v => Number(v.discount_value || 0) > 0).length;
-const economiaTotal = vendas.reduce((acc,v) => acc + Number(v.discount_value || 0), 0);
+  const lucroTotal = Math.round(vendas.reduce((acc, v) => {
+    const resumoLucro = calcularLucroVendaHistorica(v);
+    return acc + Number(resumoLucro.lucro || 0);
+  }, 0));
 
-    const armasVendidas = {};
-    vendas.forEach(v => {
-      (v.items || []).forEach(item => {
-        armasVendidas[item.weapon] = (armasVendidas[item.weapon] || 0) + Number(item.quantity || 0);
-      });
+  const lucroMedio = totalVendas ? Math.round(lucroTotal / totalVendas) : 0;
+  const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
+  const totalEncomendas = encomendasHistorico.length;
+  const gastoEncomendas = encomendasHistorico.reduce((acc, e) => acc + Number(e.total || 0), 0);
+  const vendasComDesconto = vendas.filter(v => Number(v.discount_value || 0) > 0).length;
+  const economiaTotal = vendas.reduce((acc, v) => acc + Number(v.discount_value || 0), 0);
+
+  const armasVendidas = {};
+  vendas.forEach(v => {
+    (v.items || []).forEach(item => {
+      armasVendidas[item.weapon] = (armasVendidas[item.weapon] || 0) + Number(item.quantity || 0);
     });
+  });
 
-    let armaTop = "Nenhuma";
-    let maiorQtd = 0;
-    Object.entries(armasVendidas).forEach(([arma,qtd]) => {
-      if(qtd > maiorQtd){
-        maiorQtd = qtd;
-        armaTop = arma;
-      }
-    });
+  let armaTop = "Nenhuma";
+  let maiorQtd = 0;
+  Object.entries(armasVendidas).forEach(([arma, qtd]) => {
+    if(qtd > maiorQtd){
+      maiorQtd = qtd;
+      armaTop = arma;
+    }
+  });
 
-    relatorio.innerHTML = `
-<div class="stat"><div class="icon">🧾</div><div class="title">Total de vendas</div><div class="value">${totalVendas}</div></div>
-<div class="stat"><div class="icon">💰</div><div class="title">Faturamento</div><div class="value">${dinheiro(faturamento)}</div></div>
-<div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(lucroTotal)}</div></div>
-<div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(Math.round(lucroTotal))}</div></div>
-<div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(Math.round(lucroMedio))}</div></div>
-<div class="stat"><div class="icon">📈</div><div class="title">Ticket médio</div><div class="value">${dinheiro(ticketMedio)}</div></div>
-<div class="stat"><div class="icon">🔫</div><div class="title">Arma mais vendida</div><div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div></div>
-<div class="stat"><div class="icon">📦</div><div class="title">Encomendas feitas</div><div class="value">${totalEncomendas}</div></div>
-<div class="stat"><div class="icon">💸</div><div class="title">Gasto em encomendas</div><div class="value">${dinheiro(gastoEncomendas)}</div></div>
-<div class="stat"><div class="icon">✅</div><div class="title">Pedidos com desconto</div><div class="value">${vendasComDesconto}</div></div>
-<div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(economiaTotal)}</div></div>
-      </div>
-    `;
+  relatorio.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="icon">🧾</div><div class="title">Total de vendas</div><div class="value">${totalVendas}</div></div>
+      <div class="stat"><div class="icon">💰</div><div class="title">Faturamento</div><div class="value">${dinheiro(Math.round(faturamento))}</div></div>
+      <div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(lucroTotal)}</div></div>
+      <div class="stat"><div class="icon">📈</div><div class="title">Ticket médio</div><div class="value">${dinheiro(ticketMedio)}</div></div>
+      <div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(lucroMedio)}</div></div>
 
-    gerarRanking();
-  }
+      <div class="stat"><div class="icon">🔫</div><div class="title">Arma mais vendida</div><div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div></div>
+      <div class="stat"><div class="icon">📦</div><div class="title">Encomendas feitas</div><div class="value">${totalEncomendas}</div></div>
+      <div class="stat"><div class="icon">💸</div><div class="title">Gasto em encomendas</div><div class="value">${dinheiro(Math.round(gastoEncomendas))}</div></div>
+      <div class="stat"><div class="icon">✅</div><div class="title">Pedidos com desconto</div><div class="value">${vendasComDesconto}</div></div>
+      <div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(Math.round(economiaTotal))}</div></div>
+    </div>
+  `;
+
+  gerarRanking();
+}
 
 window.onload = async () => {
   openTab("pedidos");
