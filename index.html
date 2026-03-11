@@ -1342,7 +1342,34 @@
     renderHistoricoEncomendasInterno();
     gerarDashboard();
   }
+async function editarTotalHistorico(id, valorAtual){
+  const novoValor = prompt("Digite o novo valor total do pedido:", String(Number(valorAtual || 0)));
 
+  if(novoValor === null) return;
+
+  const total = Number(novoValor);
+
+  if(!Number.isFinite(total) || total <= 0){
+    alert("Informe um valor válido.");
+    return;
+  }
+
+  const res = await fetch('/api/update-order-total', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id, total })
+  });
+
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.error || "Erro ao atualizar total do pedido.");
+    return;
+  }
+
+  await carregarHistoricoBanco();
+  alert("Total do pedido atualizado.");
+}
   async function excluirHistorico(id){
     const ok = confirm("Deseja excluir este pedido?");
     if(!ok) return;
@@ -2301,6 +2328,7 @@ linhas.push(
 
         html += `
          html += `
+ html += `
   <div class="history">
     <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
     Comprador: ${escapeHtml(v.buyer_name)}<br>
