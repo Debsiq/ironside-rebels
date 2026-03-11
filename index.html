@@ -196,7 +196,11 @@
       color:#ffd166;
       border:1px solid rgba(255,209,102,.25);
     }
-
+    .meta-status.opcional{
+      background: rgba(80, 160, 255, .12);
+      color: #6fb6ff;
+      border: 1px solid rgba(80, 160, 255, .25);
+    }
     .meta-total-box{
       display:grid;
       grid-template-columns:repeat(6, minmax(0, 1fr));
@@ -1517,7 +1521,7 @@
         statusExibido = "opcional";
       }
 
-      const classe = statusExibido === "opcional" ? "pendente" : r.status;
+      const classe = statusExibido === "opcional" ? "opcional" : r.status;
 
          html += `
   <div class="meta-card">
