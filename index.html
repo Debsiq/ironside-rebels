@@ -1751,6 +1751,8 @@ function resetarPedido(){
     let itens = [];
     let totalArmas = 0;
     let subtotalGeral = 0;
+    let totalLimpo = 0;
+    let totalSujo = 0;
     let totalCylinder = 0;
     let totalComponents = 0;
     let totalBlueprint = 0;
@@ -1805,8 +1807,6 @@ function resetarPedido(){
     let desconto = false;
     let valorDesconto = 0;
     let totalFinal = subtotalGeral;
-    let totalLimpo = 0;
-    let totalSujo = 0;
 
    if(qtdElegivelDesconto >= 11){
   desconto = true;
