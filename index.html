@@ -457,11 +457,17 @@
 
 .stats{
   display:grid;
-  grid-template-columns:repeat(3, minmax(0, 1fr));
+  grid-template-columns:repeat(5, minmax(0, 1fr));
   gap:14px;
 }
 
-@media (max-width:1100px){
+@media (max-width:1200px){
+  .stats{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width:800px){
   .stats{
     grid-template-columns:repeat(2, minmax(0, 1fr));
   }
@@ -472,7 +478,6 @@
     grid-template-columns:1fr;
   }
 }
-
     .stat{
       background:linear-gradient(180deg,#1b1b1b,#121212);
       border:1px solid #2a2a2a;
@@ -2438,63 +2443,59 @@ const resumoLucro = calcularLucroVendaHistorica(v);
     div.innerHTML = html;
   }
 
-  function gerarRanking(){
-   const ranking = {};
+function gerarDashboard(){
+  const relatorio = document.getElementById("relatorio");
 
-vendas.forEach(v => {
-  const resumoLucro = calcularLucroVendaHistorica(v);
+  const totalVendas = vendas.length;
+  const faturamento = vendas.reduce((acc, v) => acc + Number(v.total || 0), 0);
 
-  if(!ranking[v.buyer_name]){
-    ranking[v.buyer_name] = {
-      total: 0,
-      profit: 0
-    };
-  }
+  const lucroTotal = Math.round(vendas.reduce((acc, v) => {
+    const resumoLucro = calcularLucroVendaHistorica(v);
+    return acc + Number(resumoLucro.lucro || 0);
+  }, 0));
 
-  ranking[v.buyer_name].total += Number(v.total || 0);
-  ranking[v.buyer_name].profit += Number(resumoLucro.lucro || 0);
-});
+  const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
+  const lucroMedio = totalVendas ? Math.round(lucroTotal / totalVendas) : 0;
 
-const lista = Object.entries(ranking).sort((a,b) => b[1].total - a[1].total);
-    
-    const div = document.getElementById("rankingClientes");
+  const totalEncomendas = encomendasHistorico.length;
+  const gastoEncomendas = encomendasHistorico.reduce((acc, e) => acc + Number(e.total || 0), 0);
+  const vendasComDesconto = vendas.filter(v => Number(v.discount_value || 0) > 0).length;
+  const economiaTotal = vendas.reduce((acc, v) => acc + Number(v.discount_value || 0), 0);
 
-    if(lista.length === 0){
-      div.innerHTML = `<div class="empty">Sem vendas registradas para gerar ranking.</div>`;
-      return;
-    }
-
-    let html = `<div class="ranking-grid">`;
-
-    if(lista[0]){
-  html += `<div class="podium gold"><div class="place">🥇 1º Lugar</div><div class="name">${escapeHtml(lista[0][0])}</div><div class="amount">Total movimentado: ${dinheiro(lista[0][1].total)}<br>Lucro gerado: ${dinheiro(lista[0][1].profit)}</div></div>`;
-}
-if(lista[1]){
-  html += `<div class="podium silver"><div class="place">🥈 2º Lugar</div><div class="name">${escapeHtml(lista[1][0])}</div><div class="amount">Total movimentado: ${dinheiro(lista[1][1].total)}<br>Lucro gerado: ${dinheiro(lista[1][1].profit)}</div></div>`;
-}
-if(lista[2]){
-  html += `<div class="podium bronze"><div class="place">🥉 3º Lugar</div><div class="name">${escapeHtml(lista[2][0])}</div><div class="amount">Total movimentado: ${dinheiro(lista[2][1].total)}<br>Lucro gerado: ${dinheiro(lista[2][1].profit)}</div></div>`;
-}
-    html += `</div><div class="ranking-list">`;
-
-    lista.forEach((c, i) => {
-      html += `
-        <div class="ranking-item">
-          <div class="left">
-            <div class="pos">${i + 1}º colocado</div>
-            <div>${escapeHtml(c[0])}</div>
-          </div>
-<div class="value">
-  ${dinheiro(c[1].total)}
-  <div style="font-size:12px;color:#9dffbf;margin-top:4px;">Lucro: ${dinheiro(c[1].profit)}</div>
-</div>
-</div>
-      `;
+  const armasVendidas = {};
+  vendas.forEach(v => {
+    (v.items || []).forEach(item => {
+      armasVendidas[item.weapon] = (armasVendidas[item.weapon] || 0) + Number(item.quantity || 0);
     });
+  });
 
-    html += `</div>`;
-    div.innerHTML = html;
-  }
+  let armaTop = "Nenhuma";
+  let maiorQtd = 0;
+  Object.entries(armasVendidas).forEach(([arma, qtd]) => {
+    if(qtd > maiorQtd){
+      maiorQtd = qtd;
+      armaTop = arma;
+    }
+  });
+
+  relatorio.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="icon">🧾</div><div class="title">Total de vendas</div><div class="value">${totalVendas}</div></div>
+      <div class="stat"><div class="icon">💰</div><div class="title">Faturamento</div><div class="value">${dinheiro(Math.round(faturamento))}</div></div>
+      <div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(lucroTotal)}</div></div>
+      <div class="stat"><div class="icon">📈</div><div class="title">Ticket médio</div><div class="value">${dinheiro(ticketMedio)}</div></div>
+      <div class="stat"><div class="icon">🔫</div><div class="title">Arma mais vendida</div><div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div></div>
+      
+      <div class="stat"><div class="icon">📦</div><div class="title">Encomendas feitas</div><div class="value">${totalEncomendas}</div></div>
+      <div class="stat"><div class="icon">💸</div><div class="title">Gasto em encomendas</div><div class="value">${dinheiro(Math.round(gastoEncomendas))}</div></div>
+      <div class="stat"><div class="icon">⭐</div><div class="title">Pedidos com desconto</div><div class="value">${vendasComDesconto}</div></div>
+      <div class="stat"><div class="icon">🟢</div><div class="title">Desconto total concedido</div><div class="value">${dinheiro(Math.round(economiaTotal))}</div></div>
+      <div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(lucroMedio)}</div></div>
+    </div>
+  `;
+
+  gerarRanking();
+}
 async function carregarBanco(){
   const filterType = document.getElementById("bankFilterType")?.value || "todos";
   const query = filterType !== "todos" ? `?type=${encodeURIComponent(filterType)}` : "";
@@ -2725,12 +2726,13 @@ function renderBanco(data){
 
     const totalVendas = vendas.length;
 const faturamento = vendas.reduce((acc,v) => acc + Number(v.total || 0), 0);
-const lucroTotal = vendas.reduce((acc, v) => {
+const lucroTotal = Math.round(vendas.reduce((acc, v) => {
   const resumoLucro = calcularLucroVendaHistorica(v);
   return acc + Number(resumoLucro.lucro || 0);
-}, 0);
-const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
+}, 0));
+
 const lucroMedio = totalVendas ? Math.round(lucroTotal / totalVendas) : 0;
+const ticketMedio = totalVendas ? Math.round(faturamento / totalVendas) : 0;
 const totalEncomendas = encomendasHistorico.length;
 const gastoEncomendas = encomendasHistorico.reduce((acc,e) => acc + Number(e.total || 0), 0);
 const vendasComDesconto = vendas.filter(v => Number(v.discount_value || 0) > 0).length;
@@ -2756,8 +2758,9 @@ const economiaTotal = vendas.reduce((acc,v) => acc + Number(v.discount_value || 
 <div class="stat"><div class="icon">🧾</div><div class="title">Total de vendas</div><div class="value">${totalVendas}</div></div>
 <div class="stat"><div class="icon">💰</div><div class="title">Faturamento</div><div class="value">${dinheiro(faturamento)}</div></div>
 <div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(lucroTotal)}</div></div>
+<div class="stat"><div class="icon">🟩</div><div class="title">Lucro total</div><div class="value">${dinheiro(Math.round(lucroTotal))}</div></div>
+<div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(Math.round(lucroMedio))}</div></div>
 <div class="stat"><div class="icon">📈</div><div class="title">Ticket médio</div><div class="value">${dinheiro(ticketMedio)}</div></div>
-<div class="stat"><div class="icon">💹</div><div class="title">Lucro médio</div><div class="value">${dinheiro(lucroMedio)}</div></div>
 <div class="stat"><div class="icon">🔫</div><div class="title">Arma mais vendida</div><div class="value" style="font-size:19px">${escapeHtml(armaTop)}</div></div>
 <div class="stat"><div class="icon">📦</div><div class="title">Encomendas feitas</div><div class="value">${totalEncomendas}</div></div>
 <div class="stat"><div class="icon">💸</div><div class="title">Gasto em encomendas</div><div class="value">${dinheiro(gastoEncomendas)}</div></div>
