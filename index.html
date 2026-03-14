@@ -158,6 +158,72 @@
       padding:14px;
     }
 
+    .meta-card-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    .meta-card-actions .small{
+      margin-top:0;
+    }
+
+    .quadro-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .quadro-panel{
+      background:linear-gradient(180deg,#181818,#121212);
+      border:1px solid #2a2a2a;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .quadro-panel h4{
+      margin:0 0 12px;
+      color:#ffe0e0;
+      font-size:16px;
+    }
+
+    .quadro-lista{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .quadro-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      background:linear-gradient(180deg,#1b1b1b,#131313);
+      border:1px solid #2a2a2a;
+      border-radius:12px;
+    }
+
+    .quadro-item-info strong{
+      display:block;
+      color:#fff;
+      margin-bottom:4px;
+    }
+
+    .quadro-item-info span{
+      color:#bdbdbd;
+      font-size:12px;
+    }
+
+    .quadro-item-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:flex-end;
+    }
+
     .meta-card .nome{
       font-weight:800;
       color:#fff;
@@ -1049,6 +1115,31 @@
         <button class="action" onclick="registrarMetaPessoa()">Registrar / Atualizar</button>
       </div>
 
+      <div class="divider"></div>
+
+      <h3>🛡️ Gestão do quadro</h3>
+      <div class="helper">Adicione novos nomes ao quadro, promova prospects para membros e remova pessoas quando precisar.</div>
+
+      <div class="grid" style="margin-top:12px;">
+        <div>
+          <label for="novoNomeQuadro">Nome</label>
+          <input id="novoNomeQuadro" placeholder="Ex: Novo membro ou prospect">
+        </div>
+
+        <div>
+          <label for="tipoNovoQuadro">Adicionar como</label>
+          <select id="tipoNovoQuadro">
+            <option value="membro">Membro</option>
+            <option value="prospect">Prospect</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="action" onclick="adicionarPessoaQuadro()">Adicionar ao quadro</button>
+      </div>
+
+      <div id="gestaoQuadroMeta" style="margin-top:18px;"></div>
       <div id="metaTabelaSemana" style="margin-top:18px;"></div>
       <div id="metaHistoricoSemanas" style="margin-top:18px;"></div>
     </div>
@@ -1182,7 +1273,11 @@
     renderHistoricoEncomendasInterno();
   }
 
-  const membrosMeta = [
+  const QUADRO_MEMBROS_STORAGE_KEY = 'fenrir_quadro_membros';
+  const QUADRO_PROSPECTS_STORAGE_KEY = 'fenrir_quadro_prospects';
+  const NOMES_REMOVIDOS_DO_QUADRO = ['Isaiah D\'Lenfer'];
+
+  const membrosMetaPadrao = [
     'Maximilian Leclerc',
     'Pietro "Devil" D\'Lenfer',
     'Bjorn "Thor" D\'Lenfer',
@@ -1194,7 +1289,6 @@
     'Ricardo Lionhearth',
     'Chuck Silver',
     'Dante D\'Lenfer',
-    'Isaiah D\'Lenfer',
     'Tristan D\'Lenfer',
     'Angelique "Angel" Melbourne',
     'Kaleb Chester',
@@ -1203,7 +1297,7 @@
     'Baltazar "Bills" D\'Lenfer'
   ];
 
-  const prospectsMeta = [
+  const prospectsMetaPadrao = [
     'Aurora "Castillo" Castillo',
     'Jorsh Garcia',
     'Rebecca "Belladonna" Celestine',
@@ -1213,8 +1307,10 @@
     'Jesse "Foster" Foster'
   ];
 
-  const membrosMetaOrdenados = [...membrosMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
-  const prospectsMetaOrdenados = [...prospectsMeta].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+  let membrosMeta = [];
+  let prospectsMeta = [];
+  let membrosMetaOrdenados = [];
+  let prospectsMetaOrdenados = [];
 
   let metaSemanaAtualNumero = 0;
   let metaSemanaAtual = null;
@@ -1290,6 +1386,232 @@
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;")
       .replaceAll("'","&#039;");
+  }
+
+  function normalizarNomeMeta(nome){
+    return String(nome || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLocaleLowerCase('pt-BR');
+  }
+
+  function ordenarListaMeta(lista){
+    const mapa = new Map();
+
+    (Array.isArray(lista) ? lista : []).forEach(item => {
+      const nome = String(item || "").trim().replace(/\s+/g, " ");
+      const chave = normalizarNomeMeta(nome);
+
+      if(nome && !mapa.has(chave)){
+        mapa.set(chave, nome);
+      }
+    });
+
+    return [...mapa.values()].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
+  }
+
+  function carregarListaQuadroMeta(chave, fallback){
+    try{
+      const salvo = JSON.parse(localStorage.getItem(chave) || 'null');
+      if(Array.isArray(salvo)){
+        return ordenarListaMeta(salvo);
+      }
+    }catch(error){
+      console.warn(`Não foi possível ler ${chave} do localStorage.`, error);
+    }
+
+    return ordenarListaMeta(fallback);
+  }
+
+  function atualizarListasQuadroMeta(){
+    membrosMetaOrdenados = ordenarListaMeta(membrosMeta);
+    prospectsMetaOrdenados = ordenarListaMeta(prospectsMeta);
+  }
+
+  function salvarQuadroMeta(){
+    atualizarListasQuadroMeta();
+    localStorage.setItem(QUADRO_MEMBROS_STORAGE_KEY, JSON.stringify(membrosMetaOrdenados));
+    localStorage.setItem(QUADRO_PROSPECTS_STORAGE_KEY, JSON.stringify(prospectsMetaOrdenados));
+    membrosMeta = [...membrosMetaOrdenados];
+    prospectsMeta = [...prospectsMetaOrdenados];
+  }
+
+  function inicializarQuadroMeta(){
+    membrosMeta = carregarListaQuadroMeta(QUADRO_MEMBROS_STORAGE_KEY, membrosMetaPadrao);
+    prospectsMeta = carregarListaQuadroMeta(QUADRO_PROSPECTS_STORAGE_KEY, prospectsMetaPadrao);
+
+    const nomesRemovidos = new Set(NOMES_REMOVIDOS_DO_QUADRO.map(normalizarNomeMeta));
+
+    membrosMeta = membrosMeta.filter(nome => !nomesRemovidos.has(normalizarNomeMeta(nome)));
+    prospectsMeta = prospectsMeta.filter(nome => !nomesRemovidos.has(normalizarNomeMeta(nome)));
+
+    salvarQuadroMeta();
+  }
+
+  function nomeExisteNoQuadroMeta(nome){
+    const chave = normalizarNomeMeta(nome);
+    return [...membrosMeta, ...prospectsMeta].some(item => normalizarNomeMeta(item) === chave);
+  }
+
+  function renderGestaoQuadroMeta(){
+    const container = document.getElementById('gestaoQuadroMeta');
+    if(!container) return;
+
+    const renderItens = (lista, tipo) => {
+      if(!lista.length){
+        return `<div class="empty">Nenhum ${tipo === 'membro' ? 'membro' : 'prospect'} cadastrado no quadro.</div>`;
+      }
+
+      return `
+        <div class="quadro-lista">
+          ${lista.map(nome => `
+            <div class="quadro-item">
+              <div class="quadro-item-info">
+                <strong>${escapeHtml(nome)}</strong>
+                <span>${tipo === 'membro' ? 'Membro do quadro' : 'Prospect do quadro'}</span>
+              </div>
+              <div class="quadro-item-actions">
+                ${tipo === 'prospect' ? `<button class="small" onclick="promoverProspect(decodeURIComponent('${encodeURIComponent(nome)}'))">Promover</button>` : ''}
+                <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(nome)}'), '${tipo}')">Remover</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    };
+
+    container.innerHTML = `
+      <div class="quadro-grid">
+        <div class="quadro-panel">
+          <h4>👑 Membros (${membrosMetaOrdenados.length})</h4>
+          ${renderItens(membrosMetaOrdenados, 'membro')}
+        </div>
+        <div class="quadro-panel">
+          <h4>🕯️ Prospects (${prospectsMetaOrdenados.length})</h4>
+          ${renderItens(prospectsMetaOrdenados, 'prospect')}
+        </div>
+      </div>
+    `;
+  }
+
+  function syncQuadroMeta(preservarSelecao = true){
+    const tipoSelect = document.getElementById('tipoMetaPessoa');
+    const nomeSelect = document.getElementById('nomeMetaPessoa');
+    const nomeAtual = nomeSelect ? nomeSelect.value : '';
+
+    atualizarListasQuadroMeta();
+
+    if(tipoSelect){
+      carregarPessoasMeta();
+
+      if(preservarSelecao && nomeAtual){
+        const opcoes = [...document.getElementById('nomeMetaPessoa').options];
+        const opcaoCorrespondente = opcoes.find(opcao => normalizarNomeMeta(opcao.value) === normalizarNomeMeta(nomeAtual));
+
+        if(opcaoCorrespondente){
+          document.getElementById('nomeMetaPessoa').value = opcaoCorrespondente.value;
+        }
+      }
+    }
+
+    renderGestaoQuadroMeta();
+
+    if(metaSemanaAtual){
+      renderMeta();
+    }
+  }
+
+  function adicionarPessoaQuadro(){
+    const nomeInput = document.getElementById('novoNomeQuadro');
+    const tipo = document.getElementById('tipoNovoQuadro').value;
+    const nome = String(nomeInput.value || '').trim().replace(/\s+/g, ' ');
+
+    if(!nome){
+      alert('Digite um nome para adicionar ao quadro.');
+      return;
+    }
+
+    if(nomeExisteNoQuadroMeta(nome)){
+      alert('Esse nome já existe no quadro.');
+      return;
+    }
+
+    if(tipo === 'membro'){
+      membrosMeta.push(nome);
+    }else{
+      prospectsMeta.push(nome);
+    }
+
+    salvarQuadroMeta();
+    nomeInput.value = '';
+    syncQuadroMeta(false);
+    alert(`${nome} adicionado(a) ao quadro como ${tipo}.`);
+  }
+
+  function promoverProspect(nome){
+    const chave = normalizarNomeMeta(nome);
+    const prospect = prospectsMeta.find(item => normalizarNomeMeta(item) === chave);
+
+    if(!prospect){
+      alert('Prospect não encontrado no quadro.');
+      return;
+    }
+
+    prospectsMeta = prospectsMeta.filter(item => normalizarNomeMeta(item) !== chave);
+
+    if(!membrosMeta.some(item => normalizarNomeMeta(item) === chave)){
+      membrosMeta.push(prospect);
+    }
+
+    salvarQuadroMeta();
+
+    const tipoSelect = document.getElementById('tipoMetaPessoa');
+    if(tipoSelect){
+      tipoSelect.value = 'membro';
+    }
+
+    syncQuadroMeta(false);
+    alert(`${prospect} agora faz parte dos membros.`);
+  }
+
+  function removerPessoaQuadro(nome, tipo){
+    const categoria = tipo === 'membro' ? 'membros' : 'prospects';
+    const confirmado = confirm(`Deseja remover ${nome} do quadro de ${categoria}?`);
+
+    if(!confirmado) return;
+
+    if(tipo === 'membro'){
+      membrosMeta = membrosMeta.filter(item => normalizarNomeMeta(item) !== normalizarNomeMeta(nome));
+    }else{
+      prospectsMeta = prospectsMeta.filter(item => normalizarNomeMeta(item) !== normalizarNomeMeta(nome));
+    }
+
+    salvarQuadroMeta();
+    syncQuadroMeta(false);
+  }
+
+  function montarEntradasSemana(tipo){
+    const quadro = tipo === 'membro' ? membrosMetaOrdenados : prospectsMetaOrdenados;
+
+    return quadro.map(nome => {
+      const existente = metaEntradas.find(item => normalizarNomeMeta(item.person_name) === normalizarNomeMeta(nome));
+
+      if(existente){
+        return {
+          ...existente,
+          person_name: nome,
+          person_type: tipo
+        };
+      }
+
+      return {
+        person_name: nome,
+        person_type: tipo,
+        amount: 0,
+        status: 'pendente',
+        justification: ''
+      };
+    });
   }
 
   function openTab(tab, btn = null){
@@ -1500,7 +1822,14 @@ async function editarTotalHistorico(id, valorAtual){
     const select = document.getElementById("nomeMetaPessoa");
     const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
 
-    select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
+    if(!lista.length){
+      select.innerHTML = `<option value="">Nenhum ${tipo === 'membro' ? 'membro' : 'prospect'} cadastrado</option>`;
+      select.disabled = true;
+    }else{
+      select.disabled = false;
+      select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
+    }
+
     document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
 
     const status = document.getElementById("statusMetaPessoa");
@@ -1553,6 +1882,8 @@ async function editarTotalHistorico(id, valorAtual){
   }
 
   function renderMeta(){
+    renderGestaoQuadroMeta();
+
     if(!metaSemanaAtual){
       document.getElementById("metaTabelaSemana").innerHTML = `<div class="empty">Carregando meta...</div>`;
       document.getElementById("metaHistoricoSemanas").innerHTML = '';
@@ -1562,10 +1893,8 @@ async function editarTotalHistorico(id, valorAtual){
     document.getElementById("metaResumoSemana").innerHTML =
       `Meta Semanal #${String(metaSemanaAtual.week_number).padStart(3, "0")} • Início: ${dataAtualBR(metaSemanaAtual.week_start)}`;
 
-    const membros = [...metaEntradas.filter(r => r.person_type === "membro")]
-      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
-    const prospects = [...metaEntradas.filter(r => r.person_type === "prospect")]
-      .sort((a, b) => a.person_name.localeCompare(b.person_name, 'pt-BR', { sensitivity: 'base' }));
+    const membros = montarEntradasSemana('membro');
+    const prospects = montarEntradasSemana('prospect');
 
     const membrosPagos = membros.filter(r => r.status === "pago").length;
     const membrosPendentes = membros.filter(r => r.status === "pendente").length;
@@ -1622,6 +1951,9 @@ async function editarTotalHistorico(id, valorAtual){
       <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
     </div>
+    <div class="meta-card-actions">
+      <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(r.person_name)}'), 'membro')">Remover do quadro</button>
+    </div>
   </div>
 `;
     });
@@ -1643,6 +1975,10 @@ async function editarTotalHistorico(id, valorAtual){
     <div class="meta-info-row">
       <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
+    </div>
+    <div class="meta-card-actions">
+      <button class="small" onclick="promoverProspect(decodeURIComponent('${encodeURIComponent(r.person_name)}'))">Promover para membro</button>
+      <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(r.person_name)}'), 'prospect')">Remover do quadro</button>
     </div>
   </div>
 `;
@@ -2818,6 +3154,7 @@ window.onload = async () => {
   adicionarItemPedido();
   adicionarItemEncomenda();
 
+  inicializarQuadroMeta();
   carregarPessoasMeta();
   await carregarBanco();
   await carregarMetaBanco();
