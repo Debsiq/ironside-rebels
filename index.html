@@ -169,13 +169,14 @@
       margin-top:0;
     }
 
-    .quadro-grid{
+    .quadro-toolbar{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
       gap:14px;
       margin-top:14px;
     }
 
+    .quadro-toolbar-card,
     .quadro-panel{
       background:linear-gradient(180deg,#181818,#121212);
       border:1px solid #2a2a2a;
@@ -183,16 +184,34 @@
       padding:14px;
     }
 
+    .quadro-toolbar-title,
     .quadro-panel h4{
       margin:0 0 12px;
       color:#ffe0e0;
       font-size:16px;
+      font-weight:800;
+    }
+
+    .quadro-toolbar-subtitle{
+      color:#bdbdbd;
+      font-size:12px;
+      margin:-4px 0 12px;
+    }
+
+    .quadro-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:14px;
+      margin-top:18px;
     }
 
     .quadro-lista{
       display:flex;
       flex-direction:column;
       gap:10px;
+      max-height:460px;
+      overflow:auto;
+      padding-right:4px;
     }
 
     .quadro-item{
@@ -206,10 +225,15 @@
       border-radius:12px;
     }
 
+    .quadro-item-info{
+      min-width:0;
+    }
+
     .quadro-item-info strong{
       display:block;
       color:#fff;
       margin-bottom:4px;
+      word-break:break-word;
     }
 
     .quadro-item-info span{
@@ -217,11 +241,30 @@
       font-size:12px;
     }
 
-    .quadro-item-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:flex-end;
+    .quadro-item-badge{
+      flex-shrink:0;
+      border:1px solid #353535;
+      background:#202020;
+      color:#e5e5e5;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+
+    .quadro-resumo-box{
+      margin-top:10px;
+      padding:12px;
+      border:1px dashed #343434;
+      border-radius:12px;
+      background:#121212;
+      color:#d7d7d7;
+      font-size:12px;
+    }
+
+    .quadro-form-row{
+      margin-top:0;
     }
 
     .meta-card .nome{
@@ -1118,25 +1161,59 @@
       <div class="divider"></div>
 
       <h3>🛡️ Gestão do quadro</h3>
-      <div class="helper">Adicione novos nomes ao quadro, promova prospects para membros e remova pessoas quando precisar.</div>
+      <div class="helper">Gerencie o quadro por seleção, sem poluir a tabela da semana.</div>
 
-      <div class="grid" style="margin-top:12px;">
-        <div>
-          <label for="novoNomeQuadro">Nome</label>
-          <input id="novoNomeQuadro" placeholder="Ex: Novo membro ou prospect">
+      <div class="quadro-toolbar">
+        <div class="quadro-toolbar-card">
+          <div class="quadro-toolbar-title">➕ Adicionar ao quadro</div>
+          <div class="quadro-toolbar-subtitle">Cadastre um novo nome escolhendo se entra como membro ou prospect.</div>
+
+          <div class="item-pedido quadro-form-row" style="grid-template-columns:1.6fr 1fr auto;">
+            <div>
+              <label for="novoNomeQuadro">Nome</label>
+              <input id="novoNomeQuadro" placeholder="Ex: Novo membro ou prospect">
+            </div>
+
+            <div>
+              <label for="tipoNovoQuadro">Adicionar como</label>
+              <select id="tipoNovoQuadro">
+                <option value="membro">Membro</option>
+                <option value="prospect">Prospect</option>
+              </select>
+            </div>
+
+            <button class="action" onclick="adicionarPessoaQuadro()">Adicionar</button>
+          </div>
         </div>
 
-        <div>
-          <label for="tipoNovoQuadro">Adicionar como</label>
-          <select id="tipoNovoQuadro">
-            <option value="membro">Membro</option>
-            <option value="prospect">Prospect</option>
-          </select>
-        </div>
-      </div>
+        <div class="quadro-toolbar-card">
+          <div class="quadro-toolbar-title">⚙️ Gerenciar pessoa</div>
+          <div class="quadro-toolbar-subtitle">Selecione o tipo, escolha o nome e aplique a ação desejada.</div>
 
-      <div class="actions">
-        <button class="action" onclick="adicionarPessoaQuadro()">Adicionar ao quadro</button>
+          <div class="item-pedido quadro-form-row" style="grid-template-columns:1fr 1.6fr 1.2fr auto;">
+            <div>
+              <label for="tipoGestaoQuadro">Tipo</label>
+              <select id="tipoGestaoQuadro" onchange="carregarPessoasGestaoQuadro()">
+                <option value="prospect">Prospect</option>
+                <option value="membro">Membro</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="nomeGestaoQuadro">Nome</label>
+              <select id="nomeGestaoQuadro" onchange="atualizarResumoGestaoQuadro()"></select>
+            </div>
+
+            <div>
+              <label for="acaoGestaoQuadro">Ação</label>
+              <select id="acaoGestaoQuadro" onchange="atualizarResumoGestaoQuadro()"></select>
+            </div>
+
+            <button class="action" onclick="executarAcaoQuadroSelecionada()">Aplicar</button>
+          </div>
+
+          <div id="resumoGestaoQuadro" class="quadro-resumo-box">Selecione uma pessoa para gerenciar o quadro.</div>
+        </div>
       </div>
 
       <div id="gestaoQuadroMeta" style="margin-top:18px;"></div>
@@ -1273,10 +1350,6 @@
     renderHistoricoEncomendasInterno();
   }
 
-  const QUADRO_MEMBROS_STORAGE_KEY = 'fenrir_quadro_membros';
-  const QUADRO_PROSPECTS_STORAGE_KEY = 'fenrir_quadro_prospects';
-  const NOMES_REMOVIDOS_DO_QUADRO = ['Isaiah D\'Lenfer'];
-
   const membrosMetaPadrao = [
     'Maximilian Leclerc',
     'Pietro "Devil" D\'Lenfer',
@@ -1410,17 +1483,13 @@
     return [...mapa.values()].sort((a, b) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' }));
   }
 
-  function carregarListaQuadroMeta(chave, fallback){
-    try{
-      const salvo = JSON.parse(localStorage.getItem(chave) || 'null');
-      if(Array.isArray(salvo)){
-        return ordenarListaMeta(salvo);
-      }
-    }catch(error){
-      console.warn(`Não foi possível ler ${chave} do localStorage.`, error);
-    }
+  function aplicarQuadroMetaDoBanco(roster){
+    const membros = Array.isArray(roster?.members) ? roster.members : membrosMetaPadrao;
+    const prospects = Array.isArray(roster?.prospects) ? roster.prospects : prospectsMetaPadrao;
 
-    return ordenarListaMeta(fallback);
+    membrosMeta = ordenarListaMeta(membros);
+    prospectsMeta = ordenarListaMeta(prospects);
+    atualizarListasQuadroMeta();
   }
 
   function atualizarListasQuadroMeta(){
@@ -1428,29 +1497,88 @@
     prospectsMetaOrdenados = ordenarListaMeta(prospectsMeta);
   }
 
-  function salvarQuadroMeta(){
-    atualizarListasQuadroMeta();
-    localStorage.setItem(QUADRO_MEMBROS_STORAGE_KEY, JSON.stringify(membrosMetaOrdenados));
-    localStorage.setItem(QUADRO_PROSPECTS_STORAGE_KEY, JSON.stringify(prospectsMetaOrdenados));
-    membrosMeta = [...membrosMetaOrdenados];
-    prospectsMeta = [...prospectsMetaOrdenados];
-  }
-
   function inicializarQuadroMeta(){
-    membrosMeta = carregarListaQuadroMeta(QUADRO_MEMBROS_STORAGE_KEY, membrosMetaPadrao);
-    prospectsMeta = carregarListaQuadroMeta(QUADRO_PROSPECTS_STORAGE_KEY, prospectsMetaPadrao);
-
-    const nomesRemovidos = new Set(NOMES_REMOVIDOS_DO_QUADRO.map(normalizarNomeMeta));
-
-    membrosMeta = membrosMeta.filter(nome => !nomesRemovidos.has(normalizarNomeMeta(nome)));
-    prospectsMeta = prospectsMeta.filter(nome => !nomesRemovidos.has(normalizarNomeMeta(nome)));
-
-    salvarQuadroMeta();
+    aplicarQuadroMetaDoBanco({
+      members: membrosMetaPadrao,
+      prospects: prospectsMetaPadrao
+    });
   }
 
   function nomeExisteNoQuadroMeta(nome){
     const chave = normalizarNomeMeta(nome);
     return [...membrosMeta, ...prospectsMeta].some(item => normalizarNomeMeta(item) === chave);
+  }
+
+  function carregarPessoasGestaoQuadro(nomePreferido = ''){
+    const tipoSelect = document.getElementById('tipoGestaoQuadro');
+    const nomeSelect = document.getElementById('nomeGestaoQuadro');
+    const acaoSelect = document.getElementById('acaoGestaoQuadro');
+    const resumoEl = document.getElementById('resumoGestaoQuadro');
+
+    if(!tipoSelect || !nomeSelect || !acaoSelect || !resumoEl) return;
+
+    const tipo = tipoSelect.value;
+    const lista = tipo === 'membro' ? membrosMetaOrdenados : prospectsMetaOrdenados;
+
+    if(!lista.length){
+      nomeSelect.innerHTML = `<option value="">Nenhum ${tipo === 'membro' ? 'membro' : 'prospect'} cadastrado</option>`;
+      nomeSelect.disabled = true;
+    }else{
+      nomeSelect.disabled = false;
+      nomeSelect.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join('');
+
+      const nomeEncontrado = lista.find(nome => normalizarNomeMeta(nome) === normalizarNomeMeta(nomePreferido));
+      if(nomeEncontrado){
+        nomeSelect.value = nomeEncontrado;
+      }
+    }
+
+    if(tipo === 'prospect'){
+      acaoSelect.innerHTML = `
+        <option value="promover">Promover para membro</option>
+        <option value="remover">Remover do quadro</option>
+      `;
+    }else{
+      acaoSelect.innerHTML = `<option value="remover">Remover do quadro</option>`;
+    }
+
+    atualizarResumoGestaoQuadro();
+  }
+
+  function atualizarResumoGestaoQuadro(){
+    const tipoSelect = document.getElementById('tipoGestaoQuadro');
+    const nomeSelect = document.getElementById('nomeGestaoQuadro');
+    const acaoSelect = document.getElementById('acaoGestaoQuadro');
+    const resumoEl = document.getElementById('resumoGestaoQuadro');
+
+    if(!tipoSelect || !nomeSelect || !acaoSelect || !resumoEl) return;
+
+    if(nomeSelect.disabled || !nomeSelect.value){
+      resumoEl.textContent = 'Nenhuma pessoa disponível nesse tipo de quadro.';
+      return;
+    }
+
+    const tipoLabel = tipoSelect.value === 'membro' ? 'Membro' : 'Prospect';
+    const acaoLabel = acaoSelect.value === 'promover' ? 'promover para membro' : 'remover do quadro';
+    resumoEl.textContent = `${nomeSelect.value} • ${tipoLabel} selecionado • Ação: ${acaoLabel}.`;
+  }
+
+  async function executarAcaoQuadroSelecionada(){
+    const tipo = document.getElementById('tipoGestaoQuadro')?.value;
+    const nome = document.getElementById('nomeGestaoQuadro')?.value;
+    const acao = document.getElementById('acaoGestaoQuadro')?.value;
+
+    if(!nome){
+      alert('Selecione uma pessoa para gerenciar.');
+      return;
+    }
+
+    if(acao === 'promover'){
+      await promoverProspect(nome);
+      return;
+    }
+
+    await removerPessoaQuadro(nome, tipo);
   }
 
   function renderGestaoQuadroMeta(){
@@ -1464,16 +1592,13 @@
 
       return `
         <div class="quadro-lista">
-          ${lista.map(nome => `
+          ${lista.map((nome, index) => `
             <div class="quadro-item">
               <div class="quadro-item-info">
                 <strong>${escapeHtml(nome)}</strong>
                 <span>${tipo === 'membro' ? 'Membro do quadro' : 'Prospect do quadro'}</span>
               </div>
-              <div class="quadro-item-actions">
-                ${tipo === 'prospect' ? `<button class="small" onclick="promoverProspect(decodeURIComponent('${encodeURIComponent(nome)}'))">Promover</button>` : ''}
-                <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(nome)}'), '${tipo}')">Remover</button>
-              </div>
+              <div class="quadro-item-badge">#${String(index + 1).padStart(2, '0')}</div>
             </div>
           `).join('')}
         </div>
@@ -1492,6 +1617,9 @@
         </div>
       </div>
     `;
+
+    const nomeAtual = document.getElementById('nomeGestaoQuadro')?.value || '';
+    carregarPessoasGestaoQuadro(nomeAtual);
   }
 
   function syncQuadroMeta(preservarSelecao = true){
@@ -1521,7 +1649,7 @@
     }
   }
 
-  function adicionarPessoaQuadro(){
+  async function adicionarPessoaQuadro(){
     const nomeInput = document.getElementById('novoNomeQuadro');
     const tipo = document.getElementById('tipoNovoQuadro').value;
     const nome = String(nomeInput.value || '').trim().replace(/\s+/g, ' ');
@@ -1536,58 +1664,87 @@
       return;
     }
 
-    if(tipo === 'membro'){
-      membrosMeta.push(nome);
-    }else{
-      prospectsMeta.push(nome);
+    const res = await fetch('/api/meta', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add',
+        weekNumber: metaSemanaAtualNumero,
+        personName: nome,
+        personType: tipo
+      })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || 'Erro ao adicionar pessoa ao quadro.');
+      return;
     }
 
-    salvarQuadroMeta();
     nomeInput.value = '';
-    syncQuadroMeta(false);
+    await carregarMetaBanco();
     alert(`${nome} adicionado(a) ao quadro como ${tipo}.`);
   }
 
-  function promoverProspect(nome){
-    const chave = normalizarNomeMeta(nome);
-    const prospect = prospectsMeta.find(item => normalizarNomeMeta(item) === chave);
+  async function promoverProspect(nome){
+    const prospect = prospectsMeta.find(item => normalizarNomeMeta(item) === normalizarNomeMeta(nome));
 
     if(!prospect){
       alert('Prospect não encontrado no quadro.');
       return;
     }
 
-    prospectsMeta = prospectsMeta.filter(item => normalizarNomeMeta(item) !== chave);
+    const res = await fetch('/api/meta', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'promote',
+        weekNumber: metaSemanaAtualNumero,
+        personName: prospect
+      })
+    });
 
-    if(!membrosMeta.some(item => normalizarNomeMeta(item) === chave)){
-      membrosMeta.push(prospect);
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || 'Erro ao promover prospect.');
+      return;
     }
-
-    salvarQuadroMeta();
 
     const tipoSelect = document.getElementById('tipoMetaPessoa');
     if(tipoSelect){
       tipoSelect.value = 'membro';
     }
 
-    syncQuadroMeta(false);
+    await carregarMetaBanco();
     alert(`${prospect} agora faz parte dos membros.`);
   }
 
-  function removerPessoaQuadro(nome, tipo){
+  async function removerPessoaQuadro(nome, tipo){
     const categoria = tipo === 'membro' ? 'membros' : 'prospects';
     const confirmado = confirm(`Deseja remover ${nome} do quadro de ${categoria}?`);
 
     if(!confirmado) return;
 
-    if(tipo === 'membro'){
-      membrosMeta = membrosMeta.filter(item => normalizarNomeMeta(item) !== normalizarNomeMeta(nome));
-    }else{
-      prospectsMeta = prospectsMeta.filter(item => normalizarNomeMeta(item) !== normalizarNomeMeta(nome));
+    const res = await fetch('/api/meta', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        action: 'remove',
+        weekNumber: metaSemanaAtualNumero,
+        personName: nome
+      })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok){
+      alert(data.error || 'Erro ao remover pessoa do quadro.');
+      return;
     }
 
-    salvarQuadroMeta();
-    syncQuadroMeta(false);
+    await carregarMetaBanco();
   }
 
   function montarEntradasSemana(tipo){
@@ -1797,10 +1954,17 @@ async function editarTotalHistorico(id, valorAtual){
     const res = await fetch(`/api/meta${query}`);
     const data = await res.json();
 
+    if(!res.ok){
+      alert(data.error || "Erro ao carregar a meta.");
+      return;
+    }
+
+    aplicarQuadroMetaDoBanco(data.roster || {});
+
     metaSemanaAtual = data.week;
     metaEntradas = data.entries || [];
     metaHistoricoSemanas = data.history || [];
-    metaSemanaAtualNumero = Number(metaSemanaAtual.week_number || 0);
+    metaSemanaAtualNumero = Number(metaSemanaAtual?.week_number || 0);
 
     renderMeta();
   }
@@ -1882,6 +2046,7 @@ async function editarTotalHistorico(id, valorAtual){
   }
 
   function renderMeta(){
+    carregarPessoasMeta();
     renderGestaoQuadroMeta();
 
     if(!metaSemanaAtual){
@@ -1951,9 +2116,6 @@ async function editarTotalHistorico(id, valorAtual){
       <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
     </div>
-    <div class="meta-card-actions">
-      <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(r.person_name)}'), 'membro')">Remover do quadro</button>
-    </div>
   </div>
 `;
     });
@@ -1975,10 +2137,6 @@ async function editarTotalHistorico(id, valorAtual){
     <div class="meta-info-row">
       <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
-    </div>
-    <div class="meta-card-actions">
-      <button class="small" onclick="promoverProspect(decodeURIComponent('${encodeURIComponent(r.person_name)}'))">Promover para membro</button>
-      <button class="small" onclick="removerPessoaQuadro(decodeURIComponent('${encodeURIComponent(r.person_name)}'), 'prospect')">Remover do quadro</button>
     </div>
   </div>
 `;
@@ -3155,7 +3313,6 @@ window.onload = async () => {
   adicionarItemEncomenda();
 
   inicializarQuadroMeta();
-  carregarPessoasMeta();
   await carregarBanco();
   await carregarMetaBanco();
   await carregarHistoricoBanco();
