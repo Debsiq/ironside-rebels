@@ -91,6 +91,27 @@ async function ensureMetaSchema(client) {
     )
   `);
 
+
+  await client.query(`
+    alter table weekly_goal_entries
+    add column if not exists created_at timestamptz not null default now()
+  `);
+
+  await client.query(`
+    alter table weekly_goal_entries
+    add column if not exists updated_at timestamptz not null default now()
+  `);
+
+  await client.query(`
+    alter table meta_people
+    add column if not exists created_at timestamptz not null default now()
+  `);
+
+  await client.query(`
+    alter table meta_people
+    add column if not exists updated_at timestamptz not null default now()
+  `);
+
   const activeCount = await client.query(`
     select count(*)::int as count
     from meta_people
