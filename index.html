@@ -1435,19 +1435,27 @@
 
   const tabelaCompras = {
     municoes: {
-      "9mm ou .45": {
-        "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
-        "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" }
-      },
-      ".50 e Doze": {
-        "NINE": { limpo: 30, sujo: null, obs: "" },
-        "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" }
-      },
-      "762": {
-        "NINE": { limpo: 30, sujo: null, obs: "" },
-        "FAMILIA CESARINE": { limpo: 30, sujo: 60, obs: "" }
-      }
-    },
+  "9mm": {
+    "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
+    "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" }
+  },
+  ".45": {
+    "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
+    "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" }
+  },
+  ".50": {
+    "NINE": { limpo: 30, sujo: null, obs: "" },
+    "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" }
+  },
+  "Doze": {
+    "NINE": { limpo: 30, sujo: null, obs: "" },
+    "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" }
+  },
+  "762": {
+    "NINE": { limpo: 30, sujo: null, obs: "" },
+    "FAMILIA CESARINE": { limpo: 30, sujo: 60, obs: "" }
+  }
+},
     drogas: {
       "Coca": {
         "FAMILIES": { limpo: 230, sujo: 460, obs: "Venda média 280$ a 290$" },
@@ -2786,10 +2794,15 @@ body: JSON.stringify({
         return;
       }
 
-      if(categoria === "municoes" && fornecedor === "NINE" && produto === "9mm ou .45" && qtd < 1000){
-        alert("Para 9mm ou .45 com a NINE, o pedido mínimo é 1000 munições.");
-        return;
-      }
+     if(
+  categoria === "municoes" &&
+  fornecedor === "NINE" &&
+  (produto === "9mm" || produto === ".45") &&
+  qtd < 1000
+){
+  alert(`Para ${produto} com a NINE, o pedido mínimo é 1000 munições.`);
+  return;
+}
 
       const total = qtd * valorUnitario;
       totalGeral += total;
@@ -2810,30 +2823,68 @@ body: JSON.stringify({
 
     const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
 
-    const linhas = [
-      { type:"title", text:">> SISTEMA FENRIR" },
-      { type:"line", text:"==============================" },
-      { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
-      { text:`DATA: ${dataAtualBR()}` },
-      { text:`COMPRADOR: ${comprador || "-"}` },
-      { text:`VENDEDOR: ${vendedor || "-"}` },
-      { type:"line", text:"------------------------------" },
-      { text:"ITENS:" }
-    ];
+    let totalLimpo = 0;
+let totalSujo = 0;
 
-    itens.forEach(item => {
-      linhas.push({ text:`${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)` });
-      linhas.push({ text:`Fornecedor: ${item.supplierName} | Pagamento: ${item.paymentType}` });
-      if(item.obs){
-        linhas.push({ text:`Obs: ${item.obs}` });
-      }
-      linhas.push({ type:"line", text:"------------------------------" });
-    });
+itens.forEach(item => {
+  if(item.paymentType === "LIMPO"){
+    totalLimpo += Number(item.total || 0);
+  }else if(item.paymentType === "SUJO"){
+    totalSujo += Number(item.total || 0);
+  }
+});
 
-    linhas.push(
-      { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` },
-      { type:"line", text:"==============================" }
-    );
+const pagamentosUnicos = [...new Set(itens.map(item => item.paymentType))];
+
+let tipoPagamentoCupom = "MISTO";
+if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
+  tipoPagamentoCupom = "LIMPO";
+}else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "SUJO"){
+  tipoPagamentoCupom = "SUJO";
+}
+    
+   const linhas = [
+  { type:"title", text:">> SISTEMA FENRIR" },
+  { type:"line", text:"==============================" },
+  { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
+  { text:`DATA: ${dataAtualBR()}` },
+  { text:`COMPRADOR: ${comprador || "-"}` },
+  { text:`VENDEDOR: ${vendedor || "-"}` },
+  { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
+  { type:"line", text:"------------------------------" },
+  { text:"ITENS:" }
+];
+
+itens.forEach(item => {
+  const mostrarTipoNoItem = tipoPagamentoCupom === "MISTO";
+  const linhaItem = mostrarTipoNoItem
+    ? `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada) • ${item.paymentType}`
+    : `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)`;
+
+  linhas.push({ text: linhaItem });
+
+  if(item.obs){
+    linhas.push({ text:`Obs: ${item.obs}` });
+  }
+});
+
+linhas.push({ type:"line", text:"------------------------------" });
+
+if(tipoPagamentoCupom === "MISTO"){
+  linhas.push(
+    { type:"total", text:`TOTAL LIMPO: ${dinheiro(totalLimpo)}` },
+    { type:"total", text:`TOTAL SUJO: ${dinheiro(totalSujo)}` },
+    { type:"total", text:`TOTAL GERAL: ${dinheiro(totalGeral)}` }
+  );
+}else{
+  linhas.push(
+    { type:"total", text:`TOTAL DA COMPRA: ${dinheiro(totalGeral)}` }
+  );
+}
+
+linhas.push(
+  { type:"line", text:"==============================" }
+);
 
     document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
 
@@ -2911,62 +2962,93 @@ const resumoLucro = calcularLucroVendaHistorica(v);
   });
 }
 
-    if(encomendasHistorico.length){
-      html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
+ if(encomendasHistorico.length){
+  html += `<div class="divider"></div><h3>📦 Encomendas</h3>`;
 
-      encomendasHistorico.forEach((e) => {
-        const itensTexto = (e.items || [])
-          .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
-          .join(", ");
+  encomendasHistorico.forEach((e) => {
+    const itens = Array.isArray(e.items) ? e.items : [];
+    const pagamentosUnicos = [...new Set(itens.map(i => (i.paymentType || "").toUpperCase()).filter(Boolean))];
 
-        html += `
-          <div class="history">
-            <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-            Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-            Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
-            Itens: ${escapeHtml(itensTexto || "-")}<br>
-            Total: ${dinheiro(e.total)}<br>
-            Data: ${dataAtualBR(e.created_at)}<br>
-            <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
-          </div>
-        `;
-      });
+    let tipoPagamentoResumo = "MISTO";
+    if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
+      tipoPagamentoResumo = "LIMPO";
+    }else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "SUJO"){
+      tipoPagamentoResumo = "SUJO";
     }
+
+    const itensTexto = itens.length
+      ? itens.map(i => {
+          const tipo = (i.paymentType || "").toUpperCase();
+          const mostrarTipo = tipoPagamentoResumo === "MISTO" && tipo;
+          return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}`;
+        }).join(", ")
+      : "-";
+
+    html += `
+      <div class="history">
+        <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+        Pagamento: ${escapeHtml(tipoPagamentoResumo)}<br>
+        Itens: ${escapeHtml(itensTexto)}<br>
+        Total: ${dinheiro(e.total)}<br>
+        Data: ${dataAtualBR(e.created_at)}<br>
+        <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+      </div>
+    `;
+  });
+}
 
     div.innerHTML = html;
   }
 
-  function renderHistoricoEncomendasInterno(){
-    const div = document.getElementById("historicoEncomendasInterno");
-    if(!div) return;
+function renderHistoricoEncomendasInterno(){
+  const div = document.getElementById("historicoEncomendasInterno");
+  if(!div) return;
 
-    if(!encomendasHistorico.length){
-      div.innerHTML = `<div class="empty">Nenhuma encomenda registrada.</div>`;
-      return;
+  if(!encomendasHistorico.length){
+    div.innerHTML = `<div class="empty">Nenhuma encomenda registrada.</div>`;
+    return;
+  }
+
+  let html = "";
+
+  encomendasHistorico.forEach((e) => {
+    const itens = Array.isArray(e.items) ? e.items : [];
+    const pagamentosUnicos = [...new Set(itens.map(i => (i.paymentType || "").toUpperCase()).filter(Boolean))];
+
+    let tipoPagamentoResumo = "MISTO";
+    if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
+      tipoPagamentoResumo = "LIMPO";
+    }else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "SUJO"){
+      tipoPagamentoResumo = "SUJO";
     }
 
-    let html = "";
+    const itensTexto = itens.length
+      ? itens.map(i => {
+          const tipo = (i.paymentType || "").toUpperCase();
+          const mostrarTipo = tipoPagamentoResumo === "MISTO" && tipo;
+          return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}`;
+        }).join(", ")
+      : "-";
 
-    encomendasHistorico.forEach((e) => {
-      const itensTexto = (e.items || [])
-        .map(i => `${i.quantity}x ${i.productName} (${i.supplierName})`)
-        .join(", ");
+    html += `
+      <div class="history">
+        <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
+        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
+        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+        Pagamento: ${escapeHtml(tipoPagamentoResumo)}<br>
+        Itens: ${escapeHtml(itensTexto)}<br>
+        Total: ${dinheiro(e.total)}<br>
+        Data: ${dataAtualBR(e.created_at)}<br>
+        <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
+      </div>
+    `;
+  });
 
-      html += `
-        <div class="history">
-          <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-          Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-          Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
-          Itens: ${escapeHtml(itensTexto || "-")}<br>
-          Total: ${dinheiro(e.total)}<br>
-          Data: ${dataAtualBR(e.created_at)}<br>
-          <button class="small" onclick="excluirEncomenda(${e.id})">Excluir encomenda</button>
-        </div>
-      `;
-    });
-
-    div.innerHTML = html;
-  }
+  div.innerHTML = html;
+}
+  
 function gerarRanking(){
   const ranking = {};
 
