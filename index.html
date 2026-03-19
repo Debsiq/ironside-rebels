@@ -1394,8 +1394,9 @@
   let vendas = [];
   let encomendasHistorico = [];
   const BANK_IDEAL_TARGET = 194800;
-const BANK_BIG_LOAD_AMOUNT = 120000; // valor de 1 carregamento grande
-const CUSTO_POR_PECA = 80000 / 45;
+  const BANK_ATTENTION_LIMIT = 274800;
+  const BANK_BIG_LOAD_AMOUNT = 15000;
+  const CUSTO_POR_PECA = 80000 / 45;
   
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -3045,30 +3046,30 @@ async function carregarBanco(){
   renderBanco(data);
 }
 
-function getBankStatus(clean){
-  if(clean >= BANK_IDEAL_TARGET){
+  function getBankStatus(clean){
+  if(clean > BANK_ATTENTION_LIMIT){
     return {
       color: "green",
-      text: "🟢 CAIXA IDEAL",
+      text: "🟢 IDEAL, ESTAMOS RICOS",
       progress: 100
     };
   }
 
-  if(clean >= 150000){
+  if(clean >= BANK_IDEAL_TARGET && clean <= BANK_ATTENTION_LIMIT){
     return {
       color: "yellow",
       text: "🟡 ATENÇÃO NO CAIXA",
-      progress: Math.min((clean / BANK_IDEAL_TARGET) * 100, 100)
+      progress: Math.min((clean / BANK_ATTENTION_LIMIT) * 100, 100)
     };
   }
 
   return {
     color: "red",
-    text: "🔴 ABAIXO DO IDEAL",
+    text: "🔴 FALIU, ABAIXO DO MINIMO",
     progress: Math.min((clean / BANK_IDEAL_TARGET) * 100, 100)
   };
 }
-
+  
 function resetBancoForm(){
   document.getElementById("bankActionType").value = "entrada";
   document.getElementById("bankMoneyType").value = "limpo";
