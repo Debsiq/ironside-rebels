@@ -1394,7 +1394,8 @@
   let vendas = [];
   let encomendasHistorico = [];
   const BANK_IDEAL_TARGET = 194800;
-  const CUSTO_POR_PECA = 80000 / 45;
+const BANK_BIG_LOAD_AMOUNT = 120000; // valor de 1 carregamento grande
+const CUSTO_POR_PECA = 80000 / 45;
   
   const armas = {
     "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
@@ -3044,8 +3045,8 @@ async function carregarBanco(){
   renderBanco(data);
 }
 
-function getBankStatus(total){
-  if(total >= BANK_IDEAL_TARGET){
+function getBankStatus(clean){
+  if(clean >= BANK_IDEAL_TARGET){
     return {
       color: "green",
       text: "🟢 CAIXA IDEAL",
@@ -3053,18 +3054,18 @@ function getBankStatus(total){
     };
   }
 
-  if(total >= 150000){
+  if(clean >= 150000){
     return {
       color: "yellow",
       text: "🟡 ATENÇÃO NO CAIXA",
-      progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+      progress: Math.min((clean / BANK_IDEAL_TARGET) * 100, 100)
     };
   }
 
   return {
     color: "red",
     text: "🔴 ABAIXO DO IDEAL",
-    progress: Math.min((total / BANK_IDEAL_TARGET) * 100, 100)
+    progress: Math.min((clean / BANK_IDEAL_TARGET) * 100, 100)
   };
 }
 
@@ -3182,9 +3183,10 @@ async function excluirMovimentacaoBanco(id){
 function renderBanco(data){
   const clean = Number(data.clean || 0);
   const dirty = Number(data.dirty || 0);
-  const total = clean + dirty;
-  const diff = total - BANK_IDEAL_TARGET;
-  const status = getBankStatus(total);
+  const total = clean + dirty; // continua existindo só para exibir o total geral
+  const diff = clean - BANK_IDEAL_TARGET; // agora a diferença é baseada só no limpo
+  const status = getBankStatus(clean); // agora o status usa só o limpo
+  const bigLoads = Math.floor(dirty / BANK_BIG_LOAD_AMOUNT); // quantos carregamentos grandes o sujo cobre
 
   const hoje = new Date().toLocaleDateString("pt-BR");
   const movements = Array.isArray(data.movements) ? data.movements : [];
@@ -3200,11 +3202,17 @@ function renderBanco(data){
     .reduce((acc, m) => acc + Number(m.amount || 0), 0);
 
   document.getElementById("bankCleanValue").textContent = dinheiro(clean);
-  document.getElementById("bankDirtyValue").textContent = dinheiro(dirty);
+  document.getElementById("bankDirtyValue").innerHTML = `
+    ${dinheiro(dirty)}
+    <div style="font-size:13px; color:#bdbdbd; margin-top:6px;">
+      ${bigLoads} carregamento(s) grande(s)
+    </div>
+  `;
   document.getElementById("bankTotalValue").textContent = dinheiro(total);
   document.getElementById("bankIdealTargetText").textContent = dinheiro(BANK_IDEAL_TARGET);
   document.getElementById("bankIdealTargetValue").textContent = dinheiro(BANK_IDEAL_TARGET);
-  document.getElementById("bankTargetDiff").textContent = `${diff >= 0 ? "+" : "-"}${dinheiro(Math.abs(diff)).replace("$","$")}`;
+  document.getElementById("bankTargetDiff").textContent = `${diff >= 0 ? "+" : "-"}${dinheiro(Math.abs(diff))}`;
+  
   document.getElementById("bankTodayCount").textContent = movimentosHoje.length;
   document.getElementById("bankEntriesValue").textContent = dinheiro(totalEntradas);
   document.getElementById("bankExitsValue").textContent = dinheiro(totalSaidas);
