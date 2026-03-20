@@ -2567,13 +2567,14 @@ body: JSON.stringify({
     alert("Cupom copiado.");
   }
 
-  function getCategoriasOptionsHtml(selected = ""){
-    return `
-      <option value="">Selecionar</option>
-      <option value="municoes" ${selected === "municoes" ? "selected" : ""}>Munições</option>
-      <option value="drogas" ${selected === "drogas" ? "selected" : ""}>Drogas</option>
-    `;
-  }
+function getCategoriasOptionsHtml(selected = ""){
+  return `
+    <option value="">Selecionar</option>
+    <option value="municoes" ${selected === "municoes" ? "selected" : ""}>Munições</option>
+    <option value="drogas" ${selected === "drogas" ? "selected" : ""}>Drogas</option>
+    <option value="ferramentas" ${selected === "ferramentas" ? "selected" : ""}>Ferramentas</option>
+  `;
+}
 
   function adicionarItemEncomenda(){
     const container = document.getElementById("itensEncomenda");
@@ -2791,18 +2792,24 @@ body: JSON.stringify({
       const total = qtd * valorUnitario;
       totalGeral += total;
 
-      itens.push({
-        category: categoria === "municoes" ? "Munições" : "Drogas",
-        productName: produto,
-        supplierName: fornecedor,
-        quantity: qtd,
-        paymentType: tipo.toUpperCase(),
-        unitPrice: valorUnitario,
-        total,
-        limpo: dados.limpo,
-        sujo: dados.sujo,
-        obs: dados.obs || ""
-      });
+     const categoriaLabel = {
+      municoes: "Munições",
+      drogas: "Drogas",
+      ferramentas: "Ferramentas"
+    };
+    
+    itens.push({
+      category: categoriaLabel[categoria] || categoria,
+      productName: produto,
+      supplierName: fornecedor,
+      quantity: qtd,
+      paymentType: tipo.toUpperCase(),
+      unitPrice: valorUnitario,
+      total,
+      limpo: dados.limpo,
+      sujo: dados.sujo,
+      obs: dados.obs || ""
+    });
     }
 
     const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
