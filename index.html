@@ -1422,12 +1422,12 @@
 
   let vendas = [];
   let encomendasHistorico = [];
-  const BANK_IDEAL_TARGET = 194800;
-  const BANK_ATTENTION_LIMIT = 274800;
-const BANK_SUB_SMALL_AMOUNT = 75000;
-const BANK_SUB_MEDIUM_AMOUNT = 150000;
-const BANK_SUB_BIG_AMOUNT = 200000;
-  const CUSTO_POR_PECA = 80000 / 45;
+  
+ const BANK_IDEAL_TARGET = 194800;
+const BANK_ATTENTION_LIMIT = 274800;
+const BANK_PISTOL_BIG_LOAD_AMOUNT = 120000;
+const BANK_SUB_BIG_LOAD_AMOUNT = 200000;
+const CUSTO_POR_PECA = 80000 / 45;
   
   const armas = {
   "Colt 1911": {
@@ -1880,21 +1880,27 @@ function calcularLucroPedido(totalVenda, totalCylinder, totalComponents, totalBl
   const itens = Array.isArray(venda.items) ? venda.items : [];
 
   let totalCylinder = 0;
-  let totalComponents = 0;
-  let totalBlueprint = 0;
+let totalComponents = 0;
+let totalBlueprint = 0;
+
+let totalGunbarrel = 0;
+let totalComponents2 = 0;
+let totalBlueprintSub = 0;
 
   itens.forEach(item => {
-    const nomeArma = item.weapon;
-    const qtd = Number(item.quantity || 0);
-    const arma = armas[nomeArma];
+  const arma = armas[item.arma];
+  const qtd = Number(item.qtd || 0);
+  if(!arma) return;
 
-    if(!arma) return;
+  totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
+  totalComponents += qtd * Number(arma.materiais?.components || 0);
+  totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
 
-    totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
-    totalComponents += qtd * Number(arma.materiais?.components || 0);
-    totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
-  });
-
+  totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
+  totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
+  totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
+});
+    
   return calcularLucroPedido(
     Number(venda.total || 0),
     totalCylinder,
@@ -2545,15 +2551,18 @@ const resumoLucro = calcularLucroPedido(totalFinal, totalCylinder, totalComponen
 
 linhas.push(
   { type:"line", text:"==============================" },
-  { text:"MATERIAIS:" },
+  { text:"MATERIAIS PISTOLA:" },
   { text:`${totalCylinder} Cylinder` },
   { text:`${totalComponents} Componente` },
   { text:`${totalBlueprint} Blueprint` },
-  { type:"line", text:"==============================" },
-  { text:`CARREGAMENTO: ${textoCarreg || "Não calculado"}` },
-  { text:`CUSTO DOS MATERIAIS: ${dinheiro(Math.round(resumoLucro.custoMateriais))}` },
-  { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(resumoLucro.lucro))}` }
+  { type:"line", text:"------------------------------" },
+  { text:"MATERIAIS SUB:" },
+  { text:`${totalGunbarrel} Gunbarrel` },
+  { text:`${totalComponents2} Components2` },
+  { text:`${totalBlueprintSub} Blueprint_sub` },
+  { type:"line", text:"==============================" }
 );
+    
     document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
     const res = await fetch('/api/orders', {
@@ -3317,11 +3326,8 @@ async function excluirMovimentacaoBanco(id){
 
   renderBanco(data);
   alert("Movimentação excluída.");
-
-  const BANK_PISTOL_BIG_LOAD_AMOUNT = 120000;
-const BANK_SUB_BIG_LOAD_AMOUNT = 200000;
-  
 }
+  
 function renderBanco(data){
   const clean = Number(data.clean || 0);
   const dirty = Number(data.dirty || 0);
