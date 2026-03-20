@@ -1424,14 +1424,49 @@
   let encomendasHistorico = [];
   const BANK_IDEAL_TARGET = 194800;
   const BANK_ATTENTION_LIMIT = 274800;
-  const BANK_BIG_LOAD_AMOUNT = 120000;
+const BANK_SUB_SMALL_AMOUNT = 75000;
+const BANK_SUB_MEDIUM_AMOUNT = 150000;
+const BANK_SUB_BIG_AMOUNT = 200000;
   const CUSTO_POR_PECA = 80000 / 45;
   
   const armas = {
-    "Colt 1911": { limpo: 10000, sujo: 12500, materiais: { cylinder: 1, components: 1, blueprint: 1 } },
-    "HK USP": { limpo: 12000, sujo: 15000, materiais: { cylinder: 1, components: 2, blueprint: 1 } },
-    "Desert Eagle": { limpo: 14000, sujo: 17500, materiais: { cylinder: 2, components: 1, blueprint: 1 } }
-  };
+  "Colt 1911": {
+    limpo: 10000,
+    sujo: 12500,
+    materiais: { cylinder: 1, components: 1, blueprint: 1 }
+  },
+  "HK USP": {
+    limpo: 12000,
+    sujo: 15000,
+    materiais: { cylinder: 1, components: 2, blueprint: 1 }
+  },
+  "Desert Eagle": {
+    limpo: 14000,
+    sujo: 17500,
+    materiais: { cylinder: 2, components: 1, blueprint: 1 }
+  },
+
+  "Scorpion": {
+    limpo: 20000,
+    sujo: 25000,
+    materiais: { gunbarrel: 2, components: 1, blueprint: 1 }
+  },
+  "Tec-9": {
+    limpo: 16000,
+    sujo: 20000,
+    materiais: { gunbarrel: 1, components: 1, blueprint: 1 }
+  },
+  "CZ Scorpion EVO 3 S1": {
+    limpo: 30000,
+    sujo: 37500,
+    materiais: { gunbarrel: 2, components: 2, blueprint: 1 }
+  },
+  "MP9": {
+    limpo: 20000,
+    sujo: 25000,
+    materiais: { gunbarrel: 1, components: 2, blueprint: 1 }
+  }
+};
 
   const tabelaCompras = {
   municoes: {
@@ -3282,15 +3317,21 @@ async function excluirMovimentacaoBanco(id){
 
   renderBanco(data);
   alert("Movimentação excluída.");
+
+  const BANK_PISTOL_BIG_LOAD_AMOUNT = 120000;
+const BANK_SUB_BIG_LOAD_AMOUNT = 200000;
+  
 }
 function renderBanco(data){
   const clean = Number(data.clean || 0);
   const dirty = Number(data.dirty || 0);
-  const total = clean + dirty; // continua existindo só para exibir o total geral
-  const diff = clean - BANK_IDEAL_TARGET; // agora a diferença é baseada só no limpo
-  const status = getBankStatus(clean); // agora o status usa só o limpo
-  const bigLoads = Math.floor(dirty / BANK_BIG_LOAD_AMOUNT); // quantos carregamentos grandes o sujo cobre
+  const total = clean + dirty;
+  const diff = clean - BANK_IDEAL_TARGET;
+  const status = getBankStatus(clean);
 
+  const pistolGrande = Math.floor(dirty / BANK_PISTOL_BIG_LOAD_AMOUNT);
+  const subGrande = Math.floor(dirty / BANK_SUB_BIG_LOAD_AMOUNT);
+  
   const hoje = new Date().toLocaleDateString("pt-BR");
   const movements = Array.isArray(data.movements) ? data.movements : [];
 
@@ -3305,12 +3346,15 @@ function renderBanco(data){
     .reduce((acc, m) => acc + Number(m.amount || 0), 0);
 
   document.getElementById("bankCleanValue").textContent = dinheiro(clean);
+  
   document.getElementById("bankDirtyValue").innerHTML = `
     ${dinheiro(dirty)}
-    <div style="font-size:13px; color:#bdbdbd; margin-top:6px;">
-      ${bigLoads} carregamento(s) grande(s)
+    <div style="font-size:13px; color:#bdbdbd; margin-top:6px; line-height:1.6;">
+      Carregamento Grande Pistola: ${pistolGrande}<br>
+      Carregamento Grande Sub: ${subGrande}
     </div>
   `;
+  
   document.getElementById("bankTotalValue").textContent = dinheiro(total);
   document.getElementById("bankIdealTargetText").textContent = dinheiro(BANK_IDEAL_TARGET);
   document.getElementById("bankIdealTargetValue").textContent = dinheiro(BANK_IDEAL_TARGET);
