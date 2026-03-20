@@ -1865,7 +1865,12 @@ const CUSTO_POR_PECA = 80000 / 45;
     let pequeno = Math.ceil(resto / 5);
     return { grande, medio, pequeno };
   }
-function calcularLucroPedido(totalVenda, totalCylinder, totalComponents, totalBlueprint){
+function calcularLucroPedido(totalVenda, custoMateriais){
+  return {
+    custoMateriais,
+    lucro: Number(totalVenda || 0) - Number(custoMateriais || 0)
+  };
+}
   const totalPecas = Number(totalCylinder || 0) + Number(totalComponents || 0) + Number(totalBlueprint || 0);
   const custoMateriais = totalPecas * CUSTO_POR_PECA;
   const lucro = Number(totalVenda || 0) - custoMateriais;
@@ -1893,12 +1898,12 @@ let totalBlueprintSub = 0;
   if(!arma) return;
 
   totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
-  totalComponents += qtd * Number(arma.materiais?.components || 0);
-  totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
+totalComponents += qtd * Number(arma.materiais?.components || 0);
+totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
 
-  totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
-  totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
-  totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
+totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
+totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
+totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
 });
     
   return calcularLucroPedido(
@@ -2377,228 +2382,260 @@ function resetarPedido(){
   adicionarItemPedido();
 }
 
-  async function gerarPedido(){
-    const contato = document.getElementById("contato").value.trim();
-    const vendedor = document.getElementById("vendedorPedido").value.trim();
-    const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
+async function gerarPedido(){
+  const contato = document.getElementById("contato").value.trim();
+  const vendedor = document.getElementById("vendedorPedido").value.trim();
+  const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
 
-    if(!contato){
-      alert("Preencha o comprador.");
+  if(!contato){
+    alert("Preencha o comprador.");
+    return;
+  }
+
+  if(itensEls.length === 0){
+    alert("Adicione pelo menos uma arma.");
+    return;
+  }
+
+  let itens = [];
+  let totalArmas = 0;
+  let subtotalGeral = 0;
+  let totalLimpo = 0;
+  let totalSujo = 0;
+
+  let totalCylinder = 0;
+  let totalComponents = 0;
+  let totalBlueprint = 0;
+
+  let totalGunbarrel = 0;
+  let totalComponents2 = 0;
+  let totalBlueprintSub = 0;
+
+  let qtdElegivelDesconto = 0;
+  let subtotalElegivelDesconto = 0;
+  let temHK = false;
+
+  for(const itemEl of itensEls){
+    const armaNome = itemEl.querySelector(".arma-item").value;
+    const qtd = Number(itemEl.querySelector(".qtd-item").value);
+    const pagamento = itemEl.querySelector(".pagamento-item").value;
+
+    if(!qtd || qtd <= 0){
+      alert("Todas as armas precisam ter uma quantidade válida.");
       return;
     }
 
-    if(itensEls.length === 0){
-      alert("Adicione pelo menos uma arma.");
+    const arma = armas[armaNome];
+    if(!arma){
+      alert(`Arma não encontrada: ${armaNome}`);
       return;
     }
 
-    let itens = [];
-    let totalArmas = 0;
-    let subtotalGeral = 0;
-    let totalLimpo = 0;
-    let totalSujo = 0;
-    let totalCylinder = 0;
-    let totalComponents = 0;
-    let totalBlueprint = 0;
-    let qtdElegivelDesconto = 0;
-    let subtotalElegivelDesconto = 0;
-    let temHK = false;
+    const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
+    const subtotalItem = qtd * preco;
+    const elegivelDesconto = armaNome !== "HK USP";
 
-    for(const itemEl of itensEls){
-      const armaNome = itemEl.querySelector(".arma-item").value;
-      const qtd = Number(itemEl.querySelector(".qtd-item").value);
-      const pagamento = itemEl.querySelector(".pagamento-item").value;
+    if(armaNome === "HK USP") temHK = true;
 
-      if(!qtd || qtd <= 0){
-        alert("Todas as armas precisam ter uma quantidade válida.");
-        return;
-      }
+    itens.push({
+      arma: armaNome,
+      qtd,
+      pagamento,
+      preco,
+      subtotal: subtotalItem,
+      elegivelDesconto
+    });
 
-      const arma = armas[armaNome];
-      const preco = pagamento === "Limpo" ? arma.limpo : arma.sujo;
-      const subtotalItem = qtd * preco;
-      const elegivelDesconto = armaNome !== "HK USP";
+    totalArmas += qtd;
+    subtotalGeral += subtotalItem;
 
-      if(armaNome === "HK USP") temHK = true;
-
-      itens.push({
-        arma: armaNome,
-        qtd,
-        pagamento,
-        preco,
-        subtotal: subtotalItem,
-        elegivelDesconto
-      });
-      totalArmas += qtd;
-      subtotalGeral += subtotalItem;
-
-      if(pagamento === "Limpo"){
-        totalLimpo += subtotalItem;
-      }else{
-        totalSujo += subtotalItem;
-      }
-      
-      totalCylinder += qtd * arma.materiais.cylinder;
-      totalComponents += qtd * arma.materiais.components;
-      totalBlueprint += qtd * arma.materiais.blueprint;
-
-      if(elegivelDesconto){
-        qtdElegivelDesconto += qtd;
-        subtotalElegivelDesconto += subtotalItem;
-      }
+    if(pagamento === "Limpo"){
+      totalLimpo += subtotalItem;
+    }else{
+      totalSujo += subtotalItem;
     }
 
-    let desconto = false;
-    let valorDesconto = 0;
-    let totalFinal = subtotalGeral;
+    // Materiais de pistola
+    totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
+    totalComponents += qtd * Number(arma.materiais?.components || 0);
+    totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
 
-   if(qtdElegivelDesconto >= 11){
-  desconto = true;
-  valorDesconto = subtotalElegivelDesconto * 0.10;
-  totalFinal = subtotalGeral - valorDesconto;
+    // Materiais de sub
+    totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
+    totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
+    totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
 
-  const descontoPorItem = 0.10;
-
-  let descontoLimpo = 0;
-  let descontoSujo = 0;
-
-  itens.forEach(item => {
-    if(item.elegivelDesconto){
-      const descontoItem = item.subtotal * descontoPorItem;
-      if(item.pagamento === "Limpo"){
-        descontoLimpo += descontoItem;
-      }else{
-        descontoSujo += descontoItem;
-      }
+    if(elegivelDesconto){
+      qtdElegivelDesconto += qtd;
+      subtotalElegivelDesconto += subtotalItem;
     }
-  });
+  }
 
-  totalLimpo -= descontoLimpo;
-  totalSujo -= descontoSujo;
-}
+  let desconto = false;
+  let valorDesconto = 0;
+  let totalFinal = subtotalGeral;
 
-    const caixas = Math.max(totalCylinder, totalComponents, totalBlueprint);
-    const carreg = calcularCarregamento(caixas);
+  if(qtdElegivelDesconto >= 11){
+    desconto = true;
+    valorDesconto = subtotalElegivelDesconto * 0.10;
+    totalFinal = subtotalGeral - valorDesconto;
 
-    let textoCarreg = "";
-    if(carreg.grande > 0) textoCarreg += `${carreg.grande} Grande `;
-    if(carreg.medio > 0) textoCarreg += `${carreg.medio} Médio `;
-    if(carreg.pequeno > 0) textoCarreg += `${carreg.pequeno} Pequeno`;
-
-    const numero = (vendas[0]?.order_number || 0) + 1;
-
-    const pagamentosUnicos = [...new Set(itens.map(item => item.pagamento))];
-
-let tipoPagamentoCupom = "DINHEIRO MISTO";
-if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Limpo"){
-  tipoPagamentoCupom = "DINHEIRO LIMPO";
-}else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Sujo"){
-  tipoPagamentoCupom = "DINHEIRO SUJO";
-}
-
-const linhas = [
-  { text:`VENDA #${String(numero).padStart(4,"0")}` },
-  { text:`DATA: ${dataAtualBR()}` },
-  { text:`COMPRADOR: ${contato}` },
-  { text:`VENDEDOR: ${vendedor || "-"}` },
-  { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
-  { type:"line", text:"------------------------------" },
-  { text:"ITENS:" }
-];
+    const descontoPorItem = 0.10;
+    let descontoLimpo = 0;
+    let descontoSujo = 0;
 
     itens.forEach(item => {
-      const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
-      linhas.push({
-        text:`${item.qtd} ${item.arma} → ${dinheiro(item.preco)} (cada) • ${item.pagamento.toUpperCase()}${marcador}`
-      });
+      if(item.elegivelDesconto){
+        const descontoItem = item.subtotal * descontoPorItem;
+        if(item.pagamento === "Limpo"){
+          descontoLimpo += descontoItem;
+        }else{
+          descontoSujo += descontoItem;
+        }
+      }
     });
 
+    totalLimpo -= descontoLimpo;
+    totalSujo -= descontoSujo;
+  }
+
+  const caixasPistola = Math.max(totalCylinder, totalComponents, totalBlueprint);
+  const caixasSub = Math.max(totalGunbarrel, totalComponents2, totalBlueprintSub);
+
+  const carregPistola = calcularCarregamento(caixasPistola);
+  const carregSub = calcularCarregamento(caixasSub);
+
+  let textoCarregPistola = "";
+  if(carregPistola.grande > 0) textoCarregPistola += `${carregPistola.grande} Grande `;
+  if(carregPistola.medio > 0) textoCarregPistola += `${carregPistola.medio} Médio `;
+  if(carregPistola.pequeno > 0) textoCarregPistola += `${carregPistola.pequeno} Pequeno`;
+
+  let textoCarregSub = "";
+  if(carregSub.grande > 0) textoCarregSub += `${carregSub.grande} Grande `;
+  if(carregSub.medio > 0) textoCarregSub += `${carregSub.medio} Médio `;
+  if(carregSub.pequeno > 0) textoCarregSub += `${carregSub.pequeno} Pequeno`;
+
+  const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_POR_PECA;
+  const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_POR_PECA;
+  const custoTotalMateriais = custoPistola + custoSub;
+  const lucroTotal = totalFinal - custoTotalMateriais;
+
+  const numero = (vendas[0]?.order_number || 0) + 1;
+  const pagamentosUnicos = [...new Set(itens.map(item => item.pagamento))];
+
+  let tipoPagamentoCupom = "DINHEIRO MISTO";
+  if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Limpo"){
+    tipoPagamentoCupom = "DINHEIRO LIMPO";
+  }else if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "Sujo"){
+    tipoPagamentoCupom = "DINHEIRO SUJO";
+  }
+
+  const linhas = [
+    { text:`VENDA #${String(numero).padStart(4,"0")}` },
+    { text:`DATA: ${dataAtualBR()}` },
+    { text:`COMPRADOR: ${contato}` },
+    { text:`VENDEDOR: ${vendedor || "-"}` },
+    { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
+    { type:"line", text:"------------------------------" },
+    { text:"ITENS:" }
+  ];
+
+  itens.forEach(item => {
+    const marcador = item.elegivelDesconto ? "" : " [SEM DESCONTO]";
+    linhas.push({
+      text:`${item.qtd} ${item.arma} → ${dinheiro(item.preco)} (cada) • ${item.pagamento.toUpperCase()}${marcador}`
+    });
+  });
+
+  linhas.push(
+    { type:"line", text:"------------------------------" },
+    { text:`TOTAL DE ARMAS: ${totalArmas}` },
+    { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` }
+  );
+
+  if(desconto && temHK){
+    linhas.push({ text:`OBS: HK USP não participa do desconto.` });
+    linhas.push({ text:`ARMAS COM DESCONTO: ${qtdElegivelDesconto}` });
+  }
+
+  if(desconto){
+    linhas.push({
+      type:"discount",
+      text:`DESCONTO: 10% SOBRE ITENS ELEGÍVEIS (-${dinheiro(Math.round(valorDesconto))})`
+    });
+  }
+
+  linhas.push({ type:"line", text:"------------------------------" });
+
+  if(pagamentosUnicos.length > 1){
     linhas.push(
-      { type:"line", text:"------------------------------" },
-      { text:`TOTAL DE ARMAS: ${totalArmas}` },
-      { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` }
+      { type:"total", text:`TOTAL LIMPO: ${dinheiro(Math.round(totalLimpo))}` },
+      { type:"total", text:`TOTAL SUJO: ${dinheiro(Math.round(totalSujo))}` },
+      { type:"total", text:`TOTAL GERAL: ${dinheiro(Math.round(totalFinal))}` }
     );
-
-    if(desconto && temHK){
-      linhas.push({ text:`OBS: HK USP não participa do desconto.` });
-      linhas.push({ text:`ARMAS COM DESCONTO: ${qtdElegivelDesconto}` });
-    }
-
-    if(desconto){
-      linhas.push({
-        type:"discount",
-        text:`DESCONTO: 10% SOBRE ITENS ELEGÍVEIS (-${dinheiro(Math.round(valorDesconto))})`
-      });
-    }
+  }else{
+    linhas.push(
+      { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(totalFinal))}` }
+    );
+  }
 
   linhas.push(
-  { type:"line", text:"------------------------------" }
-);
-
-if(pagamentosUnicos.length > 1){
-  linhas.push(
-    { type:"total", text:`TOTAL LIMPO: ${dinheiro(Math.round(totalLimpo))}` },
-    { type:"total", text:`TOTAL SUJO: ${dinheiro(Math.round(totalSujo))}` },
-    { type:"total", text:`TOTAL GERAL: ${dinheiro(Math.round(totalFinal))}` }
+    { type:"line", text:"==============================" },
+    { text:"MATERIAIS PISTOLA:" },
+    { text:`${totalCylinder} Cylinder` },
+    { text:`${totalComponents} Componente` },
+    { text:`${totalBlueprint} Blueprint` },
+    { type:"line", text:"------------------------------" },
+    { text:"MATERIAIS SUB:" },
+    { text:`${totalGunbarrel} Gunbarrel` },
+    { text:`${totalComponents2} Components2` },
+    { text:`${totalBlueprintSub} Blueprint_sub` },
+    { type:"line", text:"==============================" },
+    { text:`CARREGAMENTO PISTOLA: ${textoCarregPistola || "Não calculado"}` },
+    { text:`CARREGAMENTO SUB: ${textoCarregSub || "Não calculado"}` },
+    { text:`CUSTO PISTOLA: ${dinheiro(Math.round(custoPistola))}` },
+    { text:`CUSTO SUB: ${dinheiro(Math.round(custoSub))}` },
+    { text:`CUSTO TOTAL DOS MATERIAIS: ${dinheiro(Math.round(custoTotalMateriais))}` },
+    { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(lucroTotal))}` }
   );
-}else{
-  linhas.push(
-    { type:"total", text:`TOTAL FINAL: ${dinheiro(Math.round(totalFinal))}` }
-  );
+
+  document.getElementById("cupom").innerHTML = renderTerminal(linhas);
+
+  const res = await fetch('/api/orders', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      orderNumber: numero,
+      buyerName: contato,
+      sellerName: vendedor || null,
+      paymentType: tipoPagamentoCupom,
+      totalWeapons: totalArmas,
+      discountEligibleWeapons: qtdElegivelDesconto,
+      subtotal: Math.round(subtotalGeral),
+      discountValue: Math.round(valorDesconto),
+      total: Math.round(totalFinal),
+      profit: Math.round(lucroTotal),
+      materialCost: Math.round(custoTotalMateriais),
+      items: itens.map(i => ({
+        weapon: i.arma,
+        quantity: i.qtd,
+        paymentType: i.pagamento,
+        unitPrice: i.preco,
+        subtotal: i.subtotal,
+        eligibleDiscount: i.elegivelDesconto,
+      })),
+    }),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    alert(data.error || 'Erro ao salvar pedido no histórico (banco de dados).');
+    return;
+  }
+
+  await carregarHistoricoBanco();
+  alert('Pedido salvo e histórico atualizado.');
 }
-
-const resumoLucro = calcularLucroPedido(totalFinal, totalCylinder, totalComponents, totalBlueprint);
-
-linhas.push(
-  { type:"line", text:"==============================" },
-  { text:"MATERIAIS PISTOLA:" },
-  { text:`${totalCylinder} Cylinder` },
-  { text:`${totalComponents} Componente` },
-  { text:`${totalBlueprint} Blueprint` },
-  { type:"line", text:"------------------------------" },
-  { text:"MATERIAIS SUB:" },
-  { text:`${totalGunbarrel} Gunbarrel` },
-  { text:`${totalComponents2} Components2` },
-  { text:`${totalBlueprintSub} Blueprint_sub` },
-  { type:"line", text:"==============================" }
-);
-    
-    document.getElementById("cupom").innerHTML = renderTerminal(linhas);
-
-    const res = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-body: JSON.stringify({
-  orderNumber: numero,
-  buyerName: contato,
-  sellerName: vendedor || null,
-  paymentType: tipoPagamentoCupom,
-  totalWeapons: totalArmas,
-  discountEligibleWeapons: qtdElegivelDesconto,
-  subtotal: Math.round(subtotalGeral),
-  discountValue: Math.round(valorDesconto),
-  total: Math.round(totalFinal),
-  profit: Math.round(resumoLucro.lucro),
-  materialCost: Math.round(resumoLucro.custoMateriais),
-  items: itens.map(i => ({
-    weapon: i.arma,
-    quantity: i.qtd,
-    paymentType: i.pagamento,
-    unitPrice: i.preco,
-    subtotal: i.subtotal,
-    eligibleDiscount: i.elegivelDesconto,
-  })),
-}),
-    });
-
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      alert(data.error || 'Erro ao salvar pedido no histórico (banco de dados).');
-      return;
-    }
-
-    await carregarHistoricoBanco();
-    alert('Pedido salvo e histórico atualizado.');
   }
 
   function copiarCupom(){
