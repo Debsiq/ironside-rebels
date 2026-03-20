@@ -1446,26 +1446,26 @@ const CUSTO_POR_PECA = 80000 / 45;
     materiais: { cylinder: 2, components: 1, blueprint: 1 }
   },
 
-  "Scorpion": {
-    limpo: 20000,
-    sujo: 25000,
-    materiais: { gunbarrel: 2, components: 1, blueprint: 1 }
-  },
-  "Tec-9": {
-    limpo: 16000,
-    sujo: 20000,
-    materiais: { gunbarrel: 1, components: 1, blueprint: 1 }
-  },
-  "CZ Scorpion EVO 3 S1": {
-    limpo: 30000,
-    sujo: 37500,
-    materiais: { gunbarrel: 2, components: 2, blueprint: 1 }
-  },
-  "MP9": {
-    limpo: 20000,
-    sujo: 25000,
-    materiais: { gunbarrel: 1, components: 2, blueprint: 1 }
-  }
+"Scorpion": {
+  limpo: 20000,
+  sujo: 25000,
+  materiais: { gunbarrel: 2, components2: 1, blueprint_sub: 1 }
+},
+"Tec-9": {
+  limpo: 16000,
+  sujo: 20000,
+  materiais: { gunbarrel: 1, components2: 1, blueprint_sub: 1 }
+},
+"CZ Scorpion EVO 3 S1": {
+  limpo: 30000,
+  sujo: 37500,
+  materiais: { gunbarrel: 2, components2: 2, blueprint_sub: 1 }
+},
+"MP9": {
+  limpo: 20000,
+  sujo: 25000,
+  materiais: { gunbarrel: 1, components2: 2, blueprint_sub: 1 }
+}
 };
 
   const tabelaCompras = {
@@ -1871,16 +1871,6 @@ function calcularLucroPedido(totalVenda, custoMateriais){
     lucro: Number(totalVenda || 0) - Number(custoMateriais || 0)
   };
 }
-  const totalPecas = Number(totalCylinder || 0) + Number(totalComponents || 0) + Number(totalBlueprint || 0);
-  const custoMateriais = totalPecas * CUSTO_POR_PECA;
-  const lucro = Number(totalVenda || 0) - custoMateriais;
-
-  return {
-    totalPecas,
-    custoMateriais,
-    lucro
-  };
-}
   function calcularLucroVendaHistorica(venda){
   const itens = Array.isArray(venda.items) ? venda.items : [];
 
@@ -1893,8 +1883,8 @@ let totalComponents2 = 0;
 let totalBlueprintSub = 0;
 
   itens.forEach(item => {
-  const arma = armas[item.arma];
-  const qtd = Number(item.qtd || 0);
+const arma = armas[item.weapon];
+const qtd = Number(item.quantity || 0);
   if(!arma) return;
 
   totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
@@ -1906,12 +1896,14 @@ totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
 totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
 });
     
-  return calcularLucroPedido(
-    Number(venda.total || 0),
-    totalCylinder,
-    totalComponents,
-    totalBlueprint
-  );
+const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_POR_PECA;
+const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_POR_PECA;
+const custoTotalMateriais = custoPistola + custoSub;
+
+return calcularLucroPedido(
+  Number(venda.total || 0),
+  custoTotalMateriais
+);
 }
   function renderTerminal(lines){
     return lines.map(item => {
@@ -2382,7 +2374,7 @@ function resetarPedido(){
   adicionarItemPedido();
 }
 
-async function gerarPedido(){
+async function gerarPedido()
   const contato = document.getElementById("contato").value.trim();
   const vendedor = document.getElementById("vendedorPedido").value.trim();
   const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
