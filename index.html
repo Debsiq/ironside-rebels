@@ -2386,7 +2386,6 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
     const armaNome = item.querySelector(".arma-item").value;
     const qtd = Number(item.querySelector(".qtd-item").value);
     const pagamento = item.querySelector(".pagamento-item").value;
-    const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
     const valorUnitario = obterPrecoArma(armaNome, pagamento, tipoComprador);
     const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
 
@@ -2415,7 +2414,8 @@ async function gerarPedido(){
   const contato = document.getElementById("contato").value.trim();
   const vendedor = document.getElementById("vendedorPedido").value.trim();
   const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
-
+  const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
+  
   if(!contato){
     alert("Preencha o comprador.");
     return;
@@ -2460,7 +2460,6 @@ async function gerarPedido(){
       return;
     }
 
-    const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
     const preco = obterPrecoArma(armaNome, pagamento, tipoComprador);
     
     const subtotalItem = qtd * preco;
