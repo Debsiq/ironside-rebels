@@ -1423,11 +1423,13 @@
   let vendas = [];
   let encomendasHistorico = [];
   
- const BANK_IDEAL_TARGET = 194800;
+const BANK_IDEAL_TARGET = 194800;
 const BANK_ATTENTION_LIMIT = 274800;
 const BANK_PISTOL_BIG_LOAD_AMOUNT = 120000;
 const BANK_SUB_BIG_LOAD_AMOUNT = 200000;
-const CUSTO_POR_PECA = 80000 / 45;
+
+const CUSTO_PISTOLA_POR_PECA = 120000 / 45;
+const CUSTO_SUB_POR_PECA = 135000 / 45;
   
   const armas = {
   "Colt 1911": {
@@ -1896,8 +1898,8 @@ totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
 totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
 });
     
-const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_POR_PECA;
-const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_POR_PECA;
+const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_PISTOLA_POR_PECA;
+const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_SUB_POR_PECA;
 const custoTotalMateriais = custoPistola + custoSub;
 
 return calcularLucroPedido(
@@ -2507,12 +2509,17 @@ async function gerarPedido(){
   if(carregSub.medio > 0) textoCarregSub += `${carregSub.medio} Médio `;
   if(carregSub.pequeno > 0) textoCarregSub += `${carregSub.pequeno} Pequeno`;
 
-  const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_POR_PECA;
-  const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_POR_PECA;
-  const custoTotalMateriais = custoPistola + custoSub;
-  const lucroTotal = totalFinal - custoTotalMateriais;
+const totalPecasPistola = totalCylinder + totalComponents + totalBlueprint;
+const totalPecasSub = totalGunbarrel + totalComponents2 + totalBlueprintSub;
 
-  const numero = (vendas[0]?.order_number || 0) + 1;
+const custoPistola = totalPecasPistola * CUSTO_PISTOLA_POR_PECA;
+const custoSub = totalPecasSub * CUSTO_SUB_POR_PECA;
+const custoTotalMateriais = custoPistola + custoSub;
+const lucroTotal = totalFinal - custoTotalMateriais;
+
+const temPistolaNoPedido = totalCylinder > 0 || totalComponents > 0 || totalBlueprint > 0;
+const temSubNoPedido = totalGunbarrel > 0 || totalComponents2 > 0 || totalBlueprintSub > 0;
+const numero = (vendas[0]?.order_number || 0) + 1;
   const pagamentosUnicos = [...new Set(itens.map(item => item.pagamento))];
 
   let tipoPagamentoCupom = "DINHEIRO MISTO";
@@ -2571,26 +2578,43 @@ async function gerarPedido(){
     );
   }
 
+ linhas.push(
+  { type:"line", text:"==============================" }
+);
+
+if(temPistolaNoPedido){
   linhas.push(
-    { type:"line", text:"==============================" },
     { text:"MATERIAIS PISTOLA:" },
     { text:`${totalCylinder} Cylinder` },
     { text:`${totalComponents} Componente` },
     { text:`${totalBlueprint} Blueprint` },
-    { type:"line", text:"------------------------------" },
+    { text:`CARREGAMENTO PISTOLA: ${textoCarregPistola || "Não calculado"}` },
+    { text:`CUSTO PISTOLA: ${dinheiro(Math.round(custoPistola))}` }
+  );
+}
+
+if(temPistolaNoPedido && temSubNoPedido){
+  linhas.push(
+    { type:"line", text:"------------------------------" }
+  );
+}
+
+if(temSubNoPedido){
+  linhas.push(
     { text:"MATERIAIS SUB:" },
     { text:`${totalGunbarrel} Gunbarrel` },
     { text:`${totalComponents2} Components2` },
     { text:`${totalBlueprintSub} Blueprint_sub` },
-    { type:"line", text:"==============================" },
-    { text:`CARREGAMENTO PISTOLA: ${textoCarregPistola || "Não calculado"}` },
     { text:`CARREGAMENTO SUB: ${textoCarregSub || "Não calculado"}` },
-    { text:`CUSTO PISTOLA: ${dinheiro(Math.round(custoPistola))}` },
-    { text:`CUSTO SUB: ${dinheiro(Math.round(custoSub))}` },
-    { text:`CUSTO TOTAL DOS MATERIAIS: ${dinheiro(Math.round(custoTotalMateriais))}` },
-    { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(lucroTotal))}` }
+    { text:`CUSTO SUB: ${dinheiro(Math.round(custoSub))}` }
   );
+}
 
+linhas.push(
+  { type:"line", text:"==============================" },
+  { text:`CUSTO TOTAL DOS MATERIAIS: ${dinheiro(Math.round(custoTotalMateriais))}` },
+  { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(lucroTotal))}` }
+);
   document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
   const res = await fetch('/api/orders', {
