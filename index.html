@@ -2503,33 +2503,37 @@ async function gerarPedido(){
     }
   }
 
-  let desconto = false;
-  let valorDesconto = 0;
-  let totalFinal = subtotalGeral;
+const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
 
-  if(qtdElegivelDesconto >= 11){
-    desconto = true;
-    valorDesconto = subtotalElegivelDesconto * 0.10;
-    totalFinal = subtotalGeral - valorDesconto;
+let desconto = false;
+let valorDesconto = 0;
+let totalFinal = subtotalGeral;
 
-    const descontoPorItem = 0.10;
-    let descontoLimpo = 0;
-    let descontoSujo = 0;
+const podeTerDescontoQuantidade = tipoComprador !== "parceria";
 
-    itens.forEach(item => {
-      if(item.elegivelDesconto){
-        const descontoItem = item.subtotal * descontoPorItem;
-        if(item.pagamento === "Limpo"){
-          descontoLimpo += descontoItem;
-        }else{
-          descontoSujo += descontoItem;
-        }
+if(podeTerDescontoQuantidade && qtdElegivelDesconto >= 11){
+  desconto = true;
+  valorDesconto = subtotalElegivelDesconto * 0.10;
+  totalFinal = subtotalGeral - valorDesconto;
+
+  const descontoPorItem = 0.10;
+  let descontoLimpo = 0;
+  let descontoSujo = 0;
+
+  itens.forEach(item => {
+    if(item.elegivelDesconto){
+      const descontoItem = item.subtotal * descontoPorItem;
+      if(item.pagamento === "Limpo"){
+        descontoLimpo += descontoItem;
+      }else{
+        descontoSujo += descontoItem;
       }
-    });
+    }
+  });
 
-    totalLimpo -= descontoLimpo;
-    totalSujo -= descontoSujo;
-  }
+  totalLimpo -= descontoLimpo;
+  totalSujo -= descontoSujo;
+}
 
   const caixasPistola = Math.max(totalCylinder, totalComponents, totalBlueprint);
   const caixasSub = Math.max(totalGunbarrel, totalComponents2, totalBlueprintSub);
