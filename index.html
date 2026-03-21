@@ -1256,18 +1256,33 @@
       <h2 class="section-title">🧾 Novo Pedido</h2>
       <div class="tag">✅ 10% acima de 10 armas elegíveis • HK USP não participa</div>
 
-      <div class="grid">
-        <div>
-          <label for="contato">Comprador</label>
-          <input id="contato" placeholder="Nome do comprador">
-        </div>
+<div class="grid">
+  <div>
+    <label for="contato">Comprador</label>
+    <input id="contato" placeholder="Nome do comprador">
+  </div>
 
-        <div>
-          <label for="vendedorPedido">Vendedor</label>
-          <input id="vendedorPedido" placeholder="Nome do vendedor">
-        </div>
-        
-      </div>
+  <div>
+    <label for="tipoCompradorPedido">Tipo do comprador</label>
+    <select id="tipoCompradorPedido" onchange="atualizarResumoItensPedido()">
+      <option value="cheio">Valor cheio</option>
+      <option value="parceria">Parceria</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="vendedorPedido">Vendedor</label>
+    <input id="vendedorPedido" placeholder="Nome do vendedor">
+  </div>
+
+  <div>
+    <label for="tipoVendedorPedido">Tipo do vendedor</label>
+    <select id="tipoVendedorPedido">
+      <option value="cheio">Valor cheio</option>
+      <option value="parceria">Parceria</option>
+    </select>
+  </div>
+</div>
 
 <div class="helper">Você pode adicionar várias armas no mesmo pedido e definir o pagamento de cada arma separadamente. A HK USP não recebe desconto.</div>
       
@@ -1328,29 +1343,13 @@
 
   <div class="grid">
   <div>
-    <label for="contato">Comprador</label>
-    <input id="contato" placeholder="Nome do comprador">
+    <label for="compradorEncomenda">Comprador</label>
+    <input id="compradorEncomenda" placeholder="Nome do comprador">
   </div>
 
   <div>
-    <label for="tipoCompradorPedido">Tipo do comprador</label>
-    <select id="tipoCompradorPedido" onchange="atualizarResumoItensPedido()">
-      <option value="cheio">Valor cheio</option>
-      <option value="parceria">Parceria</option>
-    </select>
-  </div>
-
-  <div>
-    <label for="vendedorPedido">Vendedor</label>
-    <input id="vendedorPedido" placeholder="Nome do vendedor">
-  </div>
-
-  <div>
-    <label for="tipoVendedorPedido">Tipo do vendedor</label>
-    <select id="tipoVendedorPedido">
-      <option value="cheio">Valor cheio</option>
-      <option value="parceria">Parceria</option>
-    </select>
+    <label for="vendedorEncomenda">Vendedor</label>
+    <input id="vendedorEncomenda" placeholder="Nome do vendedor">
   </div>
 </div>
 
@@ -2411,8 +2410,13 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
 function resetarPedido(){
   document.getElementById("contato").value = "";
   document.getElementById("vendedorPedido").value = "";
-  document.getElementById("tipoCompradorPedido").value = "cheio";
-  document.getElementById("tipoVendedorPedido").value = "cheio";
+  
+  const tipoComprador = document.getElementById("tipoCompradorPedido");
+  const tipoVendedor = document.getElementById("tipoVendedorPedido");
+  
+  if(tipoComprador) tipoComprador.value = "cheio";
+  if(tipoVendedor) tipoVendedor.value = "cheio";
+  
   document.getElementById("itensPedido").innerHTML = "";
   document.getElementById("cupom").innerHTML = "";
   adicionarItemPedido();
