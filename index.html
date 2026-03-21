@@ -2584,6 +2584,7 @@ async function gerarPedido(){
   }
 
   const linhas = [
+    { text:"```" },
     { text:`VENDA #${String(numero).padStart(4,"0")}` },
     { text:`DATA: ${dataAtualBR()}` },
     { text:`COMPRADOR: ${contato}` },
@@ -2669,7 +2670,8 @@ if(temSubNoPedido){
 linhas.push(
   { type:"line", text:"==============================" },
   { text:`CUSTO TOTAL DOS MATERIAIS: ${dinheiro(Math.round(custoTotalMateriais))}` },
-  { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(lucroTotal))}` }
+  { type:"total", text:`LUCRO DO PEDIDO: ${dinheiro(Math.round(lucroTotal))}` },
+  { text:"```" }
 );
   document.getElementById("cupom").innerHTML = renderTerminal(linhas);
 
@@ -2987,6 +2989,7 @@ if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
 }
     
    const linhas = [
+  { text:"```" },
   { type:"title", text:">> SISTEMA FENRIR" },
   { type:"line", text:"==============================" },
   { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
@@ -3026,7 +3029,8 @@ if(tipoPagamentoCupom === "MISTO"){
 }
 
 linhas.push(
-  { type:"line", text:"==============================" }
+  { type:"line", text:"==============================" },
+  { text:"```" }
 );
 
     document.getElementById("cupomCompra").innerHTML = renderTerminal(linhas);
