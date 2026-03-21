@@ -2374,7 +2374,7 @@ function resetarPedido(){
   adicionarItemPedido();
 }
 
-async function gerarPedido()
+async function gerarPedido(){
   const contato = document.getElementById("contato").value.trim();
   const vendedor = document.getElementById("vendedorPedido").value.trim();
   const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
@@ -2627,7 +2627,6 @@ async function gerarPedido()
 
   await carregarHistoricoBanco();
   alert('Pedido salvo e histórico atualizado.');
-}
   }
 
   function copiarCupom(){
