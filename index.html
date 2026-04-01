@@ -2238,6 +2238,10 @@ async function editarTotalHistorico(id, valorAtual){
   </div>
 `;
     }
+    const prospectsPagosLista = prospects.filter(r => r.status === "pago");
+
+    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+    if(!prospectsPagosLista.length){
 
     prospectsPagosLista.forEach(r => {
       html += `
