@@ -2228,16 +2228,6 @@ async function editarTotalHistorico(id, valorAtual){
 
     html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
     if(!prospectsPagosLista.length){
-      html += `
-  <div class="meta-card">
-    <div class="nome">Nenhum prospect pago</div>
-    <div class="tipo">Prospect • Exibido somente quando pago</div>
-    <div class="meta-info-row">
-      <div class="meta-status pendente">AGUARDANDO PAGAMENTO</div>
-    </div>
-  </div>
-`;
-    }
 
     prospectsPagosLista.forEach(r => {
       html += `
