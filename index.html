@@ -131,12 +131,13 @@
       overflow:hidden;
     }
 
-    .meta-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-      gap:12px;
-      margin-top:16px;
-    }
+  .meta-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px, 320px));
+  gap:12px;
+  margin-top:16px;
+  justify-content:start;
+}
       .meta-info-row{
         display:flex;
         align-items:center;
@@ -151,12 +152,14 @@
         color:#fff;
         font-size:14px;
     }
-    .meta-card{
-      background:linear-gradient(180deg,#181818,#121212);
-      border:1px solid #2a2a2a;
-      border-radius:14px;
-      padding:14px;
-    }
+.meta-card{
+  width:100%;
+  max-width:320px;
+  background:linear-gradient(180deg,#181818,#121212);
+  border:1px solid #2a2a2a;
+  border-radius:14px;
+  padding:14px;
+}
 
     .meta-card-actions{
       display:flex;
