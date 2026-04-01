@@ -1141,7 +1141,7 @@
   <div id="meta" class="tab">
     <div class="card">
       <h2 class="section-title">💰 Meta Semanal</h2>
-      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: opcional</div>
+      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: aparece na tabela apenas quando pago</div>
 
       <div class="actions" style="margin-top:0; margin-bottom:14px;">
         <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
@@ -2224,21 +2224,28 @@ async function editarTotalHistorico(id, valorAtual){
     });
     html += `</div>`;
 
+    const prospectsPagosLista = prospects.filter(r => String(r.status || "").toLowerCase() === "pago");
+
     html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
-    prospects.forEach(r => {
-      let statusExibido = r.status;
-      if(r.status === "pendente" && Number(r.amount || 0) === 0){
-        statusExibido = "opcional";
-      }
+    if(!prospectsPagosLista.length){
+      html += `
+  <div class="meta-card">
+    <div class="nome">Nenhum prospect pago</div>
+    <div class="tipo">Prospect • Exibido somente quando pago</div>
+    <div class="meta-info-row">
+      <div class="meta-status pendente">NENHUM PAGO AINDA</div>
+    </div>
+  </div>
+`;
+    }
 
-      const classe = statusExibido === "opcional" ? "opcional" : r.status;
-
-         html += `
+    prospectsPagosLista.forEach(r => {
+      html += `
   <div class="meta-card">
     <div class="nome">${escapeHtml(r.person_name)}</div>
-    <div class="tipo">Prospect • Ajuda opcional</div>
+    <div class="tipo">Prospect • Exibido somente quando pago</div>
     <div class="meta-info-row">
-      <div class="meta-status ${classe}">${statusExibido.toUpperCase()}</div>
+      <div class="meta-status pago">PAGO</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
     </div>
   </div>
