@@ -2224,6 +2224,7 @@ async function editarTotalHistorico(id, valorAtual){
     });
     html += `</div>`;
 
+
     const prospectsPagosLista = prospects.filter(r => String(r.status || "").toLowerCase() === "pago");
 
     html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
@@ -2237,11 +2238,20 @@ async function editarTotalHistorico(id, valorAtual){
     </div>
   </div>
 `;
+    } else {
+      prospectsPagosLista.forEach(r => {
+        html += `
+  <div class="meta-card">
+    <div class="nome">${escapeHtml(r.person_name)}</div>
+    <div class="tipo">Prospect • Exibido somente quando pago</div>
+    <div class="meta-info-row">
+      <div class="meta-status pago">PAGO</div>
+      ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
+    </div>
+  </div>
+`;
+      });
     }
-    const prospectsPagosLista = prospects.filter(r => r.status === "pago");
-
-    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
-    if(!prospectsPagosLista.length){
 
     prospectsPagosLista.forEach(r => {
       html += `
