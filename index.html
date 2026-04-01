@@ -2224,6 +2224,20 @@ async function editarTotalHistorico(id, valorAtual){
     });
     html += `</div>`;
 
+    const prospectsPagosLista = prospects.filter(r => String(r.status || "").toLowerCase() === "pago");
+
+    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+    if(!prospectsPagosLista.length){
+      html += `
+  <div class="meta-card">
+    <div class="nome">Nenhum prospect pago</div>
+    <div class="tipo">Prospect • Exibido somente quando pago</div>
+    <div class="meta-info-row">
+      <div class="meta-status pendente">NENHUM PAGO AINDA</div>
+    </div>
+  </div>
+`;
+    }
     const prospectsPagosLista = prospects.filter(r => r.status === "pago");
 
     html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
