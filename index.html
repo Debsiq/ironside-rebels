@@ -131,9 +131,15 @@
       overflow:hidden;
     }
 
-  .meta-grid{
+.meta-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px, 320px));
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+    .meta-grid-prospects{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,240px));
   gap:12px;
   margin-top:16px;
   justify-content:start;
@@ -2230,7 +2236,7 @@ async function editarTotalHistorico(id, valorAtual){
 
     const prospectsPagosLista = prospects.filter(r => String(r.status || "").toLowerCase() === "pago");
 
-    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
+html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid-prospects">`;
     if(!prospectsPagosLista.length){
       html += `
   <div class="meta-card">
