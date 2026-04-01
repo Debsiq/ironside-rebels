@@ -2237,12 +2237,7 @@ async function editarTotalHistorico(id, valorAtual){
     </div>
   </div>
 `;
-    }
-    const prospectsPagosLista = prospects.filter(r => r.status === "pago");
-
-    html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-grid">`;
-    if(!prospectsPagosLista.length){
-
+    } else {
     prospectsPagosLista.forEach(r => {
       html += `
   <div class="meta-card">
@@ -3549,7 +3544,8 @@ function renderBanco(data){
 
   historyEl.innerHTML = html;
 }
- function gerarDashboard(){
+
+function gerarDashboard(){
   const relatorio = document.getElementById("relatorio");
 
   const totalVendas = vendas.length;
@@ -3601,6 +3597,8 @@ function renderBanco(data){
 
   gerarRanking();
 }
+
+
 
 window.onload = async () => {
   openTab("pedidos");
