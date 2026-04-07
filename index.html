@@ -1499,27 +1499,27 @@ const CUSTO_SUB_POR_PECA = 135000 / 45;
     "9mm": {
       "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
       "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" },
-      "Night Syndication": { limpo: 20, sujo: 30, obs: "" }
+      "Night Syndication": { limpo: 20, sujo: 30, obs: "1 muni grátis a cada 5 compradas " }
     },
     ".45": {
       "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
       "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" },
-      "Night Syndication": { limpo: 20, sujo: 30, obs: "" }
+      "Night Syndication": { limpo: 20, sujo: 30, obs: "1 muni grátis a cada 5 compradas" }
     },
     ".50": {
       "NINE": { limpo: 30, sujo: null, obs: "" },
       "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "" }
+      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
     },
     "Doze": {
       "NINE": { limpo: 30, sujo: null, obs: "" },
       "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "" }
+      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
     },
     "762": {
       "NINE": { limpo: 30, sujo: null, obs: "" },
       "FAMILIA CESARINE": { limpo: 30, sujo: 60, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "" }
+      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
     }
   },
 
@@ -2895,35 +2895,53 @@ function getCategoriasOptionsHtml(selected = ""){
     atualizarResumoEncomendaItem(el);
   }
 
-  function atualizarResumoEncomendaItem(el){
-    const item = el.closest(".item-pedido");
-    const categoria = item.querySelector(".categoria-item").value;
-    const produto = item.querySelector(".produto-item").value;
-    const fornecedor = item.querySelector(".fornecedor-item").value;
-    const qtd = Number(item.querySelector(".qtd-encomenda-item").value);
-    const tipo = item.querySelector(".tipo-pagamento-item").value;
-    const resumo = item.querySelector(".item-resumo");
+ function atualizarResumoEncomendaItem(el){
+  const item = el.closest(".item-pedido");
+  const categoria = item.querySelector(".categoria-item").value;
+  const produto = item.querySelector(".produto-item").value;
+  const fornecedor = item.querySelector(".fornecedor-item").value;
+  const qtd = Number(item.querySelector(".qtd-encomenda-item").value);
+  const tipo = item.querySelector(".tipo-pagamento-item").value;
+  const resumo = item.querySelector(".item-resumo");
 
-    if(!categoria || !produto || !fornecedor){
-      resumo.innerHTML = "";
-      return;
-    }
-
-    const dados = tabelaCompras[categoria][produto][fornecedor];
-    const valor = tipo === "limpo" ? dados.limpo : dados.sujo;
-
-    if(valor == null){
-      resumo.innerHTML = `⚠️ Este fornecedor não possui valor em dinheiro ${tipo}.`;
-      return;
-    }
-
-    if(!qtd || qtd <= 0){
-      resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)}`;
-      return;
-    }
-
-    resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)} | Total do item: ${dinheiro(qtd * valor)}`;
+  if(!categoria || !produto || !fornecedor){
+    resumo.innerHTML = "";
+    return;
   }
+
+  const dados = tabelaCompras[categoria][produto][fornecedor];
+  const valor = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+  if(valor == null){
+    resumo.innerHTML = `⚠️ Este fornecedor não possui valor em dinheiro ${tipo}.`;
+    return;
+  }
+
+  const temBonusNight =
+    categoria === "municoes" &&
+    fornecedor === "Night Syndication";
+
+  if(!qtd || qtd <= 0){
+    resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)}`;
+    return;
+  }
+
+  const total = qtd * valor;
+
+  if(temBonusNight){
+    const bonus = Math.floor(qtd / 5);
+    const totalRecebido = qtd + bonus;
+
+   resumo.innerHTML =
+    `Valor unitário selecionado: ${dinheiro(valor)} | ` +
+    `Total do item: ${dinheiro(total)} | ` +
+    `Obs: Promoção 5 por 1 • Você vai receber +${bonus} munições grátis | ` +
+    `Total recebido: ${totalRecebido}`;
+  return;
+  }
+
+  resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)} | Total do item: ${dinheiro(total)}`;
+}
 
   function resetarEncomenda(){
     document.getElementById("compradorEncomenda").value = "";
@@ -2986,18 +3004,27 @@ function getCategoriasOptionsHtml(selected = ""){
       ferramentas: "Ferramentas"
     };
     
-    itens.push({
-      category: categoriaLabel[categoria] || categoria,
-      productName: produto,
-      supplierName: fornecedor,
-      quantity: qtd,
-      paymentType: tipo.toUpperCase(),
-      unitPrice: valorUnitario,
-      total,
-      limpo: dados.limpo,
-      sujo: dados.sujo,
-      obs: dados.obs || ""
-    });
+    const bonusNight =
+  categoria === "municoes" && fornecedor === "Night Syndication"
+    ? Math.floor(qtd / 5)
+    : 0;
+
+const quantidadeFinal = qtd + bonusNight;
+
+itens.push({
+  category: categoriaLabel[categoria] || categoria,
+  productName: produto,
+  supplierName: fornecedor,
+  quantity: qtd,
+  bonusQuantity: bonusNight,
+  finalQuantity: quantidadeFinal,
+  paymentType: tipo.toUpperCase(),
+  unitPrice: valorUnitario,
+  total,
+  limpo: dados.limpo,
+  sujo: dados.sujo,
+  obs: dados.obs || ""
+});
     }
 
     const numero = (encomendasHistorico[0]?.purchase_number || 0) + 1;
@@ -3038,14 +3065,19 @@ if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
 itens.forEach(item => {
   const mostrarTipoNoItem = tipoPagamentoCupom === "MISTO";
   const linhaItem = mostrarTipoNoItem
-    ? `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada) • ${item.paymentType}`
-    : `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)`;
+  ? `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada) • ${item.paymentType}`
+  : `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)`;
 
-  linhas.push({ text: linhaItem });
+linhas.push({ text: linhaItem });
 
-  if(item.obs){
-    linhas.push({ text:`Obs: ${item.obs}` });
-  }
+if(Number(item.bonusQuantity || 0) > 0){
+  linhas.push({ text: `BÔNUS NIGHT SYNDICATION: +${item.bonusQuantity} munições` });
+  linhas.push({ text: `TOTAL RECEBIDO: ${item.finalQuantity} munições` });
+}
+
+if(item.obs){
+  linhas.push({ text:`Obs: ${item.obs}` });
+}
 });
 
 linhas.push({ type:"line", text:"------------------------------" });
@@ -3161,8 +3193,12 @@ const resumoLucro = calcularLucroVendaHistorica(v);
       ? itens.map(i => {
           const tipo = (i.paymentType || "").toUpperCase();
           const mostrarTipo = tipoPagamentoResumo === "MISTO" && tipo;
-          return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}`;
-        }).join(", ")
+const bonusTexto = Number(i.bonusQuantity || 0) > 0
+  ? ` • recebe ${i.finalQuantity} (${i.quantity} + ${i.bonusQuantity} bônus)`
+  : "";
+
+return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}${bonusTexto}`;
+      }).join(", ")
       : "-";
 
     html += `
@@ -3209,8 +3245,12 @@ function renderHistoricoEncomendasInterno(){
       ? itens.map(i => {
           const tipo = (i.paymentType || "").toUpperCase();
           const mostrarTipo = tipoPagamentoResumo === "MISTO" && tipo;
-          return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}`;
-        }).join(", ")
+const bonusTexto = Number(i.bonusQuantity || 0) > 0
+  ? ` • recebe ${i.finalQuantity} (${i.quantity} + ${i.bonusQuantity} bônus)`
+  : "";
+
+return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` • ${tipo}` : ""}${bonusTexto}`;
+      }).join(", ")
       : "-";
 
     html += `
