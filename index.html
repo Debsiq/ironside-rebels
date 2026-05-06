@@ -1263,7 +1263,7 @@
   <div id="pedidos" class="tab">
     <div class="card">
       <h2 class="section-title">🧾 Novo Pedido</h2>
-      <div class="tag">✅ 10% acima de 10 armas elegíveis • HK USP não participa</div>
+      <div class="tag">✅ Preço com desconto em dinheiro limpo para pedidos acima de 10 armas • A partir da 11ª arma</div>
 
 <div class="grid">
   <div>
@@ -1274,8 +1274,7 @@
   <div>
     <label for="tipoCompradorPedido">Tipo do comprador</label>
     <select id="tipoCompradorPedido" onchange="atualizarResumoItensPedido()">
-      <option value="cheio">Valor cheio</option>
-      <option value="parceria">Parceria</option>
+      <option value="normal">Preço normal</option>
     </select>
   </div>
 
@@ -1285,7 +1284,7 @@
   </div>
 </div>
 
-<div class="helper">Você pode adicionar várias armas no mesmo pedido e definir o pagamento de cada arma separadamente. A HK USP não recebe desconto.</div>
+<div class="helper">Você pode adicionar várias armas no mesmo pedido e definir o pagamento de cada arma separadamente. No momento não existe preço de parceria.</div>
       
       <div id="itensPedido"></div>
 
@@ -1448,49 +1447,47 @@ const CUSTO_PISTOLA_POR_PECA = 120000 / 45;
 const CUSTO_SUB_POR_PECA = 135000 / 45;
   
  const armas = {
-  "Colt 1911": {
-    limpo: 10000,
-    sujo: 12500,
-    materiais: { cylinder: 1, components: 1, blueprint: 1 }
+  "Thompson": {
+    limpo: 25000,
+    sujo: 40000,
+    descontoLimpo: 22000,
+    custo: 16200,
+    materiais: {
+      ferro: 2700,
+      aluminio: 1100,
+      plastico: 650,
+      borracha: 240,
+      cobre: 170,
+      sucataMetal: 320
+    }
   },
-  "HK USP": {
-    limpo: 12000,
-    sujo: 15000,
-    materiais: { cylinder: 1, components: 2, blueprint: 1 }
+  "Mac-10": {
+    limpo: 25000,
+    sujo: 40000,
+    descontoLimpo: 22000,
+    custo: 16200,
+    materiais: {
+      ferro: 2700,
+      aluminio: 1100,
+      plastico: 650,
+      borracha: 240,
+      cobre: 170,
+      sucataMetal: 320
+    }
   },
-  "Desert Eagle": {
-    limpo: 14000,
-    sujo: 17500,
-    materiais: { cylinder: 2, components: 1, blueprint: 1 }
-  },
-
-  "Scorpion": {
-    limpo: 20000,
-    sujo: 25000,
-    parceriaLimpo: 15000,
-    parceriaSujo: 18750,
-    materiais: { gunbarrel: 2, components2: 1, blueprint_sub: 1 }
-  },
-  "Tec-9": {
-    limpo: 16000,
-    sujo: 20000,
-    parceriaLimpo: 12000,
-    parceriaSujo: 15000,
-    materiais: { gunbarrel: 1, components2: 1, blueprint_sub: 1 }
-  },
-  "CZ Scorpion EVO 3 S1": {
+  "Mossberg 500": {
     limpo: 30000,
-    sujo: 37500,
-    parceriaLimpo: 20000,
-    parceriaSujo: 25000,
-    materiais: { gunbarrel: 2, components2: 2, blueprint_sub: 1 }
-  },
-  "MP9": {
-    limpo: 20000,
-    sujo: 25000,
-    parceriaLimpo: 16000,
-    parceriaSujo: 20000,
-    materiais: { gunbarrel: 1, components2: 2, blueprint_sub: 1 }
+    sujo: 50000,
+    descontoLimpo: 28000,
+    custo: 19800,
+    materiais: {
+      ferro: 3300,
+      aluminio: 1440,
+      plastico: 620,
+      borracha: 320,
+      cobre: 260,
+      sucataMetal: 540
+    }
   }
 };
 
@@ -1931,37 +1928,16 @@ function calcularLucroPedido(totalVenda, custoMateriais){
 }
   function calcularLucroVendaHistorica(venda){
   const itens = Array.isArray(venda.items) ? venda.items : [];
+  const custoTotalMateriais = itens.reduce((acc, item) => {
+    const arma = armas[item.weapon];
+    const qtd = Number(item.quantity || 0);
+    return acc + (Number(arma?.custo || 0) * qtd);
+  }, 0);
 
-  let totalCylinder = 0;
-let totalComponents = 0;
-let totalBlueprint = 0;
-
-let totalGunbarrel = 0;
-let totalComponents2 = 0;
-let totalBlueprintSub = 0;
-
-  itens.forEach(item => {
-const arma = armas[item.weapon];
-const qtd = Number(item.quantity || 0);
-  if(!arma) return;
-
-  totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
-totalComponents += qtd * Number(arma.materiais?.components || 0);
-totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
-
-totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
-totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
-totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
-});
-    
-const custoPistola = (totalCylinder + totalComponents + totalBlueprint) * CUSTO_PISTOLA_POR_PECA;
-const custoSub = (totalGunbarrel + totalComponents2 + totalBlueprintSub) * CUSTO_SUB_POR_PECA;
-const custoTotalMateriais = custoPistola + custoSub;
-
-return calcularLucroPedido(
-  Number(venda.total || 0),
-  custoTotalMateriais
-);
+  return calcularLucroPedido(
+    Number(venda.total || 0),
+    custoTotalMateriais
+  );
 }
   function renderTerminal(lines){
     return lines.map(item => {
@@ -2361,19 +2337,22 @@ html += `<div class="divider"></div><h3>🕯️ Prospects</h3><div class="meta-g
     return Object.keys(armas).map(nome => `<option value="${nome}" ${nome === selected ? "selected" : ""}>${nome}</option>`).join("");
   }
   
-function obterPrecoArma(armaNome, pagamento, tipoComprador = "cheio"){
+function obterPrecoArma(armaNome, pagamento, totalPedido = 1){
   const arma = armas[armaNome];
   if(!arma) return 0;
 
-  const ehParceria = tipoComprador === "parceria";
   const ehSujo = pagamento === "Sujo";
+  const pedidoComDesconto = Number(totalPedido || 0) >= 11;
 
-  if(ehParceria){
-    if(ehSujo && arma.parceriaSujo != null) return arma.parceriaSujo;
-    if(!ehSujo && arma.parceriaLimpo != null) return arma.parceriaLimpo;
+  if(ehSujo){
+    return arma.sujo;
   }
 
-  return ehSujo ? arma.sujo : arma.limpo;
+  if(pedidoComDesconto && arma.descontoLimpo != null){
+    return arma.descontoLimpo;
+  }
+
+  return arma.limpo;
 }
   
 function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pagamentoSelecionado = "Limpo"){
@@ -2424,6 +2403,10 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
 
  function atualizarResumoItensPedido(){
   const itens = document.querySelectorAll("#itensPedido .item-pedido");
+  const totalPedido = [...itens].reduce((acc, item) => {
+    const qtd = Number(item.querySelector(".qtd-item")?.value || 0);
+    return acc + (qtd > 0 ? qtd : 0);
+  }, 0);
 
   itens.forEach(item => {
     let resumo = item.querySelector(".item-resumo");
@@ -2433,20 +2416,20 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
       item.appendChild(resumo);
     }
 
-   const armaNome = item.querySelector(".arma-item").value;
+    const armaNome = item.querySelector(".arma-item").value;
     const qtd = Number(item.querySelector(".qtd-item").value);
     const pagamento = item.querySelector(".pagamento-item").value;
-    const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
-    const valorUnitario = obterPrecoArma(armaNome, pagamento, tipoComprador);
-    
-    const semDesconto = armaNome === "HK USP" ? " • HK sem desconto" : "";
+    const valorUnitario = obterPrecoArma(armaNome, pagamento, totalPedido);
+    const arma = armas[armaNome];
+    const temDesconto = pagamento === "Limpo" && totalPedido >= 11 && arma?.descontoLimpo != null;
+    const infoDesconto = temDesconto ? " • preço com desconto aplicado" : "";
 
     if(!qtd || qtd <= 0){
-      resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)}${semDesconto}`;
+      resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)}${infoDesconto}`;
       return;
     }
 
-    resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)} | Subtotal: ${dinheiro(qtd * valorUnitario)}${semDesconto}`;
+    resumo.innerHTML = `Pagamento: ${pagamento} | Valor unitário: ${dinheiro(valorUnitario)} | Subtotal: ${dinheiro(qtd * valorUnitario)}${infoDesconto}`;
   });
 }
 
@@ -2455,7 +2438,7 @@ function resetarPedido(){
   document.getElementById("vendedorPedido").value = "";
 
   const tipoComprador = document.getElementById("tipoCompradorPedido");
-  if(tipoComprador) tipoComprador.value = "cheio";
+  if(tipoComprador) tipoComprador.value = "normal";
 
   document.getElementById("itensPedido").innerHTML = "";
   document.getElementById("cupom").innerHTML = "";
@@ -2466,8 +2449,12 @@ async function gerarPedido(){
   const contato = document.getElementById("contato").value.trim();
   const vendedor = document.getElementById("vendedorPedido").value.trim();
   const itensEls = document.querySelectorAll("#itensPedido .item-pedido");
-  const tipoComprador = document.getElementById("tipoCompradorPedido")?.value || "cheio";
-  
+  const totalQuantidadePedido = [...itensEls].reduce((acc, itemEl) => {
+    const qtd = Number(itemEl.querySelector(".qtd-item")?.value || 0);
+    return acc + (qtd > 0 ? qtd : 0);
+  }, 0);
+  const pedidoComDescontoPreco = totalQuantidadePedido >= 11;
+
   if(!contato){
     alert("Preencha o comprador.");
     return;
@@ -2494,7 +2481,16 @@ async function gerarPedido(){
 
   let qtdElegivelDesconto = 0;
   let subtotalElegivelDesconto = 0;
-  let temHK = false;
+  let valorDesconto = 0;
+  let temDescontoPedido = false;
+  let materiaisTotais = {
+    ferro: 0,
+    aluminio: 0,
+    plastico: 0,
+    borracha: 0,
+    cobre: 0,
+    sucataMetal: 0
+  };
 
   for(const itemEl of itensEls){
     const armaNome = itemEl.querySelector(".arma-item").value;
@@ -2512,12 +2508,15 @@ async function gerarPedido(){
       return;
     }
 
-    const preco = obterPrecoArma(armaNome, pagamento, tipoComprador);
-    
+    const preco = obterPrecoArma(armaNome, pagamento, totalQuantidadePedido);
+    const precoSemDesconto = pagamento === "Sujo" ? arma.sujo : arma.limpo;
     const subtotalItem = qtd * preco;
-    const elegivelDesconto = armaNome !== "HK USP";
+    const elegivelDesconto = pagamento === "Limpo" && pedidoComDescontoPreco && arma.descontoLimpo != null;
 
-    if(armaNome === "HK USP") temHK = true;
+    if(elegivelDesconto){
+      temDescontoPedido = true;
+      valorDesconto += Math.max(0, precoSemDesconto - preco) * qtd;
+    }
 
     itens.push({
       arma: armaNome,
@@ -2525,8 +2524,7 @@ async function gerarPedido(){
       pagamento,
       preco,
       subtotal: subtotalItem,
-      elegivelDesconto,
-      tipoComprador,
+      elegivelDesconto
     });
 
     totalArmas += qtd;
@@ -2538,15 +2536,13 @@ async function gerarPedido(){
       totalSujo += subtotalItem;
     }
 
-    // Materiais de pistola
-    totalCylinder += qtd * Number(arma.materiais?.cylinder || 0);
-    totalComponents += qtd * Number(arma.materiais?.components || 0);
-    totalBlueprint += qtd * Number(arma.materiais?.blueprint || 0);
-
-    // Materiais de sub
-    totalGunbarrel += qtd * Number(arma.materiais?.gunbarrel || 0);
-    totalComponents2 += qtd * Number(arma.materiais?.components2 || 0);
-    totalBlueprintSub += qtd * Number(arma.materiais?.blueprint_sub || 0);
+    // Materiais detalhados da planilha Ironside
+    materiaisTotais.ferro += qtd * Number(arma.materiais?.ferro || 0);
+    materiaisTotais.aluminio += qtd * Number(arma.materiais?.aluminio || 0);
+    materiaisTotais.plastico += qtd * Number(arma.materiais?.plastico || 0);
+    materiaisTotais.borracha += qtd * Number(arma.materiais?.borracha || 0);
+    materiaisTotais.cobre += qtd * Number(arma.materiais?.cobre || 0);
+    materiaisTotais.sucataMetal += qtd * Number(arma.materiais?.sucataMetal || 0);
 
     if(elegivelDesconto){
       qtdElegivelDesconto += qtd;
@@ -2554,62 +2550,15 @@ async function gerarPedido(){
     }
   }
 
-let desconto = false;
-let valorDesconto = 0;
+let desconto = temDescontoPedido;
 let totalFinal = subtotalGeral;
 
-const podeTerDescontoQuantidade = tipoComprador !== "parceria";
-
-if(podeTerDescontoQuantidade && qtdElegivelDesconto >= 11){
-  desconto = true;
-  valorDesconto = subtotalElegivelDesconto * 0.10;
-  totalFinal = subtotalGeral - valorDesconto;
-
-  const descontoPorItem = 0.10;
-  let descontoLimpo = 0;
-  let descontoSujo = 0;
-
-  itens.forEach(item => {
-    if(item.elegivelDesconto){
-      const descontoItem = item.subtotal * descontoPorItem;
-      if(item.pagamento === "Limpo"){
-        descontoLimpo += descontoItem;
-      }else{
-        descontoSujo += descontoItem;
-      }
-    }
-  });
-
-  totalLimpo -= descontoLimpo;
-  totalSujo -= descontoSujo;
-}
-
-  const caixasPistola = Math.max(totalCylinder, totalComponents, totalBlueprint);
-  const caixasSub = Math.max(totalGunbarrel, totalComponents2, totalBlueprintSub);
-
-  const carregPistola = calcularCarregamento(caixasPistola);
-  const carregSub = calcularCarregamento(caixasSub);
-
-  let textoCarregPistola = "";
-  if(carregPistola.grande > 0) textoCarregPistola += `${carregPistola.grande} Grande `;
-  if(carregPistola.medio > 0) textoCarregPistola += `${carregPistola.medio} Médio `;
-  if(carregPistola.pequeno > 0) textoCarregPistola += `${carregPistola.pequeno} Pequeno`;
-
-  let textoCarregSub = "";
-  if(carregSub.grande > 0) textoCarregSub += `${carregSub.grande} Grande `;
-  if(carregSub.medio > 0) textoCarregSub += `${carregSub.medio} Médio `;
-  if(carregSub.pequeno > 0) textoCarregSub += `${carregSub.pequeno} Pequeno`;
-
-  const totalPecasPistola = totalCylinder + totalComponents + totalBlueprint;
-  const totalPecasSub = totalGunbarrel + totalComponents2 + totalBlueprintSub;
-  
-  const custoPistola = totalPecasPistola * CUSTO_PISTOLA_POR_PECA;
-  const custoSub = totalPecasSub * CUSTO_SUB_POR_PECA;
-  const custoTotalMateriais = custoPistola + custoSub;
+  const custoTotalMateriais = itens.reduce((acc, item) => {
+    const arma = armas[item.arma];
+    return acc + (Number(arma?.custo || 0) * Number(item.qtd || 0));
+  }, 0);
   const lucroTotal = totalFinal - custoTotalMateriais;
-  
-  const temPistolaNoPedido = totalCylinder > 0 || totalComponents > 0 || totalBlueprint > 0;
-  const temSubNoPedido = totalGunbarrel > 0 || totalComponents2 > 0 || totalBlueprintSub > 0;
+  const temMateriaisNoPedido = Object.values(materiaisTotais).some(v => Number(v || 0) > 0);
   const numero = (vendas[0]?.order_number || 0) + 1;
   const pagamentosUnicos = [...new Set(itens.map(item => item.pagamento))];
 
@@ -2625,7 +2574,6 @@ if(podeTerDescontoQuantidade && qtdElegivelDesconto >= 11){
     { text:`VENDA #${String(numero).padStart(4,"0")}` },
     { text:`DATA: ${dataAtualBR()}` },
     { text:`COMPRADOR: ${contato}` },
-    { text:`TIPO COMPRADOR: ${tipoComprador === "parceria" ? "PARCERIA" : "VALOR CHEIO"}` },
     { text:`VENDEDOR: ${vendedor || "-"}` },
     { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
     { type:"line", text:"------------------------------" },
@@ -2645,15 +2593,12 @@ if(podeTerDescontoQuantidade && qtdElegivelDesconto >= 11){
     { text:`SUBTOTAL: ${dinheiro(Math.round(subtotalGeral))}` }
   );
 
-  if(desconto && temHK){
-    linhas.push({ text:`OBS: HK USP não participa do desconto.` });
-    linhas.push({ text:`ARMAS COM DESCONTO: ${qtdElegivelDesconto}` });
-  }
-
   if(desconto){
+    linhas.push({ text:`OBS: preço com desconto aplicado em dinheiro limpo para pedido acima de 10 armas.` });
+    linhas.push({ text:`ARMAS COM PREÇO DE DESCONTO: ${qtdElegivelDesconto}` });
     linhas.push({
       type:"discount",
-      text:`DESCONTO: 10% SOBRE ITENS ELEGÍVEIS (-${dinheiro(Math.round(valorDesconto))})`
+      text:`ECONOMIA ESTIMADA: -${dinheiro(Math.round(valorDesconto))}`
     });
   }
 
@@ -2675,31 +2620,15 @@ if(podeTerDescontoQuantidade && qtdElegivelDesconto >= 11){
   { type:"line", text:"==============================" }
 );
 
-if(temPistolaNoPedido){
+if(temMateriaisNoPedido){
   linhas.push(
-    { text:"MATERIAIS PISTOLA:" },
-    { text:`${totalCylinder} Cylinder` },
-    { text:`${totalComponents} Componente` },
-    { text:`${totalBlueprint} Blueprint` },
-    { text:`CARREGAMENTO PISTOLA: ${textoCarregPistola || "Não calculado"}` },
-    { text:`CUSTO PISTOLA: ${dinheiro(Math.round(custoPistola))}` }
-  );
-}
-
-if(temPistolaNoPedido && temSubNoPedido){
-  linhas.push(
-    { type:"line", text:"------------------------------" }
-  );
-}
-
-if(temSubNoPedido){
-  linhas.push(
-    { text:"MATERIAIS SUB:" },
-    { text:`${totalGunbarrel} Gunbarrel` },
-    { text:`${totalComponents2} Components2` },
-    { text:`${totalBlueprintSub} Blueprint_sub` },
-    { text:`CARREGAMENTO SUB: ${textoCarregSub || "Não calculado"}` },
-    { text:`CUSTO SUB: ${dinheiro(Math.round(custoSub))}` }
+    { text:"MATERIAIS:" },
+    { text:`${materiaisTotais.ferro} Ferro` },
+    { text:`${materiaisTotais.aluminio} Alumínio` },
+    { text:`${materiaisTotais.plastico} Plástico` },
+    { text:`${materiaisTotais.borracha} Borracha` },
+    { text:`${materiaisTotais.cobre} Cobre` },
+    { text:`${materiaisTotais.sucataMetal} Sucata de Metal` }
   );
 }
 
