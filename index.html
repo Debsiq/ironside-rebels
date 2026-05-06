@@ -1279,7 +1279,7 @@
   </div>
 
   <div>
-    <label for="vendedorPedido">Comprador</label>
+    <label for="vendedorPedido">Contato</label>
     <input id="vendedorPedido" placeholder="Nome de quem fez o pedido">
   </div>
 </div>
@@ -2621,14 +2621,23 @@ let totalFinal = subtotalGeral;
 );
 
 if(temMateriaisNoPedido){
+  const totalMateriaisNecessarios =
+    Number(materiaisTotais.ferro || 0) +
+    Number(materiaisTotais.aluminio || 0) +
+    Number(materiaisTotais.plastico || 0) +
+    Number(materiaisTotais.borracha || 0) +
+    Number(materiaisTotais.cobre || 0) +
+    Number(materiaisTotais.sucataMetal || 0);
+
   linhas.push(
-    { text:"MATERIAIS:" },
+    { text:"TOTAL DE MATERIAIS NECESSÁRIOS:" },
     { text:`${materiaisTotais.ferro} Ferro` },
     { text:`${materiaisTotais.aluminio} Alumínio` },
     { text:`${materiaisTotais.plastico} Plástico` },
     { text:`${materiaisTotais.borracha} Borracha` },
     { text:`${materiaisTotais.cobre} Cobre` },
-    { text:`${materiaisTotais.sucataMetal} Sucata de Metal` }
+    { text:`${materiaisTotais.sucataMetal} Sucata de Metal` },
+    { text:`TOTAL GERAL DE PEÇAS: ${totalMateriaisNecessarios}` }
   );
 }
 
