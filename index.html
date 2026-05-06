@@ -1267,8 +1267,8 @@
 
 <div class="grid">
   <div>
-    <label for="contato">Comprador</label>
-    <input id="contato" placeholder="Nome do comprador">
+   <label for="contato">Organização</label>
+  <input id="contato" placeholder="Nome da organização">
   </div>
 
   <div>
@@ -1279,8 +1279,8 @@
   </div>
 
   <div>
-    <label for="vendedorPedido">Vendedor</label>
-    <input id="vendedorPedido" placeholder="Nome do vendedor">
+    <label for="vendedorPedido">Comprador</label>
+    <input id="vendedorPedido" placeholder="Nome de quem fez o pedido">
   </div>
 </div>
 
@@ -1317,8 +1317,8 @@
           <option value="oldest">Mais antigo → mais novo</option>
         </select>
 
-        <input id="filtroComprador" placeholder="Filtrar por comprador" oninput="carregarHistoricoBanco()">
-        <input id="filtroVendedor" placeholder="Filtrar por vendedor" oninput="carregarHistoricoBanco()">
+        <input id="filtroComprador" placeholder="Filtrar por organização" oninput="carregarHistoricoBanco()">
+        <input id="filtroVendedor" placeholder="Filtrar por comprador" oninput="carregarHistoricoBanco()">
       </div>
 
       <div id="listaHistorico"></div>
@@ -2573,8 +2573,8 @@ let totalFinal = subtotalGeral;
     { text:"```" },
     { text:`VENDA #${String(numero).padStart(4,"0")}` },
     { text:`DATA: ${dataAtualBR()}` },
-    { text:`COMPRADOR: ${contato}` },
-    { text:`VENDEDOR: ${vendedor || "-"}` },
+    { text:`ORGANIZAÇÃO: ${contato}` },
+    { text:`COMPRADOR: ${vendedor || "-"}` },
     { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
     { type:"line", text:"------------------------------" },
     { text:"ITENS:" }
@@ -3089,8 +3089,8 @@ const resumoLucro = calcularLucroVendaHistorica(v);
     html += `
       <div class="history">
         <strong>Venda #${String(v.order_number).padStart(4,"0")}</strong><br>
-        Comprador: ${escapeHtml(v.buyer_name)}<br>
-        Vendedor: ${escapeHtml(v.seller_name || "-")}<br>
+        Organização: ${escapeHtml(v.buyer_name)}<br>
+        Comprador: ${escapeHtml(v.seller_name || "-")}<br>
         Itens: ${escapeHtml(descricaoItens || "-")}<br>
         Total de armas: ${v.total_weapons}<br>
         Pagamento: ${escapeHtml(v.payment_type)}<br>
