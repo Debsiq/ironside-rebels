@@ -1263,7 +1263,7 @@
   <div id="pedidos" class="tab">
     <div class="card">
       <h2 class="section-title">🧾 Novo Pedido</h2>
-      <div class="tag">✅ Preço com desconto em dinheiro limpo para pedidos a partir de 10 armas • Soma qualquer arma do pedido</div>
+      <div class="tag">✅ Preço com desconto em dinheiro limpo para pedidos acima de 10 armas • A partir da 11ª arma</div>
 
 <div class="grid">
   <div>
@@ -1492,61 +1492,65 @@ const CUSTO_SUB_POR_PECA = 135000 / 45;
 };
 
   const tabelaCompras = {
+  attachments: {
+    "Lanterna": {
+      "Sindication": { limpo: 1100, sujo: 1100, obs: "" }
+    },
+    "Pente Extendido": {
+      "Sindication": { limpo: 1100, sujo: 1100, obs: "" }
+    },
+    "Silenciador": {
+      "Sindication": { limpo: 1100, sujo: 1100, obs: "" }
+    },
+    "Pente Extendido SMG": {
+      "Sindication": { limpo: 1600, sujo: 1600, obs: "" }
+    },
+    "Silenciador SMG": {
+      "Sindication": { limpo: 1600, sujo: 1600, obs: "" }
+    }
+  },
+
   municoes: {
     "9mm": {
-      "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
-      "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" },
-      "Night Syndication": { limpo: 20, sujo: 30, obs: "1 muni grátis a cada 5 compradas " }
+      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
     },
-    ".45": {
-      "NINE": { limpo: 25, sujo: null, obs: "Pedido mínimo 1000 munições" },
-      "FAMILIA CESARINE": { limpo: 20, sujo: 40, obs: "" },
-      "Night Syndication": { limpo: 20, sujo: 30, obs: "1 muni grátis a cada 5 compradas" }
+    ".45mm": {
+      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
     },
-    ".50": {
-      "NINE": { limpo: 30, sujo: null, obs: "" },
-      "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
+    ".50mm": {
+      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
     },
-    "Doze": {
-      "NINE": { limpo: 30, sujo: null, obs: "" },
-      "FAMILIA CESARINE": { limpo: 25, sujo: 50, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
+    ".38mm": {
+      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
     },
-    "762": {
-      "NINE": { limpo: 30, sujo: null, obs: "" },
-      "FAMILIA CESARINE": { limpo: 30, sujo: 60, obs: "" },
-      "Night Syndication": { limpo: 25, sujo: 40, obs: "1 muni grátis a cada 5 compradas" }
+    "12 Gauge": {
+      "Sindication": { limpo: 2000, sujo: 2000, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+    }
+  },
+
+  tier1: {
+    "FN": {
+      "Warpatch MC": { limpo: 12000, sujo: 12000, descontoAcimaDe10: 19000, obs: "Comprando acima de 10, preço unitário: $19.000" }
+    },
+    "Daemon": {
+      "Warpatch MC": { limpo: 12000, sujo: 12000, descontoAcimaDe10: 10000, obs: "Comprando acima de 10, preço unitário: $10.000" }
+    },
+    "Eagle": {
+      "Warpatch MC": { limpo: 15000, sujo: 15000, descontoAcimaDe10: 13000, obs: "Comprando acima de 10, preço unitário: $13.000" }
+    },
+    "357": {
+      "Warpatch MC": { limpo: 15000, sujo: 15000, descontoAcimaDe10: 13000, obs: "Comprando acima de 10, preço unitário: $13.000" }
     }
   },
 
   drogas: {
-    "Coca": {
-      "FAMILIES": { limpo: 230, sujo: 460, obs: "Venda média 280$ a 290$" },
-      "THUNDERS": { limpo: 300, sujo: 460, obs: "Venda média 280$ a 290$" },
-      "DVD": { limpo: 230, sujo: 460, obs: "" },
-      "CLOUND": { limpo: 230, sujo: 460, obs: "" },
-      "OG's": { limpo: 230, sujo: 380, obs: "Venda média $290 a 300" }
+    "Metafetamina": {
+      "Creeds": { limpo: 120, sujo: 120, obs: "" },
+      "La Plaga": { limpo: 120, sujo: 120, obs: "" }
     },
-    "Meta": {
-      "FAMILIES": { limpo: 230, sujo: 500, obs: "Venda média 315$" },
-      "BALLAS": { limpo: 230, sujo: 460, obs: "" }
-    },
-    "LSD": {
-      "DVD": { limpo: 230, sujo: 500, obs: "" },
-      "CLOUND": { limpo: 230, sujo: 460, obs: "" },
-      "OG's": { limpo: 230, sujo: 380, obs: "Venda média $290 a 300" }
-    }
-  },
-
-  ferramentas: {
-    "Flipper": {
-      "MIDNIGHT": { limpo: 8000, sujo: null, obs: "" },
-      "EVO": { limpo: 8000, sujo: null, obs: "" }
-    },
-    "Cinto de Corrida": {
-      "MIDNIGHT": { limpo: 12000, sujo: null, obs: "" },
-      "EVO": { limpo: 12000, sujo: null, obs: "" }
+    "Heroina": {
+      "Creeds": { limpo: 120, sujo: 120, obs: "" },
+      "La Plaga": { limpo: 120, sujo: 120, obs: "" }
     }
   }
 };
@@ -2342,7 +2346,7 @@ function obterPrecoArma(armaNome, pagamento, totalPedido = 1){
   if(!arma) return 0;
 
   const ehSujo = pagamento === "Sujo";
-  const pedidoComDesconto = Number(totalPedido || 0) >= 10;
+  const pedidoComDesconto = Number(totalPedido || 0) >= 11;
 
   if(ehSujo){
     return arma.sujo;
@@ -2421,7 +2425,7 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
     const pagamento = item.querySelector(".pagamento-item").value;
     const valorUnitario = obterPrecoArma(armaNome, pagamento, totalPedido);
     const arma = armas[armaNome];
-    const temDesconto = pagamento === "Limpo" && totalPedido >= 10 && arma?.descontoLimpo != null;
+    const temDesconto = pagamento === "Limpo" && totalPedido >= 11 && arma?.descontoLimpo != null;
     const infoDesconto = temDesconto ? " • preço com desconto aplicado" : "";
 
     if(!qtd || qtd <= 0){
@@ -2453,7 +2457,7 @@ async function gerarPedido(){
     const qtd = Number(itemEl.querySelector(".qtd-item")?.value || 0);
     return acc + (qtd > 0 ? qtd : 0);
   }, 0);
-  const pedidoComDescontoPreco = totalQuantidadePedido >= 10;
+  const pedidoComDescontoPreco = totalQuantidadePedido >= 11;
 
   if(!contato){
     alert("Preencha o comprador.");
@@ -2594,7 +2598,7 @@ let totalFinal = subtotalGeral;
   );
 
   if(desconto){
-    linhas.push({ text:`OBS: preço com desconto aplicado em dinheiro limpo para pedido a partir de 10 armas somadas.` });
+    linhas.push({ text:`OBS: preço com desconto aplicado em dinheiro limpo para pedido acima de 10 armas.` });
     linhas.push({ text:`ARMAS COM PREÇO DE DESCONTO: ${qtdElegivelDesconto}` });
     linhas.push({
       type:"discount",
@@ -2698,10 +2702,60 @@ linhas.push(
 function getCategoriasOptionsHtml(selected = ""){
   return `
     <option value="">Selecionar</option>
+    <option value="attachments" ${selected === "attachments" ? "selected" : ""}>Attachments</option>
     <option value="municoes" ${selected === "municoes" ? "selected" : ""}>Munições</option>
+    <option value="tier1" ${selected === "tier1" ? "selected" : ""}>Tier 1</option>
     <option value="drogas" ${selected === "drogas" ? "selected" : ""}>Drogas</option>
-    <option value="ferramentas" ${selected === "ferramentas" ? "selected" : ""}>Ferramentas</option>
   `;
+}
+
+function obterValorUnitarioEncomenda(dados, tipo, qtd){
+  if(!dados) return null;
+
+  const valorBase = tipo === "limpo" ? dados.limpo : dados.sujo;
+
+  if(Number(qtd || 0) > 10 && dados.descontoAcimaDe10 != null){
+    return Number(dados.descontoAcimaDe10);
+  }
+
+  return valorBase;
+}
+
+function calcularTotalEncomendaItem(dados, valorUnitario, qtd){
+  const quantidade = Number(qtd || 0);
+
+  if(!dados || valorUnitario == null || !quantidade || quantidade <= 0){
+    return 0;
+  }
+
+  if(Number(dados.packSize || 0) > 0){
+    return (quantidade / Number(dados.packSize)) * Number(valorUnitario);
+  }
+
+  return quantidade * Number(valorUnitario);
+}
+
+function validarQuantidadeEncomenda(categoria, produto, fornecedor, dados, qtd){
+  const quantidade = Number(qtd || 0);
+
+  if(!quantidade || quantidade <= 0){
+    return "Informe uma quantidade válida para todos os itens.";
+  }
+
+  if(Number(dados?.packSize || 0) > 0 && quantidade % Number(dados.packSize) !== 0){
+    return `${produto} com ${fornecedor} só pode ser comprado em packs de ${dados.packSize} unidades.`;
+  }
+
+  return "";
+}
+
+function getCategoriaLabelEncomenda(categoria){
+  return {
+    attachments: "Attachments",
+    municoes: "Munições",
+    tier1: "Tier 1",
+    drogas: "Drogas"
+  }[categoria] || categoria;
 }
 
   function adicionarItemEncomenda(){
@@ -2828,8 +2882,9 @@ function getCategoriasOptionsHtml(selected = ""){
 
     const dados = tabelaCompras[categoria][produto][fornecedor];
 
-    item.querySelector(".preco-limpo-item").value = dados.limpo != null ? dinheiro(dados.limpo) : "Indisponível";
-    item.querySelector(".preco-sujo-item").value = dados.sujo != null ? dinheiro(dados.sujo) : "Indisponível";
+    const sufixoPack = Number(dados.packSize || 0) > 0 ? ` / pack de ${dados.packSize}` : "";
+    item.querySelector(".preco-limpo-item").value = dados.limpo != null ? `${dinheiro(dados.limpo)}${sufixoPack}` : "Indisponível";
+    item.querySelector(".preco-sujo-item").value = dados.sujo != null ? `${dinheiro(dados.sujo)}${sufixoPack}` : "Indisponível";
     item.querySelector(".obs-item").value = dados.obs || "-";
 
     atualizarResumoEncomendaItem(el);
@@ -2850,37 +2905,31 @@ function getCategoriasOptionsHtml(selected = ""){
   }
 
   const dados = tabelaCompras[categoria][produto][fornecedor];
-  const valor = tipo === "limpo" ? dados.limpo : dados.sujo;
+  const valor = obterValorUnitarioEncomenda(dados, tipo, qtd);
 
   if(valor == null){
     resumo.innerHTML = `⚠️ Este fornecedor não possui valor em dinheiro ${tipo}.`;
     return;
   }
 
-  const temBonusNight =
-    categoria === "municoes" &&
-    fornecedor === "Night Syndication";
-
   if(!qtd || qtd <= 0){
-    resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)}`;
+    const sufixoPack = Number(dados.packSize || 0) > 0 ? ` por pack de ${dados.packSize}` : "";
+    resumo.innerHTML = `Valor selecionado: ${dinheiro(valor)}${sufixoPack}`;
     return;
   }
 
-  const total = qtd * valor;
-
-  if(temBonusNight){
-    const bonus = Math.floor(qtd / 5);
-    const totalRecebido = qtd + bonus;
-
-   resumo.innerHTML =
-    `Valor unitário selecionado: ${dinheiro(valor)} | ` +
-    `Total do item: ${dinheiro(total)} | ` +
-    `Obs: Promoção 5 por 1 • Você vai receber +${bonus} munições grátis | ` +
-    `Total recebido: ${totalRecebido}`;
-  return;
+  const erroQuantidade = validarQuantidadeEncomenda(categoria, produto, fornecedor, dados, qtd);
+  if(erroQuantidade){
+    resumo.innerHTML = `⚠️ ${erroQuantidade}`;
+    return;
   }
 
-  resumo.innerHTML = `Valor unitário selecionado: ${dinheiro(valor)} | Total do item: ${dinheiro(total)}`;
+  const total = calcularTotalEncomendaItem(dados, valor, qtd);
+  const packs = Number(dados.packSize || 0) > 0 ? qtd / Number(dados.packSize) : 0;
+  const textoPack = packs ? ` | Packs: ${packs}x de ${dados.packSize}` : "";
+  const textoDesconto = Number(qtd || 0) > 10 && dados.descontoAcimaDe10 != null ? " | Preço acima de 10 aplicado" : "";
+
+  resumo.innerHTML = `Valor selecionado: ${dinheiro(valor)}${textoPack} | Total do item: ${dinheiro(total)}${textoDesconto}`;
 }
 
   function resetarEncomenda(){
@@ -2918,52 +2967,41 @@ function getCategoriasOptionsHtml(selected = ""){
       if(!qtd || qtd <= 0){ alert("Informe uma quantidade válida para todos os itens."); return; }
 
       const dados = tabelaCompras[categoria][produto][fornecedor];
-      const valorUnitario = tipo === "limpo" ? dados.limpo : dados.sujo;
+      const valorUnitario = obterValorUnitarioEncomenda(dados, tipo, qtd);
 
       if(valorUnitario == null){
         alert(`Esse fornecedor não possui preço em dinheiro ${tipo} para ${produto}.`);
         return;
       }
 
-     if(
-  categoria === "municoes" &&
-  fornecedor === "NINE" &&
-  (produto === "9mm" || produto === ".45") &&
-  qtd < 1000
-){
-  alert(`Para ${produto} com a NINE, o pedido mínimo é 1000 munições.`);
-  return;
-}
+      const erroQuantidade = validarQuantidadeEncomenda(categoria, produto, fornecedor, dados, qtd);
+      if(erroQuantidade){
+        alert(erroQuantidade);
+        return;
+      }
 
-      const total = qtd * valorUnitario;
+      const total = calcularTotalEncomendaItem(dados, valorUnitario, qtd);
       totalGeral += total;
 
-     const categoriaLabel = {
-      municoes: "Munições",
-      drogas: "Drogas",
-      ferramentas: "Ferramentas"
-    };
-    
-    const bonusNight =
-  categoria === "municoes" && fornecedor === "Night Syndication"
-    ? Math.floor(qtd / 5)
-    : 0;
-
-const quantidadeFinal = qtd + bonusNight;
+      const packs = Number(dados.packSize || 0) > 0 ? qtd / Number(dados.packSize) : 0;
+      const descontoQuantidadeAplicado = Number(qtd || 0) > 10 && dados.descontoAcimaDe10 != null;
 
 itens.push({
-  category: categoriaLabel[categoria] || categoria,
+  category: getCategoriaLabelEncomenda(categoria),
   productName: produto,
   supplierName: fornecedor,
   quantity: qtd,
-  bonusQuantity: bonusNight,
-  finalQuantity: quantidadeFinal,
+  packSize: Number(dados.packSize || 0),
+  packs,
+  bonusQuantity: 0,
+  finalQuantity: qtd,
   paymentType: tipo.toUpperCase(),
   unitPrice: valorUnitario,
   total,
   limpo: dados.limpo,
   sujo: dados.sujo,
-  obs: dados.obs || ""
+  obs: dados.obs || "",
+  discountByQuantity: descontoQuantidadeAplicado
 });
     }
 
@@ -3004,20 +3042,18 @@ if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
 
 itens.forEach(item => {
   const mostrarTipoNoItem = tipoPagamentoCupom === "MISTO";
+  const sufixoPack = Number(item.packSize || 0) > 0 ? ` / pack de ${item.packSize}` : " cada";
+  const detalhePack = Number(item.packs || 0) > 0 ? ` • ${item.packs} pack(s)` : "";
+  const detalheDesconto = item.discountByQuantity ? " • PREÇO ACIMA DE 10" : "";
   const linhaItem = mostrarTipoNoItem
-  ? `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada) • ${item.paymentType}`
-  : `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (cada)`;
+    ? `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (${sufixoPack})${detalhePack} • ${item.paymentType}${detalheDesconto}`
+    : `${item.quantity} ${item.productName} → ${dinheiro(item.unitPrice)} (${sufixoPack})${detalhePack}${detalheDesconto}`;
 
-linhas.push({ text: linhaItem });
+  linhas.push({ text: linhaItem });
 
-if(Number(item.bonusQuantity || 0) > 0){
-  linhas.push({ text: `BÔNUS NIGHT SYNDICATION: +${item.bonusQuantity} munições` });
-  linhas.push({ text: `TOTAL RECEBIDO: ${item.finalQuantity} munições` });
-}
-
-if(item.obs){
-  linhas.push({ text:`Obs: ${item.obs}` });
-}
+  if(item.obs){
+    linhas.push({ text:`Obs: ${item.obs}` });
+  }
 });
 
 linhas.push({ type:"line", text:"------------------------------" });
