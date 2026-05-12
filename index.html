@@ -1512,19 +1512,24 @@ const CUSTO_SUB_POR_PECA = 135000 / 45;
 
   municoes: {
     "9mm": {
-      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" },
+      "Ceifeiros": { limpo: 20, sujo: 20, obs: "Valor unitário por munição" }
     },
     ".45mm": {
-      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+      "Sindication": { limpo: 600, sujo: 600, packSize: 100, obs: "Compra somente em packs de 100 unidades" },
+      "Ceifeiros": { limpo: 20, sujo: 20, obs: "Valor unitário por munição" }
     },
     ".50mm": {
-      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" },
+      "Ceifeiros": { limpo: 25, sujo: 25, obs: "Valor unitário por munição" }
     },
     ".38mm": {
-      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+      "Sindication": { limpo: 900, sujo: 900, packSize: 100, obs: "Compra somente em packs de 100 unidades" },
+      "Ceifeiros": { limpo: 20, sujo: 20, obs: "Valor unitário por munição" }
     },
     "12 Gauge": {
-      "Sindication": { limpo: 2000, sujo: 2000, packSize: 100, obs: "Compra somente em packs de 100 unidades" }
+      "Sindication": { limpo: 2000, sujo: 2000, packSize: 100, obs: "Compra somente em packs de 100 unidades" },
+      "Ceifeiros": { limpo: 25, sujo: 25, obs: "Valor unitário por munição" }
     }
   },
 
@@ -1551,6 +1556,45 @@ const CUSTO_SUB_POR_PECA = 135000 / 45;
     "Heroina": {
       "Creeds": { limpo: 120, sujo: 120, obs: "" },
       "La Plaga": { limpo: 120, sujo: 120, obs: "" }
+    }
+  },
+
+  heist: {
+    "Cartão de crédito X": {
+      "Hustles": { limpo: 500, sujo: 700, obs: "" }
+    },
+    "Maçarico": {
+      "Hustles": { limpo: 100, sujo: 140, obs: "" }
+    },
+    "Lockpick Avançada": {
+      "Hustles": { limpo: 800, sujo: 1120, obs: "" }
+    },
+    "Dispositivo X": {
+      "Hustles": { limpo: 1000, sujo: 1400, obs: "" }
+    },
+    "Gás X": {
+      "Hustles": { limpo: 800, sujo: 1120, obs: "" }
+    },
+    "Furadeira Laser": {
+      "Hustles": { limpo: 800, sujo: 1120, obs: "" }
+    },
+    "Corda com gancho": {
+      "Hustles": { limpo: 400, sujo: 560, obs: "" }
+    },
+    "Furadeira": {
+      "Hustles": { limpo: 500, sujo: 700, obs: "" }
+    },
+    "Termita": {
+      "Hustles": { limpo: 1000, sujo: 1400, obs: "" }
+    },
+    "Hacking Laptop": {
+      "Hustles": { limpo: 1000, sujo: 1400, obs: "" }
+    },
+    "Corda de Nylon": {
+      "Hustles": { limpo: 400, sujo: 560, obs: "" }
+    },
+    "Colete": {
+      "Hustles": { limpo: 1500, sujo: null, obs: "Disponível somente no dinheiro limpo" }
     }
   }
 };
@@ -2706,6 +2750,7 @@ function getCategoriasOptionsHtml(selected = ""){
     <option value="municoes" ${selected === "municoes" ? "selected" : ""}>Munições</option>
     <option value="tier1" ${selected === "tier1" ? "selected" : ""}>Tier 1</option>
     <option value="drogas" ${selected === "drogas" ? "selected" : ""}>Drogas</option>
+    <option value="heist" ${selected === "heist" ? "selected" : ""}>Itens de Heist</option>
   `;
 }
 
@@ -2754,7 +2799,8 @@ function getCategoriaLabelEncomenda(categoria){
     attachments: "Attachments",
     municoes: "Munições",
     tier1: "Tier 1",
-    drogas: "Drogas"
+    drogas: "Drogas",
+    heist: "Itens de Heist"
   }[categoria] || categoria;
 }
 
