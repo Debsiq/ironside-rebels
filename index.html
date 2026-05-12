@@ -2390,7 +2390,7 @@ function obterPrecoArma(armaNome, pagamento, totalPedido = 1){
   if(!arma) return 0;
 
   const ehSujo = pagamento === "Sujo";
-  const pedidoComDesconto = Number(totalPedido || 0) >= 11;
+  const pedidoComDesconto = Number(totalPedido || 0) >= 10;
 
   if(ehSujo){
     return arma.sujo;
@@ -2469,7 +2469,7 @@ function adicionarItemPedido(armaSelecionada = "Colt 1911", quantidade = "", pag
     const pagamento = item.querySelector(".pagamento-item").value;
     const valorUnitario = obterPrecoArma(armaNome, pagamento, totalPedido);
     const arma = armas[armaNome];
-    const temDesconto = pagamento === "Limpo" && totalPedido >= 11 && arma?.descontoLimpo != null;
+    const temDesconto = pagamento === "Limpo" && totalPedido >= 10 && arma?.descontoLimpo != null;
     const infoDesconto = temDesconto ? " • preço com desconto aplicado" : "";
 
     if(!qtd || qtd <= 0){
@@ -2501,7 +2501,7 @@ async function gerarPedido(){
     const qtd = Number(itemEl.querySelector(".qtd-item")?.value || 0);
     return acc + (qtd > 0 ? qtd : 0);
   }, 0);
-  const pedidoComDescontoPreco = totalQuantidadePedido >= 11;
+  const pedidoComDescontoPreco = totalQuantidadePedido >= 10;
 
   if(!contato){
     alert("Preencha o comprador.");
