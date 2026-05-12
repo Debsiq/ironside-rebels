@@ -1342,14 +1342,14 @@
       <h2 class="section-title">📦 Nova Encomenda</h2>
 
   <div class="grid">
-  <div>
-    <label for="compradorEncomenda">Comprador</label>
-    <input id="compradorEncomenda" placeholder="Nome do comprador">
+   <div>
+    <label for="compradorEncomenda">Organização</label>
+    <input id="compradorEncomenda" placeholder="Nome da organização">
   </div>
-
+  
   <div>
-    <label for="vendedorEncomenda">Vendedor</label>
-    <input id="vendedorEncomenda" placeholder="Nome do vendedor">
+    <label for="vendedorEncomenda">Contato</label>
+    <input id="vendedorEncomenda" placeholder="Nome do contato">
   </div>
 </div>
 
@@ -3079,8 +3079,8 @@ if(pagamentosUnicos.length === 1 && pagamentosUnicos[0] === "LIMPO"){
   { type:"line", text:"==============================" },
   { text:`ENCOMENDA #${String(numero).padStart(4,"0")}` },
   { text:`DATA: ${dataAtualBR()}` },
-  { text:`COMPRADOR: ${comprador || "-"}` },
-  { text:`VENDEDOR: ${vendedor || "-"}` },
+  { text:`ORGANIZAÇÃO: ${comprador || "-"}` },
+  { text:`CONTATO: ${vendedor || "-"}` },
   { text:`PAGAMENTO: ${tipoPagamentoCupom}` },
   { type:"line", text:"------------------------------" },
   { text:"ITENS:" }
@@ -3226,8 +3226,8 @@ return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` •
     html += `
       <div class="history">
         <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+        Organização: ${escapeHtml(e.buyer_name || "-")}<br>
+        Contato: ${escapeHtml(e.seller_name || "-")}<br>
         Pagamento: ${escapeHtml(tipoPagamentoResumo)}<br>
         Itens: ${escapeHtml(itensTexto)}<br>
         Total: ${dinheiro(e.total)}<br>
@@ -3278,8 +3278,8 @@ return `${i.quantity}x ${i.productName} (${i.supplierName})${mostrarTipo ? ` •
     html += `
       <div class="history">
         <strong>Encomenda #${String(e.purchase_number).padStart(4,"0")}</strong><br>
-        Comprador: ${escapeHtml(e.buyer_name || "-")}<br>
-        Vendedor: ${escapeHtml(e.seller_name || "-")}<br>
+        Organização: ${escapeHtml(e.buyer_name || "-")}<br>
+        Contato: ${escapeHtml(e.seller_name || "-")}<br>
         Pagamento: ${escapeHtml(tipoPagamentoResumo)}<br>
         Itens: ${escapeHtml(itensTexto)}<br>
         Total: ${dinheiro(e.total)}<br>
