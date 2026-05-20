@@ -3768,6 +3768,98 @@ window.onload = async () => {
   await carregarHistoricoBanco();
   await carregarHistoricoEncomendasInterno();
 };
+  const CUSTO_MACONHA_UNIT = 16;
+
+function calcularMaconha(){
+  const qtd = Number(document.getElementById("qtdMaconha").value || 0);
+  const sujo = Number(document.getElementById("dinheiroSujoMaconha").value || 0);
+
+  if(!qtd && !sujo){
+    document.getElementById("resultadosMaconha").style.display = "none";
+    return;
+  }
+
+  document.getElementById("resultadosMaconha").style.display = "block";
+
+  const custoTotal = qtd * CUSTO_MACONHA_UNIT;
+  const lucro = sujo - custoTotal;
+  const parteClube = Math.round(lucro / 2);
+  const parteMembro = lucro - parteClube;
+  const clubeLimpo = Math.round(parteClube * 0.6);
+  const membroLimpo = Math.round(parteMembro * 0.6);
+
+  document.getElementById("mCusto").textContent = dinheiro(custoTotal);
+  document.getElementById("mLucro").textContent = dinheiro(lucro);
+  document.getElementById("mClubeSujo").textContent = dinheiro(parteClube);
+  document.getElementById("mClubeLimpo").textContent = dinheiro(clubeLimpo);
+  document.getElementById("mMembroSujo").textContent = dinheiro(parteMembro);
+  document.getElementById("mMembroLimpo").textContent = dinheiro(membroLimpo);
+  document.getElementById("avisoMaconha").style.display = lucro < 0 ? "block" : "none";
+}
+
+function gerarCupomMaconha(){
+  const qtd = Number(document.getElementById("qtdMaconha").value || 0);
+  const sujo = Number(document.getElementById("dinheiroSujoMaconha").value || 0);
+  const nome = document.getElementById("nomeMembroMaconha").value.trim() || "-";
+
+  if(!qtd || !sujo){
+    alert("Preencha a quantidade e o dinheiro sujo.");
+    return;
+  }
+
+  const custoTotal = qtd * CUSTO_MACONHA_UNIT;
+  const lucro = sujo - custoTotal;
+  const parteClube = Math.round(lucro / 2);
+  const parteMembro = lucro - parteClube;
+  const clubeLimpo = Math.round(parteClube * 0.6);
+  const membroLimpo = Math.round(parteMembro * 0.6);
+
+  const linhas = [
+    { text: "```" },
+    { type: "title", text: "SISTEMA FENRIR — ACERTO DE MACONHA" },
+    { type: "line", text: "==============================" },
+    { text: `DATA: ${dataAtualBR()}` },
+    { text: `MEMBRO: ${nome}` },
+    { type: "line", text: "------------------------------" },
+    { text: `UNIDADES VENDIDAS: ${qtd} un` },
+    { text: `CUSTO UNITÁRIO: $${CUSTO_MACONHA_UNIT}/un` },
+    { text: `CUSTO TOTAL: -${dinheiro(custoTotal)}` },
+    { type: "line", text: "------------------------------" },
+    { text: `DINHEIRO SUJO ENTRADO: ${dinheiro(sujo)}` },
+    { type: "total", text: `LUCRO BRUTO (SUJO): ${dinheiro(lucro)}` },
+    { type: "line", text: "------------------------------" },
+    { text: "DIVISÃO DO LUCRO — 50% / 50%:" },
+    { text: `  CLUBE (sujo):  ${dinheiro(parteClube)}` },
+    { text: `  CLUBE (limpo): ${dinheiro(clubeLimpo)}` },
+    { type: "line", text: "  ..." },
+    { type: "discount", text: `  MEMBRO (sujo):  ${dinheiro(parteMembro)}` },
+    { type: "discount", text: `  MEMBRO (limpo): ${dinheiro(membroLimpo)}` },
+    ...(lucro < 0 ? [{ text: "⚠ ATENÇÃO: LUCRO NEGATIVO — DINHEIRO NÃO COBRE O CUSTO" }] : []),
+    { type: "line", text: "==============================" },
+    { text: "```" }
+  ];
+
+  document.getElementById("cupomMaconha").innerHTML = renderTerminal(linhas);
+}
+
+function resetarMaconha(){
+  document.getElementById("qtdMaconha").value = "";
+  document.getElementById("dinheiroSujoMaconha").value = "";
+  document.getElementById("nomeMembroMaconha").value = "";
+  document.getElementById("resultadosMaconha").style.display = "none";
+  document.getElementById("cupomMaconha").innerHTML = "";
+}
+
+function copiarCupomMaconha(){
+  const texto = document.getElementById("cupomMaconha").innerText.trim();
+  if(!texto){
+    alert("Gere um cupom primeiro.");
+    return;
+  }
+  navigator.clipboard.writeText(texto);
+  alert("Cupom copiado.");
+}
+  
 </script>
 
 </body>
