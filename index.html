@@ -1253,6 +1253,15 @@
             <option value="limpo">Dinheiro Limpo — $10.000</option>
           </select>
         </div>
+        
+        <div>
+          <label for="statusMetaPessoa">Status</label>
+          <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+            <option value="justificado">Justificado</option>
+          </select>
+        </div>
       </div>
 
       <div id="boxJustificativaMeta" style="display:none; margin-top:12px;">
@@ -2256,9 +2265,12 @@ function atualizarValorMeta(){
     metaTotalVisivel = !metaTotalVisivel;
     renderMeta();
   }
+  
   function toggleJustificativaMeta(){
-    const status = document.getElementById("statusMetaPessoa").value;
-    document.getElementById("boxJustificativaMeta").style.display = status === "justificado" ? "block" : "none";
+  const statusEl = document.getElementById("statusMetaPessoa");
+  const box = document.getElementById("boxJustificativaMeta");
+  if(!statusEl || !box) return;
+  box.style.display = statusEl.value === "justificado" ? "block" : "none";
   }
 
   async function registrarMetaPessoa(){
