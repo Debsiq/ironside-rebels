@@ -1219,7 +1219,7 @@
   <div id="meta" class="tab">
     <div class="card">
       <h2 class="section-title">💰 Meta Semanal</h2>
-      <div class="tag">Membro: obrigatório $5.000/semana • Prospect: aparece na tabela apenas quando pago</div>
+      <div class="tag">Membro: $25.000 sujo ou $10.000 limpo • Prospect: aparece na tabela apenas quando pago</div>
 
       <div class="actions" style="margin-top:0; margin-bottom:14px;">
         <button class="action" onclick="novaSemanaMeta()">Nova Semana</button>
@@ -1243,15 +1243,14 @@
 
         <div>
           <label for="valorMetaPessoa">Valor</label>
-          <input id="valorMetaPessoa" type="number" min="0" step="1" value="5000">
+          <input id="valorMetaPessoa" type="number" min="0" step="1" value="25000">
         </div>
 
         <div>
-          <label for="statusMetaPessoa">Status</label>
-          <select id="statusMetaPessoa" onchange="toggleJustificativaMeta()">
-            <option value="pago">Pago</option>
-            <option value="pendente">Pendente</option>
-            <option value="justificado">Justificado</option>
+          <label for="tipoPagamentoMeta">Tipo de pagamento</label>
+          <select id="tipoPagamentoMeta" onchange="atualizarValorMeta()">
+            <option value="sujo">Dinheiro Sujo — $25.000</option>
+            <option value="limpo">Dinheiro Limpo — $10.000</option>
           </select>
         </div>
       </div>
@@ -2224,27 +2223,35 @@ async function editarTotalHistorico(id, valorAtual){
   }
 
   function carregarPessoasMeta(){
-    const tipo = document.getElementById("tipoMetaPessoa").value;
-    const select = document.getElementById("nomeMetaPessoa");
-    const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
+  const tipo = document.getElementById("tipoMetaPessoa").value;
+  const select = document.getElementById("nomeMetaPessoa");
+  const lista = tipo === "membro" ? membrosMetaOrdenados : prospectsMetaOrdenados;
 
-    if(!lista.length){
-      select.innerHTML = `<option value="">Nenhum ${tipo === 'membro' ? 'membro' : 'prospect'} cadastrado</option>`;
-      select.disabled = true;
-    }else{
-      select.disabled = false;
-      select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
-    }
-
-    document.getElementById("valorMetaPessoa").value = tipo === "membro" ? 5000 : 0;
-
-    const status = document.getElementById("statusMetaPessoa");
-    if(tipo === "prospect" && status.value === "justificado"){
-      status.value = "pendente";
-    }
-
-    toggleJustificativaMeta();
+  if(!lista.length){
+    select.innerHTML = `<option value="">Nenhum ${tipo === 'membro' ? 'membro' : 'prospect'} cadastrado</option>`;
+    select.disabled = true;
+  }else{
+    select.disabled = false;
+    select.innerHTML = lista.map(nome => `<option value="${escapeHtml(nome)}">${escapeHtml(nome)}</option>`).join("");
   }
+
+  atualizarValorMeta();
+
+  const status = document.getElementById("statusMetaPessoa");
+  if(tipo === "prospect" && status.value === "justificado"){
+    status.value = "pendente";
+  }
+
+  toggleJustificativaMeta();
+}
+
+function atualizarValorMeta(){
+  const tipoPagamento = document.getElementById("tipoPagamentoMeta")?.value || "sujo";
+  const valorInput = document.getElementById("valorMetaPessoa");
+  if(!valorInput) return;
+  valorInput.value = tipoPagamento === "limpo" ? 10000 : 25000;
+}
+  
   function toggleMetaTotalVisivel(){
     metaTotalVisivel = !metaTotalVisivel;
     renderMeta();
