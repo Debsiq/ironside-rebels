@@ -2369,16 +2369,23 @@ function atualizarValorMeta(){
 
     html += `<h3>👑 Membros</h3><div class="meta-grid">`;
     membros.forEach(r => {
-    html += `
-  <div class="meta-card">
-    <div class="nome">${escapeHtml(r.person_name)}</div>
-    <div class="tipo">Membro • Obrigatório $10.000</div>
-    <div class="meta-info-row">
-      <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
-      ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
-    </div>
-  </div>
-`;
+      const tipoPag = Number(r.amount || 0) === 10000 ? 'limpo' : Number(r.amount || 0) === 25000 ? 'sujo' : r.amount > 0 ? 'limpo' : null;
+      const iconeImg = tipoPag === 'limpo'
+        ? `<img src="Dinheiro_Limpo.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;">`
+        : tipoPag === 'sujo'
+        ? `<img src="Dinheiro_Sujo.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;">`
+        : '';
+    
+      html += `
+      <div class="meta-card">
+        <div class="nome">${escapeHtml(r.person_name)}</div>
+        <div class="tipo">Membro • $25.000 sujo ou $10.000 limpo</div>
+        <div class="meta-info-row">
+          <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
+          ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline" style="display:flex;align-items:center;gap:6px;">${iconeImg}${dinheiro(r.amount || 0)}</div>` : ``}
+        </div>
+      </div>
+    `;
     });
     html += `</div>`;
 
