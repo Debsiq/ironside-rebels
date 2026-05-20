@@ -2372,7 +2372,7 @@ function atualizarValorMeta(){
     html += `
   <div class="meta-card">
     <div class="nome">${escapeHtml(r.person_name)}</div>
-    <div class="tipo">Membro • Obrigatório $5.000</div>
+    <div class="tipo">Membro • Obrigatório $10.000</div>
     <div class="meta-info-row">
       <div class="meta-status ${r.status}">${r.status.toUpperCase()}</div>
       ${Number(r.amount || 0) > 0 ? `<div class="meta-value-inline">${dinheiro(r.amount || 0)}</div>` : ``}
