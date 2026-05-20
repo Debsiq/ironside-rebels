@@ -1006,11 +1006,12 @@
 
 <div class="tabs">
   <button data-tab="pedidos" onclick="openTab('pedidos', this)">🧾 Pedidos</button>
-  <button data-tab="historico" onclick="openTab('historico', this)">📚 Histórico</button>
-  <button data-tab="dashboard" onclick="openTab('dashboard', this)">📊 Dashboard</button>
   <button data-tab="encomendas" onclick="openTab('encomendas', this)">📦 Encomendas</button>
+  <button data-tab="historico" onclick="openTab('historico', this)">📚 Histórico</button>
+  <button data-tab="maconha" onclick="openTab('maconha', this)">🌿 Maconha</button>
   <button data-tab="meta" onclick="openTab('meta', this)">💰 Meta</button>
   <button data-tab="banco" onclick="openTab('banco', this)">🏦 Banco</button>
+  <button data-tab="dashboard" onclick="openTab('dashboard', this)">📊 Dashboard</button>
 </div>
 
 <div class="container">
@@ -1146,7 +1147,75 @@
 </div></div>
   </div>
 </div>
+<div id="maconha" class="tab">
+  <div class="card">
+    <h2 class="section-title">🌿 Acerto de Maconha</h2>
+    <div class="tag">Custo: $16/un • Lucro dividido 50% clube / 50% membro • Limpo = sujo −40%</div>
 
+    <div class="grid">
+      <div>
+        <label for="qtdMaconha">Quantidade vendida</label>
+        <input id="qtdMaconha" type="number" min="0" step="1" placeholder="Ex: 100" oninput="calcularMaconha()">
+      </div>
+      <div>
+        <label for="dinheiroSujoMaconha">Dinheiro sujo recebido</label>
+        <input id="dinheiroSujoMaconha" type="number" min="0" step="1" placeholder="Ex: 5000" oninput="calcularMaconha()">
+      </div>
+      <div>
+        <label for="nomeMembroMaconha">Nome do membro</label>
+        <input id="nomeMembroMaconha" placeholder="Ex: Bjorn Thor">
+      </div>
+    </div>
+
+    <div id="resultadosMaconha" style="display:none; margin-top:16px;">
+      <div class="divider"></div>
+      <div class="meta-total-box">
+        <div class="meta-total-item">
+          <div class="title">Custo das unidades</div>
+          <div class="value" id="mCusto" style="color:#ff6b6b;">$0</div>
+        </div>
+        <div class="meta-total-item">
+          <div class="title">Lucro bruto (sujo)</div>
+          <div class="value" id="mLucro" style="color:#ffd166;">$0</div>
+        </div>
+        <div class="meta-total-item">
+          <div class="title">Parte do clube (sujo)</div>
+          <div class="value" id="mClubeSujo" style="color:#ff6b6b;">$0</div>
+        </div>
+        <div class="meta-total-item">
+          <div class="title">Parte do clube (limpo)</div>
+          <div class="value" id="mClubeLimpo" style="color:#ffb0b0;">$0</div>
+        </div>
+        <div class="meta-total-item">
+          <div class="title">Parte do membro (sujo)</div>
+          <div class="value" id="mMembroSujo" style="color:#00ff87;">$0</div>
+        </div>
+        <div class="meta-total-item">
+          <div class="title">Parte do membro (limpo)</div>
+          <div class="value" id="mMembroLimpo" style="color:#8fffd0;">$0</div>
+        </div>
+      </div>
+      <div id="avisoMaconha" class="warning" style="display:none;">⚠️ Atenção: dinheiro recebido não cobre o custo das unidades. Verifique os valores.</div>
+    </div>
+
+    <div class="actions">
+      <button class="action" onclick="gerarCupomMaconha()">Gerar Cupom</button>
+      <button class="secondary" onclick="resetarMaconha()">Resetar</button>
+      <button class="secondary" onclick="copiarCupomMaconha()">Copiar Cupom</button>
+    </div>
+
+    <div class="terminal">
+      <div class="terminal-head">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span>cupom_maconha.fenrir</span>
+      </div>
+      <div id="cupomMaconha" class="cupom"></div>
+    </div>
+  </div>
+</div>
+  
   <div id="meta" class="tab">
     <div class="card">
       <h2 class="section-title">💰 Meta Semanal</h2>
